@@ -7,11 +7,13 @@ import {
   updateProduct,
   deleteProduct,
   createProductReview,
+  getTopProducts,
 } from "../controllers/productController.js";
 import { protect, admin } from "../middleware/authMiddleware.js";
 
 // Fetch all products
 router.route("/").get(getProducts).post(protect, admin, createProduct);
+router.route("/top").get(getTopProducts);
 
 // Fetch single product
 router
