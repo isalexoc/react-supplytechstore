@@ -81,6 +81,8 @@ const OrderScreen = () => {
     toast.error(err.message);
   }
 
+  //bug fixed
+
   function createOrder(data, actions) {
     return actions.order
       .create({
