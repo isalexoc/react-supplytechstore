@@ -34,6 +34,7 @@ app.get("/api/config/paypal", (req, res) =>
 );
 
 if (process.env.NODE_ENV === "production") {
+  const __dirname = path.resolve();
   app.use(express.static(path.join(__dirname, "/frontend/build")));
 
   // any route that is not an API route, will point to index.html
@@ -51,6 +52,6 @@ if (process.env.NODE_ENV === "production") {
 app.use(notFound);
 app.use(errorHandler);
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+app.listen(port, () =>
+  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${port}`)
+);
