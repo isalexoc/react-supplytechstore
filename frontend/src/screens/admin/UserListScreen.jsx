@@ -38,11 +38,10 @@ const UserListScreen = () => {
         <Table striped bordered hover responsive className="table-sm">
           <thead>
             <tr>
-              <th>ID</th>
               <th>NOMBRE</th>
               <th>EMAIL</th>
               <th>ADMIN</th>
-              <th></th>
+              <th>ACCIONES</th>
             </tr>
           </thead>
           <tbody>
