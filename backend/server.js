@@ -10,6 +10,7 @@ import orderRoutes from "./routes/orderRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 
+//bugs fixed
 const port = process.env.PORT || 5000;
 
 connectDB();
