@@ -31,9 +31,12 @@ async function getPayPalAccessToken() {
     body,
   });
 
-  if (!response.ok) throw new Error("Failed to get access token");
-
   const paypalData = await response.json();
+
+  if (!response.ok) {
+    console.error(paypalData); // Log the error response
+    throw new Error("Failed to get access token");
+  }
 
   return paypalData.access_token;
 }
