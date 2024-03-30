@@ -1,6 +1,8 @@
 import path from "path";
 import express from "express";
 import multer from "multer";
+import cloudinary from "../config/cloudinary.js";
+import fs from "fs";
 
 const router = express.Router();
 
@@ -39,10 +41,42 @@ router.post("/", (req, res) => {
       return res.status(400).send({ message: err.message });
     }
 
-    res.status(200).send({
-      message: "Imagen subida correctamente",
-      image: `/${req.file.path}`,
-    });
+    // Specify transformations: crop to 500x500 and auto adjust quality for web use
+    const transformations = {
+      width: 640,
+      height: 510,
+      crop: "fill", // Crop the image to fit the specified dimensions
+      quality: "auto:good", // Automatically adjust quality for smaller size with good visual results
+      fetch_format: "auto", // Automatically select the best file format depending on the client
+    };
+
+    // Upload image to Cloudinary with transformations
+    cloudinary.uploader.upload(
+      req.file.path,
+      transformations,
+      (error, result) => {
+        if (error) {
+          // Remove image from uploads folder in case of upload error
+          fs.unlink(req.file.path, (unlinkErr) => {
+            if (unlinkErr)
+              console.error("Error deleting temporary file:", unlinkErr);
+          });
+
+          return res.status(400).send({ message: error.message });
+        } else {
+          // Remove image from uploads folder after successful upload
+          fs.unlink(req.file.path, (unlinkErr) => {
+            if (unlinkErr)
+              console.error("Error deleting temporary file:", unlinkErr);
+          });
+
+          return res.status(200).send({
+            message: "Imagen subida correctamente",
+            image: result.secure_url,
+          });
+        }
+      }
+    );
   });
 });
 
