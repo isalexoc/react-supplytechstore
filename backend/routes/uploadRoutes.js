@@ -36,6 +36,10 @@ const uploadSingleImage = upload.single("image");
 
 router.post("/", (req, res) => {
   uploadSingleImage(req, res, async (err) => {
+    // Check if req.file is defined
+    if (!req.file) {
+      return res.status(400).send({ message: "No file uploaded" });
+    }
     if (err) {
       return res.status(400).send({ message: err.message });
     }
