@@ -2,7 +2,7 @@ import path from "path";
 import express from "express";
 import multer from "multer";
 import cloudinary from "../config/cloudinary.js";
-import fs from "fs";
+import fs from "fs/promises"; // Import fs promises for async operations
 
 const router = express.Router();
 
@@ -21,7 +21,6 @@ const storage = multer.diskStorage({
 function fileFilter(req, file, cb) {
   const filetypes = /jpe?g|png|webp/;
   const mimetypes = /image\/jpe?g|image\/png|image\/webp/;
-
   const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
   const mimetype = mimetypes.test(file.mimetype);
 
@@ -36,7 +35,7 @@ const upload = multer({ storage, fileFilter });
 const uploadSingleImage = upload.single("image");
 
 router.post("/", (req, res) => {
-  uploadSingleImage(req, res, function (err) {
+  uploadSingleImage(req, res, async (err) => {
     if (err) {
       return res.status(400).send({ message: err.message });
     }
@@ -50,33 +49,30 @@ router.post("/", (req, res) => {
       fetch_format: "auto", // Automatically select the best file format depending on the client
     };
 
-    // Upload image to Cloudinary with transformations
-    cloudinary.uploader.upload(
-      req.file.path,
-      transformations,
-      (error, result) => {
-        if (error) {
-          // Remove image from uploads folder in case of upload error
-          fs.unlink(req.file.path, (unlinkErr) => {
-            if (unlinkErr)
-              console.error("Error deleting temporary file:", unlinkErr);
-          });
+    try {
+      // Upload image to Cloudinary with transformations
+      const result = await cloudinary.uploader.upload(
+        req.file.path,
+        transformations
+      );
 
-          return res.status(400).send({ message: error.message });
-        } else {
-          // Remove image from uploads folder after successful upload
-          fs.unlink(req.file.path, (unlinkErr) => {
-            if (unlinkErr)
-              console.error("Error deleting temporary file:", unlinkErr);
-          });
+      // Remove image from uploads folder after successful upload
+      await fs.unlink(req.file.path);
 
-          return res.status(200).send({
-            message: "Imagen subida correctamente",
-            image: result.secure_url,
-          });
-        }
+      return res.status(200).send({
+        message: "Imagen subida correctamente",
+        image: result.secure_url,
+      });
+    } catch (error) {
+      // Attempt to delete the temporary file even if the upload fails
+      try {
+        await fs.unlink(req.file.path);
+      } catch (unlinkErr) {
+        console.error("Error deleting temporary file:", unlinkErr);
       }
-    );
+
+      return res.status(400).send({ message: error.message });
+    }
   });
 });
 
