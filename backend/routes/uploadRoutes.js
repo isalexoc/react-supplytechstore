@@ -8,9 +8,17 @@ const router = express.Router();
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
+    console.log("file", file);
+    console.log("file.fieldname", file.fieldname);
     cb(null, "uploads/");
   },
   filename(req, file, cb) {
+    console.log("file.originalname", file.originalname);
+    console.log("file.fieldname", file.fieldname);
+    console.log(
+      "path.extname(file.originalname)",
+      path.extname(file.originalname)
+    );
     cb(
       null,
       `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`
@@ -36,17 +44,6 @@ const uploadSingleImage = upload.single("image");
 
 router.post("/", (req, res) => {
   uploadSingleImage(req, res, async (err) => {
-    // Log req.file and req.body
-    console.log("req.file:", req.file);
-    console.log("req.body:", req.body);
-    console.log("err:", err);
-    console.log("req.file.path:", req.file.path);
-    console.log("req.file.originalname:", req.file.originalname);
-    console.log("req.file.size:", req.file.size);
-    console.log("req.file.mimetype:", req.file.mimetype);
-    console.log("req.file.filename:", req.file.filename);
-    console.log("req.file.fieldname:", req.file.fieldname);
-
     // Check if req.file is defined
     if (!req.file) {
       return res.status(400).send({ message: "No file uploaded" });
