@@ -39,13 +39,13 @@ const ProductEditScreen = () => {
 
   useEffect(() => {
     if (product) {
-      setName(product.name);
+      setName(product.name === " " ? "" : product.name);
       setPrice(product.price);
       setImage(product.image);
-      setBrand(product.brand);
-      setCategory(product.category);
+      setBrand(product.brand === " " ? "" : product.brand);
+      setCategory(product.category === " " ? "" : product.category);
       setCountInStock(product.countInStock);
-      setDescription(product.description);
+      setDescription(product.description === " " ? "" : product.description);
     }
   }, [product]);
 
