@@ -7,9 +7,7 @@ import fs from "fs/promises"; // Import fs promises for async operations
 const router = express.Router();
 
 const storage = multer.diskStorage({
-  destination(req, file, cb) {
-    cb(null, "uploads/");
-  },
+  destination: "uploads/",
   filename(req, file, cb) {
     cb(
       null,
