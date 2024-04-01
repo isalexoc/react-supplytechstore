@@ -109,7 +109,7 @@ table th {
   margin: auto;
 }
 
-/* Responsive */
+/* Responsive s */
 @media (max-width: 768px) {
   .bannerVideoParent iframe {
     top: -20%;
