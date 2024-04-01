@@ -7,6 +7,7 @@ import Loader from "../components/Loader";
 import Message from "../components/Message";
 import Meta from "../components/Meta";
 import ProductCarousel from "../components/ProductCarousel";
+import BannerVideo from "../components/BannerVideo";
 
 const HomeScreen = () => {
   const { pageNumber, keyword } = useParams();
@@ -33,9 +34,10 @@ const HomeScreen = () => {
             </>
           ) : (
             <>
+              {data.page === 1 && <BannerVideo />}
+              <h1>Productos Recientes</h1>
               <ProductCarousel />
               <Meta />
-              <h1>Productos Recientes</h1>
             </>
           )}
 
