@@ -8,6 +8,7 @@ import Message from "../components/Message";
 import Meta from "../components/Meta";
 import ProductCarousel from "../components/ProductCarousel";
 import BannerVideo from "../components/BannerVideo";
+import Brands from "../components/Brands";
 
 const HomeScreen = () => {
   const { pageNumber, keyword } = useParams();
@@ -35,8 +36,12 @@ const HomeScreen = () => {
           ) : (
             <>
               {data.page === 1 && <BannerVideo />}
-              <h1>Productos Recientes</h1>
+              <h2 className="mt-5">Productos Destacados</h2>
               <ProductCarousel />
+              <h2 className="mt-5">Nuestra Marcas</h2>
+              {data.page === 1 && <Brands />}
+              <h2 className="mt-5">Todos los Productos</h2>
+
               <Meta />
             </>
           )}

@@ -49,12 +49,15 @@ const Header = () => {
                 <SearchBox />
                 <LinkContainer to="/cart">
                   <Nav.Link className="d-flex flex-column justify-content-center align-items-start align-items-lg-center mt-3 mb-2 my-lg-0">
-                    <FaShoppingCart size={25} /> Carrito
-                    {cartItems.length > 0 && (
-                      <Badge pill bg="success" style={{ marginLeft: "5px" }}>
-                        {cartItems.reduce((acc, item) => acc + item.qty, 0)}
-                      </Badge>
-                    )}
+                    <div>
+                      <FaShoppingCart size={25} />
+                      {cartItems.length > 0 && (
+                        <Badge pill bg="success" style={{ marginLeft: "5px" }}>
+                          {cartItems.reduce((acc, item) => acc + item.qty, 0)}
+                        </Badge>
+                      )}
+                    </div>
+                    Carrito
                   </Nav.Link>
                 </LinkContainer>
                 <LinkContainer to="/products">

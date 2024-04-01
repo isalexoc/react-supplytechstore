@@ -109,6 +109,48 @@ table th {
   margin: auto;
 }
 
+/* Brands component*/
+.brands-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(150px, 1fr)
+  ); /* Adjust the minmax values as needed */
+  gap: 20px; /* Space between logos */
+  justify-content: center;
+  padding: 20px;
+}
+
+.brand-logo {
+  width: 100%; /* Make logos responsive */
+  height: auto;
+  transition: transform 0.2s; /* Smooth scaling effect */
+}
+
+.brand-logo:hover {
+  transform: scale(1.1); /* Slightly enlarge logos on hover */
+}
+
+/* Whatsapp Button */
+.whatsapp-button {
+  position: fixed; /* Fixed positioning relative to the viewport */
+  bottom: 20px; /* 20px from the bottom */
+  right: 20px; /* 20px from the right */
+  background-color: #25d366; /* WhatsApp brand color */
+  color: white; /* Icon color */
+  padding: 10px; /* Padding around the icon */
+  border-radius: 50%; /* Circular button */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Optional: adds shadow for better visibility */
+  display: flex; /* Ensures the icon is centered within the button */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  text-decoration: none; /* Removes underline from the icon/link */
+}
+
+.whatsapp-button:hover {
+  background-color: #128c7e; /* Darker green on hover for visual feedback */
+}
+
 /* Responsive s */
 @media (max-width: 768px) {
   .bannerVideoParent iframe {
@@ -125,5 +167,15 @@ table th {
 
   .hero-text p {
     font-size: 1rem;
+  }
+
+  .carousel-caption h2 {
+    /*make the font smaller*/
+    font-size: 0.9rem;
+  }
+
+  /*Brands logos*/
+  .brands-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   }
 }
