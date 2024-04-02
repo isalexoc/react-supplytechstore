@@ -1,5 +1,16 @@
+body {
+  padding-top: 80px; /* Adjust based on the actual height of your header */
+}
+
 main {
   min-height: 80vh;
+}
+
+.fixed-header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1030; /* Ensure it stays above other content */
 }
 
 .rating span {
@@ -41,6 +52,16 @@ table th {
 
 .review button {
   margin-top: 10px;
+}
+
+.card-container {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add subtle shadow */
+  transition: transform 0.2s ease-in-out; /* Smooth transition for hover effect */
+}
+
+/* Slightly scale the card on hover for a lifting effect */
+.card-container:hover {
+  transform: scale(1.05);
 }
 
 .carousel-caption {
@@ -112,13 +133,11 @@ table th {
 /* Brands component*/
 .brands-grid {
   display: grid;
-  grid-template-columns: repeat(
-    auto-fill,
-    minmax(150px, 1fr)
-  ); /* Adjust the minmax values as needed */
+  grid-template-columns: repeat(4, 1fr); /* Creates four columns */
   gap: 20px; /* Space between logos */
   justify-content: center;
   padding: 20px;
+  margin: auto;
 }
 
 .brand-logo {

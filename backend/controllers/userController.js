@@ -1,6 +1,8 @@
 import asyncHandler from "../middleware/asyncHandler.js";
 import User from "../models/userModel.js";
+import Subscriber from "../models/subscriberModel.js";
 import generateToken from "../utils/generateToken.js";
+import nodemailer from "nodemailer";
 
 // @desc    Auth user & get token
 // @route   POST /api/users/login
@@ -185,6 +187,103 @@ const updateUser = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Save newsletter subscriber
+// @route   POST /api/forms/newsletternew
+// @access  Public
+const saveSubscriber = asyncHandler(async (req, res) => {
+  const { email, userName } = req.body;
+  const userExists = await User.findOne({ email });
+
+  if (!email) {
+    res.status(400);
+    throw new Error("Por favor, introduce tu dirección de correo electrónico");
+  }
+
+  // Check if subscriber already exists
+  const existingSubscriber = await Subscriber.findOne({ email });
+  if (existingSubscriber) {
+    res.status(400);
+    throw new Error("Ya estás suscrito a nuestro boletín informativo");
+  }
+
+  // send email
+
+  var transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: "isaac87usa@gmail.com",
+      pass: "icdq iclp rccg onhn",
+    },
+  });
+
+  var mailOptions = {
+    from: "supplytech.soldaduras@gmail.com",
+    to: email,
+    subject: "Subscripción a nuestro boletín informativo",
+    text: "Gracias por suscribirse a nuestro boletín informativo. Le mantendremos informado de todas las novedades de supplytechstore.com.",
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Email sent to subscriber: " + info.response);
+    }
+  });
+
+  // save subscriber to the database
+  const subscriber = new Subscriber({
+    email,
+    userName,
+  });
+
+  try {
+    await subscriber.save();
+
+    if (userExists) {
+      //add a true value to the newsletter field
+      userExists.newsletter = true;
+      await userExists.save();
+    }
+
+    res.status(200).json({
+      email,
+      message:
+        "Gracias por suscribirte a nuestro boletín informativo. Te mantendremos informado de todas las novedades de supplytechstore.com.",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message:
+        "Error al guardar el suscriptor en la base de datos. Por favor, inténtelo de nuevo.",
+    });
+  }
+});
+
+// @desc    Check if user is subscribed to newsletter
+// @route   GET /api/forms/newslettercheck
+// @access  Private
+const checkSubscriber = asyncHandler(async (req, res) => {
+  const email = req.query.email; // Use query parameter instead of body
+
+  if (!email) {
+    res.status(400);
+    throw new Error("Email is required.");
+  }
+
+  const existingSubscriber = await Subscriber.findOne({ email });
+  if (existingSubscriber) {
+    res.json({
+      message: "Yes",
+      isSubscribed: true,
+    });
+  } else {
+    res.json({
+      message: "No",
+      isSubscribed: false,
+    });
+  }
+});
+
 export {
   authUser,
   registerUser,
@@ -195,4 +294,6 @@ export {
   getUserById,
   deleteUser,
   updateUser,
+  saveSubscriber,
+  checkSubscriber,
 };
