@@ -11,6 +11,7 @@
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "data:import": "node backend/existingProductsSeeder.js",
     "data:destroy": "node backend/seeder.js -d",
+    "products:import": "node backend/doneProducts.js",
     "build": "npm install && npm install --prefix frontend && npm run build --prefix frontend"
   },
   "author": "Isaac Orraiz",

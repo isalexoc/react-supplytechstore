@@ -308,6 +308,71 @@ const unsubscribeNewsletter = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Contact form
+// @route   POST /api/forms/contact
+// @access  Public
+const contactForm = asyncHandler(async (req, res) => {
+  const { personName: name, email, message } = req.body;
+
+  if (!name || !email || !message) {
+    res.status(400);
+    throw new Error("Por favor, complete todos los campos.");
+  }
+
+  var transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: "isaac87usa@gmail.com", // Your Gmail
+      pass: "icdq iclp rccg onhn", // Your Gmail App Password
+    },
+  });
+
+  // Email to the customer
+  var customerMailOptions = {
+    from: "supplytech.soldaduras@gmail.com",
+    to: email, // Customer's email
+    subject: "Mensaje de contacto recibido",
+    text: `Hola ${name},\n\nGracias por contactarnos. Hemos recibido tu mensaje: "${message}"\n\nNos pondremos en contacto contigo a la brevedad.\n\nSaludos,\nEquipo de SupplyTech`,
+  };
+
+  // Email to the company
+  var companyMailOptions = {
+    from: "supplytech.soldaduras@gmail.com",
+    to: "isaac87usa@gmail.com", // Company's email
+    subject: "Nuevo mensaje de contacto",
+    text: `Has recibido un nuevo mensaje de contacto de ${name} (${email}).\n\nMensaje:\n${message}`,
+  };
+
+  // Sending email to the customer
+  transporter.sendMail(customerMailOptions, function (error, info) {
+    if (error) {
+      res.status(500);
+      throw new Error(
+        "Error al enviar el mensaje. Por favor, inténtelo de nuevo."
+      );
+    } else {
+      res.status(200).json({
+        message:
+          "Gracias por contactarnos. Nos pondremos en contacto contigo a la brevedad.",
+      });
+    }
+  });
+
+  // Sending email to the company
+  transporter.sendMail(companyMailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Email sent to company: " + info.response);
+    }
+  });
+
+  res.status(200).json({
+    message:
+      "Gracias por contactarnos. Nos pondremos en contacto contigo a la brevedad.",
+  });
+});
+
 export {
   authUser,
   registerUser,
@@ -321,4 +386,5 @@ export {
   saveSubscriber,
   checkSubscriber,
   unsubscribeNewsletter,
+  contactForm,
 };

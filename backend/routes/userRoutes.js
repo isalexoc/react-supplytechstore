@@ -13,6 +13,7 @@ import {
   saveSubscriber,
   checkSubscriber,
   unsubscribeNewsletter,
+  contactForm,
 } from "../controllers/userController.js";
 import { protect, admin } from "../middleware/authMiddleware.js";
 
@@ -24,6 +25,7 @@ router
   .post(saveSubscriber)
   .get(checkSubscriber)
   .delete(unsubscribeNewsletter);
+router.route("/contact").post(contactForm);
 router
   .route("/profile")
   .get(protect, getUserProfile)

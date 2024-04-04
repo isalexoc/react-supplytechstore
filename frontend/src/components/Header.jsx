@@ -66,7 +66,7 @@ const Header = () => {
                     Carrito
                   </Nav.Link>
                 </LinkContainer>
-                <LinkContainer to="/products">
+                <LinkContainer to="/products/todos%20los%20productos/page/1">
                   <Nav.Link className="d-flex flex-column justify-content-center align-items-start align-items-lg-center my-2 my-lg-0">
                     <GrCatalog size={25} />
                     Catálogo

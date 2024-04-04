@@ -79,6 +79,13 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         method: "DELETE",
       }),
     }),
+    contactForm: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/contact`,
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -94,4 +101,5 @@ export const {
   useSubscribeNewsletterMutation,
   useCheckSubscriberQuery,
   useUnsubscribeNewsletterMutation,
+  useContactFormMutation,
 } = usersApiSlice;

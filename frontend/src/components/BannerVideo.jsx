@@ -12,7 +12,7 @@ const BannerVideo = () => (
         ferretería en general.
       </p>
       {/* Action Button */}
-      <LinkContainer to="/products">
+      <LinkContainer to="/products/todos%20los%20productos/page/1">
         <button className="btn btn-outline-light mt-4">Ver Catálogo</button>
       </LinkContainer>
     </div>
