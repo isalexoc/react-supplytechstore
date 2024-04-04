@@ -50,6 +50,11 @@ const router = createBrowserRouter(
       <Route path="/login" element={<LoginScreen />} />
       <Route path="/register" element={<RegisterScreen />} />
       <Route path="/products" element={<Catalog />} />
+      <Route path="/products/page/:pageNumber" element={<Catalog />} />
+      <Route
+        path="/products/:category/page/:pageNumber"
+        element={<Catalog />}
+      />
       <Route path="/contact" element={<Contact />} />
 
       <Route path="" element={<PrivateRoute />}>

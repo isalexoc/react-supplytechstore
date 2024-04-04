@@ -9,6 +9,7 @@ import Meta from "../components/Meta";
 import ProductCarousel from "../components/ProductCarousel";
 import BannerVideo from "../components/BannerVideo";
 import Brands from "../components/Brands";
+import ShowMap from "../components/ShowMap";
 
 const HomeScreen = () => {
   const { pageNumber, keyword } = useParams();
@@ -58,6 +59,7 @@ const HomeScreen = () => {
             page={data.page}
             keyword={keyword ? keyword : ""}
           />
+          {data.page === 1 && <ShowMap />}
         </>
       )}
     </>

@@ -170,6 +170,13 @@ table th {
   background-color: #128c7e; /* Darker green on hover for visual feedback */
 }
 
+/*Footer*/
+.group-hover:hover,
+.group-hover:hover .text-primary {
+  color: #fff; /* Replace with your desired hover color */
+  cursor: pointer; /* Change cursor to indicate clickable area */
+}
+
 /* Responsive s */
 @media (max-width: 768px) {
   .bannerVideoParent iframe {

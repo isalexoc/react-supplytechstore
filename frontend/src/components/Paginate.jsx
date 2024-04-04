@@ -1,15 +1,18 @@
-import React from "react";
 import { Pagination } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 
-const Paginate = ({ pages, page, isAdmin = false, keyword = "" }) => {
+const Paginate = ({
+  pages,
+  page,
+  isAdmin = false,
+  keyword = "",
+  screen = "",
+}) => {
   let startPage, endPage;
   if (pages <= 5) {
-    // less than 5 total pages so show all
     startPage = 1;
     endPage = pages;
   } else {
-    // more than 5 total pages so calculate start and end pages
     if (page <= 3) {
       startPage = 1;
       endPage = 5;
@@ -22,43 +25,55 @@ const Paginate = ({ pages, page, isAdmin = false, keyword = "" }) => {
     }
   }
 
+  const getPageLink = (pageNum, isAdmin, keyword, screen) => {
+    if (isAdmin) {
+      return `/admin/productlist/${pageNum}`;
+    } else if (keyword) {
+      return `/search/${keyword}/page/${pageNum}`;
+    } else if (screen) {
+      return `/${screen}/page/${pageNum}`;
+    } else {
+      return `/page/${pageNum}`;
+    }
+  };
+
   return (
     pages > 1 && (
       <Pagination className="my-5">
-        <LinkContainer to={getPageLink(1, isAdmin, keyword)}>
+        {/* First Page Link */}
+        <LinkContainer to={getPageLink(1, isAdmin, keyword, screen)}>
           <Pagination.First disabled={page === 1} />
         </LinkContainer>
-        <LinkContainer to={getPageLink(page - 1, isAdmin, keyword)}>
+
+        {/* Previous Page Link */}
+        <LinkContainer to={getPageLink(page - 1, isAdmin, keyword, screen)}>
           <Pagination.Prev disabled={page === 1} />
         </LinkContainer>
+
+        {/* Numbered Page Links */}
         {[...Array(endPage + 1 - startPage).keys()].map((x) => (
           <LinkContainer
             key={startPage + x}
-            to={getPageLink(startPage + x, isAdmin, keyword)}
+            to={getPageLink(startPage + x, isAdmin, keyword, screen)}
           >
             <Pagination.Item active={startPage + x === page}>
               {startPage + x}
             </Pagination.Item>
           </LinkContainer>
         ))}
-        <LinkContainer to={getPageLink(page + 1, isAdmin, keyword)}>
+
+        {/* Next Page Link */}
+        <LinkContainer to={getPageLink(page + 1, isAdmin, keyword, screen)}>
           <Pagination.Next disabled={page === pages} />
         </LinkContainer>
-        <LinkContainer to={getPageLink(pages, isAdmin, keyword)}>
+
+        {/* Last Page Link */}
+        <LinkContainer to={getPageLink(pages, isAdmin, keyword, screen)}>
           <Pagination.Last disabled={page === pages} />
         </LinkContainer>
       </Pagination>
     )
   );
-};
-
-// Utility function to get the page link
-const getPageLink = (pageNum, isAdmin, keyword) => {
-  return !isAdmin
-    ? keyword
-      ? `/search/${keyword}/page/${pageNum}`
-      : `/page/${pageNum}`
-    : `/admin/productlist/${pageNum}`;
 };
 
 export default Paginate;

@@ -284,6 +284,30 @@ const checkSubscriber = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Unsubscribe user from newsletter
+// @route   DELETE /api/forms/newsletterdelete
+// @access  Public
+const unsubscribeNewsletter = asyncHandler(async (req, res) => {
+  const email = req.query.email;
+
+  if (!email) {
+    res.status(400);
+    throw new Error("El email es requerido.");
+  }
+
+  const subscriber = await Subscriber.findOne({ email });
+
+  if (subscriber) {
+    await subscriber.deleteOne({ email });
+    res.json({
+      message: "El usuario ha sido removido de la lista de subscriptores",
+    });
+  } else {
+    res.status(404);
+    throw new Error("Subscriber not found.");
+  }
+});
+
 export {
   authUser,
   registerUser,
@@ -296,4 +320,5 @@ export {
   updateUser,
   saveSubscriber,
   checkSubscriber,
+  unsubscribeNewsletter,
 };

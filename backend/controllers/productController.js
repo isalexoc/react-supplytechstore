@@ -29,6 +29,42 @@ const getProducts = asyncHandler(async (req, res) => {
   });
 });
 
+// @des     Get products by category query
+// @route   GET /api/products/category
+// @access  Public
+const getProductByCategory = asyncHandler(async (req, res) => {
+  const pageSize = process.env.PAGINATION_LIMIT || 12;
+  const page = Number(req.query.pageNumber) || 1;
+
+  const category = req.query.category
+    ? {
+        category: {
+          $regex: req.query.category,
+          $options: "i",
+        },
+      }
+    : {};
+
+  const count = await Product.countDocuments({ ...category });
+
+  const products = await Product.find({ ...category })
+    .limit(pageSize)
+    .skip(pageSize * (page - 1));
+  res.json({
+    products,
+    page,
+    pages: Math.ceil(count / pageSize),
+  });
+});
+
+// @desc    Fetch all products no pagination
+// @route   GET /api/products
+// @access  Public
+const getAllProducts = asyncHandler(async (req, res) => {
+  const products = await Product.find({});
+  res.json(products);
+});
+
 // @desc    Fetch single product
 // @route   GET /api/products/:id
 // @access  Public
@@ -174,4 +210,6 @@ export {
   deleteProduct,
   createProductReview,
   getTopProducts,
+  getAllProducts,
+  getProductByCategory,
 };

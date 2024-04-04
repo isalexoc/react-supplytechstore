@@ -73,6 +73,12 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    unsubscribeNewsletter: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/subscribe?email=${data.email}`,
+        method: "DELETE",
+      }),
+    }),
   }),
 });
 
@@ -87,4 +93,5 @@ export const {
   useUpdateUserMutation,
   useSubscribeNewsletterMutation,
   useCheckSubscriberQuery,
+  useUnsubscribeNewsletterMutation,
 } = usersApiSlice;

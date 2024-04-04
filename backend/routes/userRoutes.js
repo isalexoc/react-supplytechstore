@@ -12,13 +12,18 @@ import {
   updateUser,
   saveSubscriber,
   checkSubscriber,
+  unsubscribeNewsletter,
 } from "../controllers/userController.js";
 import { protect, admin } from "../middleware/authMiddleware.js";
 
 router.route("/").post(registerUser).get(protect, admin, getUsers);
 router.post("/logout", logoutUser);
 router.post("/auth", authUser);
-router.route("/subscribe").post(saveSubscriber).get(checkSubscriber);
+router
+  .route("/subscribe")
+  .post(saveSubscriber)
+  .get(checkSubscriber)
+  .delete(unsubscribeNewsletter);
 router
   .route("/profile")
   .get(protect, getUserProfile)

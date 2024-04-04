@@ -5,6 +5,8 @@ import {
   FaSmile,
   FaFacebook,
   FaInstagram,
+  FaMapMarkerAlt,
+  FaPhoneAlt,
 } from "react-icons/fa";
 import Newsletter from "./Newsletter";
 
@@ -72,6 +74,25 @@ const Footer = () => {
                 Piso B, Local 2, Sector casco central de Maracay, Edo. Aragua,
                 Zona postal 2101
               </p>
+              <div className="d-flex mb-5 mt-4">
+                <a
+                  href="https://maps.app.goo.gl/ggoGpA6aXhvwSwP17"
+                  className="group d-flex flex-column justify-content-center align-items-center group-hover text-decoration-none me-5"
+                >
+                  <FaMapMarkerAlt
+                    size={30}
+                    className="text-primary me-3 mb-1"
+                  />
+                  Ir al mapa
+                </a>
+                <a
+                  href="tel:+584122763933"
+                  className="group d-flex flex-column justify-content-center align-items-center group-hover text-decoration-none"
+                >
+                  <FaPhoneAlt size={30} className="text-primary mb-1" />
+                  Llamar ahora
+                </a>
+              </div>
             </Col>
 
             <Col md={4}>
