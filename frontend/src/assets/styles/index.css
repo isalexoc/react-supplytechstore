@@ -177,7 +177,7 @@ table th {
   cursor: pointer; /* Change cursor to indicate clickable area */
 }
 
-// Category card for categorySlider component
+/* Category card for categorySlider component */
 
 .category-card {
   width: 100%;
