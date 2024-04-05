@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, ListGroup } from "react-bootstrap";
+import { Row, Col, ListGroup, Form } from "react-bootstrap";
 import { useParams, useNavigate } from "react-router-dom";
 import Product from "../components/Product";
 import {
@@ -94,7 +94,19 @@ const Catalog = () => {
           <Row>
             <Col md={3}>
               <h3>Categorías</h3>
-              <ListGroup>
+              <Form.Control
+                as="select"
+                className="d-md-none"
+                onChange={(e) => handleCategoryChange(e.target.value)}
+              >
+                <option value="">Seleccionar</option>
+                {categories.map((normalizedCategory, index) => (
+                  <option key={index} value={normalizedCategory}>
+                    {normalizedCategory}
+                  </option>
+                ))}
+              </Form.Control>
+              <ListGroup className="d-none d-md-block">
                 {categories.map((normalizedCategory, index) => (
                   <ListGroup.Item
                     key={index}

@@ -1,5 +1,6 @@
 import asyncHandler from "../middleware/asyncHandler.js";
 import Product from "../models/productModel.js";
+import Category from "../models/categoriesModel.js";
 
 // @desc    Fetch all products
 // @route   GET /api/products
@@ -106,6 +107,19 @@ const updateProduct = asyncHandler(async (req, res) => {
   const { name, price, description, image, brand, category, countInStock } =
     req.body;
 
+  if (
+    !name ||
+    !price ||
+    !description ||
+    !image ||
+    !brand ||
+    !category ||
+    !countInStock
+  ) {
+    res.status(400);
+    throw new Error("Por favor, rellena todos los campos");
+  }
+
   const product = await Product.findById(req.params.id);
 
   if (product) {
@@ -197,9 +211,80 @@ const getTopProducts = asyncHandler(async (req, res) => {
     },
   });
 
-  //const products = await Product.find({}).sort({ rating: -1 }).limit(3);
-
   res.status(200).json(products);
+});
+
+// @desc    Get categories
+// @route   GET /api/products/categories
+// @access  Public
+const getCategories = asyncHandler(async (req, res) => {
+  try {
+    const categories = await Category.find({});
+    res.status(200).json(categories);
+  } catch (error) {
+    res.status(404);
+    throw new Error("Categorías no encontradas");
+  }
+});
+
+// @desc    Create a category
+// @route   POST /api/products/categories
+// @access  Private/Admin
+const createCategory = asyncHandler(async (req, res) => {
+  const { name, image } = req.body;
+  if (!name || !image) {
+    res.status(400);
+    throw new Error("Por favor, rellena todos los campos");
+  }
+
+  const category = new Category({
+    name,
+    image,
+  });
+
+  const createdCategory = await category.save();
+  res.status(201).json(createdCategory);
+});
+
+// @desc    Delete a category
+// @route   DELETE /api/products/categories/:id
+// @access  Private/Admin
+const deleteCategory = asyncHandler(async (req, res) => {
+  const category = await Category.findById(req.params.id);
+
+  if (category) {
+    await Category.deleteOne({ _id: category._id });
+    res.status(200).json({ message: "Categoría borrada" });
+  } else {
+    res.status(404);
+    throw new Error("Categoría no encontrada");
+  }
+});
+
+// @desc    Update a category
+// @route   PUT /api/products/categories/:id
+// @access  Private/Admin
+const updateCategory = asyncHandler(async (req, res) => {
+  const { name, image } = req.body;
+
+  if (!name || !image) {
+    res.status(400);
+    throw new Error("Por favor, rellena todos los campos");
+  }
+
+  const category = await Category.findById(req.params.id);
+
+  if (category) {
+    category.name = name;
+    category.image = image;
+
+    const updatedCategory = await category.save();
+
+    res.json(updatedCategory);
+  } else {
+    res.status(404);
+    throw new Error("Categoría no encontrada");
+  }
 });
 
 export {
@@ -212,4 +297,8 @@ export {
   getTopProducts,
   getAllProducts,
   getProductByCategory,
+  getCategories,
+  createCategory,
+  deleteCategory,
+  updateCategory,
 };

@@ -177,6 +177,40 @@ table th {
   cursor: pointer; /* Change cursor to indicate clickable area */
 }
 
+// Category card for categorySlider component
+
+.category-card {
+  width: 100%;
+}
+
+.category-image {
+  width: 100%;
+  display: block;
+  border-radius: 0.25rem; /* Match Bootstrap's border-radius */
+}
+
+.category-card .category-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+  color: white;
+  padding: 10px;
+  text-align: center;
+  border-bottom-left-radius: 0.25rem; /* Match Bootstrap's border-radius */
+  border-bottom-right-radius: 0.25rem; /* Match Bootstrap's border-radius */
+}
+
+.category-text {
+  font-weight: bold;
+  font-size: 1.25rem;
+}
+
+.carousel-indicators {
+  display: none;
+}
+
 /* Responsive s */
 @media (max-width: 768px) {
   .bannerVideoParent iframe {

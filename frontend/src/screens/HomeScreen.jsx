@@ -10,6 +10,7 @@ import ProductCarousel from "../components/ProductCarousel";
 import BannerVideo from "../components/BannerVideo";
 import Brands from "../components/Brands";
 import ShowMap from "../components/ShowMap";
+import CategoriesSlider from "../components/CategoriesSlider";
 
 const HomeScreen = () => {
   const { pageNumber, keyword } = useParams();
@@ -41,6 +42,8 @@ const HomeScreen = () => {
               <ProductCarousel />
               <h2 className="mt-5">Nuestra Marcas</h2>
               {data.page === 1 && <Brands />}
+              <h2 className="mt-5">Categorías</h2>
+              <CategoriesSlider />
               <h2 className="mt-5">Todos los Productos</h2>
 
               <Meta />

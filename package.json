@@ -12,6 +12,7 @@
     "data:import": "node backend/existingProductsSeeder.js",
     "data:destroy": "node backend/seeder.js -d",
     "products:import": "node backend/doneProducts.js",
+    "categories:import": "node backend/categoriesSeeder.js",
     "build": "npm install && npm install --prefix frontend && npm run build --prefix frontend"
   },
   "author": "Isaac Orraiz",

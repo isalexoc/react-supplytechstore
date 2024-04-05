@@ -10,6 +10,10 @@ import {
   getTopProducts,
   getAllProducts,
   getProductByCategory,
+  getCategories,
+  createCategory,
+  deleteCategory,
+  updateCategory,
 } from "../controllers/productController.js";
 import { protect, admin } from "../middleware/authMiddleware.js";
 import checkObjectId from "../middleware/checkObjectId.js";
@@ -20,6 +24,14 @@ router.route("/:id/reviews").post(protect, checkObjectId, createProductReview);
 router.route("/top").get(getTopProducts);
 router.route("/allproducts").get(getAllProducts);
 router.route("/category").get(getProductByCategory);
+router
+  .route("/categories")
+  .get(getCategories)
+  .post(protect, admin, createCategory);
+router
+  .route("/categories/:id")
+  .put(protect, admin, checkObjectId, updateCategory)
+  .delete(protect, admin, checkObjectId, deleteCategory);
 
 // Fetch single product
 router

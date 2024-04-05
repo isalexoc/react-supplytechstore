@@ -79,6 +79,31 @@ export const productsApiSlice = apiSlice.injectEndpoints({
       }),
       providesTags: ["Products"],
     }),
+    getCategories: builder.query({
+      query: () => ({
+        url: `${PRODUCTS_URL}/categories`,
+      }),
+    }),
+    createCategory: builder.mutation({
+      query: (data) => ({
+        url: `${PRODUCTS_URL}/categories`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+    deleteCategory: builder.mutation({
+      query: (categoryId) => ({
+        url: `${PRODUCTS_URL}/categories/${categoryId}`,
+        method: "DELETE",
+      }),
+    }),
+    updateCategory: builder.mutation({
+      query: (data) => ({
+        url: `${PRODUCTS_URL}/categories/${data.categoryId}`,
+        method: "PUT",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -93,4 +118,8 @@ export const {
   useCreateReviewMutation,
   useGetTopProductsQuery,
   useGetAllProductsQuery,
+  useGetCategoriesQuery,
+  useCreateCategoryMutation,
+  useDeleteCategoryMutation,
+  useUpdateCategoryMutation,
 } = productsApiSlice;
