@@ -133,17 +133,17 @@ const ShowCategories = () => {
           </Message>
         ) : (
           //display the categories on a table
-          <Form.Control
+          <Form.Group
             as="select"
             onChange={(e) => handleCatChange(e.target.value)}
+            className="form-select"
           >
-            <option value="">Seleccionar</option>
             {categories.map((category) => (
               <option key={category._id} value={category._id}>
                 {capitalizeString(category.name)}
               </option>
             ))}
-          </Form.Control>
+          </Form.Group>
         )}
 
         {selectedCategory !== null && (

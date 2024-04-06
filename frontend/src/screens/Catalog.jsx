@@ -94,18 +94,18 @@ const Catalog = () => {
           <Row>
             <Col md={3}>
               <h3>Categorías</h3>
-              <Form.Control
+              <Form.Group
                 as="select"
-                className="d-md-none"
+                className="d-md-none form-select"
+                value={selectedCategory} // Set the value to selectedCategory
                 onChange={(e) => handleCategoryChange(e.target.value)}
               >
-                <option value="">Seleccionar</option>
                 {categories.map((normalizedCategory, index) => (
                   <option key={index} value={normalizedCategory}>
-                    {normalizedCategory}
+                    {categoriesMapping[normalizedCategory]}
                   </option>
                 ))}
-              </Form.Control>
+              </Form.Group>
               <ListGroup className="d-none d-md-block">
                 {categories.map((normalizedCategory, index) => (
                   <ListGroup.Item
