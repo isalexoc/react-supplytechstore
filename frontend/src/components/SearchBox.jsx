@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Form, Button } from "react-bootstrap";
 import { useParams, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
-const SearchBox = () => {
+const SearchBox = ({ onSearch }) => {
   const navigate = useNavigate();
   const { keyword: urlKeyword } = useParams();
 
@@ -13,8 +14,9 @@ const SearchBox = () => {
     if (keyword.trim()) {
       setKeyword("");
       navigate(`/search/${keyword}`);
+      onSearch();
     } else {
-      navigate("/");
+      toast.error("Por favor, ingrese un término de búsqueda");
     }
   };
 

@@ -30,8 +30,11 @@ const Header = () => {
   const [navbarBg, setNavbarBg] = useState("dark");
   const [isHome, setIsHome] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
+    setExpanded(false);
+    window.scrollTo(0, 0);
     const handleScroll = () => {
       // Set navbar background color based on scroll position and current path
       if (
@@ -79,8 +82,10 @@ const Header = () => {
           color="white"
           variant="dark"
           expand="lg"
+          expanded={expanded}
           collapseOnSelect
           onToggle={(expanded) => {
+            setExpanded(expanded);
             if (expanded) {
               setNavbarBg("dark");
             } else if (!isScrolled && isHome) {
@@ -101,7 +106,7 @@ const Header = () => {
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="ms-auto mt-3 mt-lg-0">
-                <SearchBox />
+                <SearchBox onSearch={() => setExpanded(false)} />
                 <LinkContainer to="/cart">
                   <Nav.Link className="d-flex flex-lg-column justify-content-center align-items-start align-items-lg-center mt-3 mb-2 my-lg-0">
                     <div>
