@@ -94,14 +94,26 @@ const Header = () => {
           }}
           className={`${
             isHome && isScrolled && "border-bottom"
-          } fixed-header py-1 py-lg-2`}
+          } fixed-header py-2`}
         >
           <Container>
-            <LinkContainer to="/">
+            <LinkContainer to="/" className="me-0">
               <Navbar.Brand>
-                <img src={logo} alt="logo" />
+                <img src={logo} width={40} alt="logo" />
                 SupplyTechStore
               </Navbar.Brand>
+            </LinkContainer>
+            <LinkContainer to="/cart" className="d-lg-none">
+              <Nav.Link className="">
+                <div>
+                  <FaShoppingCart size={20} color="white" />
+                  {cartItems.length > 0 && (
+                    <Badge pill bg="success" style={{ marginLeft: "5px" }}>
+                      {cartItems.reduce((acc, item) => acc + item.qty, 0)}
+                    </Badge>
+                  )}
+                </div>
+              </Nav.Link>
             </LinkContainer>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
