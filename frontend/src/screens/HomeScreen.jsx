@@ -7,7 +7,6 @@ import Loader from "../components/Loader";
 import Message from "../components/Message";
 import Meta from "../components/Meta";
 import ProductCarousel from "../components/ProductCarousel";
-import BannerVideo from "../components/BannerVideo";
 import Brands from "../components/Brands";
 import ShowMap from "../components/ShowMap";
 import CategoriesSlider from "../components/CategoriesSlider";
@@ -37,8 +36,7 @@ const HomeScreen = () => {
             </>
           ) : (
             <>
-              {data.page === 1 && <BannerVideo />}
-              <h2 className="mt-5">Productos Destacados</h2>
+              <h2 className="mt-3">Productos Destacados</h2>
               <ProductCarousel />
               <h2 className="mt-5">Nuestra Marcas</h2>
               {data.page === 1 && <Brands />}

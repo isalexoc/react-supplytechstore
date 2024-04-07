@@ -25,8 +25,9 @@ const SearchBox = () => {
         name="q"
         onChange={(e) => setKeyword(e.target.value)}
         placeholder="Buscar productos..."
-        className="mr-sm-2 ml-sm-5"
+        className="mr-sm-2 ml-sm-5 bg-transparent search-box"
         value={keyword}
+        style={{ color: "white" }}
       ></Form.Control>
       <Button type="submit" variant="outline-light" className="p-2 mx-2">
         Buscar

@@ -7,7 +7,7 @@ const BannerVideo = () => (
     <div className="video-overlay"></div>
     <div className="hero-text">
       <h1>Tu Proyecto, Nuestras Herramientas</h1>
-      <p className="fs-4">
+      <p>
         Especialistas en soldadura, taladros, maquinaria para soldar y
         ferretería en general.
       </p>

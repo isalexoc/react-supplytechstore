@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import { Navbar, Nav, Container, Badge, NavDropdown } from "react-bootstrap";
 import { FaShoppingCart, FaUser } from "react-icons/fa";
 import { GrCatalog } from "react-icons/gr";
@@ -11,8 +12,13 @@ import SearchBox from "./SearchBox";
 import { resetCart } from "../slices/cartSlice";
 import logo from "../assets/logo.png";
 import { truncateString } from "../utils/textUtils";
+import BannerVideo from "./BannerVideo";
+import { useLocation } from "react-router-dom";
 
 const Header = () => {
+  const location = useLocation();
+  const currentPath = location.pathname;
+
   const { cartItems } = useSelector((state) => state.cart);
   const { userInfo } = useSelector((state) => state.auth);
 
@@ -20,6 +26,39 @@ const Header = () => {
   const navigate = useNavigate();
 
   const [logoutApiCall] = useLogoutMutation();
+
+  const [navbarBg, setNavbarBg] = useState("dark");
+  const [isHome, setIsHome] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Set navbar background color based on scroll position and current path
+      if (
+        (currentPath === "/" || currentPath.startsWith("/page/1")) &&
+        window.scrollY > 50
+      ) {
+        setNavbarBg("dark");
+        setIsScrolled(true);
+      } else {
+        setNavbarBg("transparent");
+        setIsScrolled(false);
+      }
+    };
+
+    if (currentPath === "/" || currentPath.startsWith("/page/1")) {
+      setNavbarBg("transparent");
+      setIsHome(true);
+      // Add scroll event listener
+      window.addEventListener("scroll", handleScroll);
+    } else {
+      setNavbarBg("dark");
+      setIsHome(false);
+    }
+
+    // Clean up the event listener when the component unmounts or path changes
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [currentPath]);
 
   const logoutHandler = async () => {
     try {
@@ -36,11 +75,21 @@ const Header = () => {
     <>
       <header>
         <Navbar
-          bg="dark"
+          bg={navbarBg}
+          color="white"
           variant="dark"
           expand="lg"
           collapseOnSelect
-          className="fixed-header py-1 py-lg-2"
+          onToggle={(expanded) => {
+            if (expanded) {
+              setNavbarBg("dark");
+            } else if (!isScrolled && isHome) {
+              setNavbarBg("transparent");
+            }
+          }}
+          className={`${
+            isHome && isScrolled && "border-bottom"
+          } fixed-header py-1 py-lg-2`}
         >
           <Container>
             <LinkContainer to="/">
@@ -51,10 +100,10 @@ const Header = () => {
             </LinkContainer>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
-              <Nav className="ms-auto">
+              <Nav className="ms-auto mt-3 mt-lg-0">
                 <SearchBox />
                 <LinkContainer to="/cart">
-                  <Nav.Link className="d-flex flex-column justify-content-center align-items-start align-items-lg-center mt-3 mb-2 my-lg-0">
+                  <Nav.Link className="d-flex flex-lg-column justify-content-center align-items-start align-items-lg-center mt-3 mb-2 my-lg-0">
                     <div>
                       <FaShoppingCart size={25} />
                       {cartItems.length > 0 && (
@@ -63,29 +112,30 @@ const Header = () => {
                         </Badge>
                       )}
                     </div>
-                    Carrito
+                    <span className="ms-2">Carrito</span>
                   </Nav.Link>
                 </LinkContainer>
                 <LinkContainer to="/products/todos%20los%20productos/page/1">
-                  <Nav.Link className="d-flex flex-column justify-content-center align-items-start align-items-lg-center my-2 my-lg-0">
+                  <Nav.Link className="d-flex flex-lg-column justify-content-center align-items-start align-items-lg-center my-2 my-lg-0">
                     <GrCatalog size={25} />
-                    Catálogo
+                    <span className="ms-2">Catálogo</span>
                   </Nav.Link>
                 </LinkContainer>
                 <LinkContainer to="/contact">
-                  <Nav.Link className="d-flex flex-column justify-content-center align-items-start align-items-lg-center my-2 my-lg-0">
+                  <Nav.Link className="d-flex flex-lg-column justify-content-center align-items-start align-items-lg-center my-2 my-lg-0">
                     <MdOutlineContactSupport size={25} />
-                    Contacto
+                    <span className="ms-2">Contacto</span>
                   </Nav.Link>
                 </LinkContainer>
                 {userInfo ? (
                   <NavDropdown
                     title={
-                      <div className="d-flex justify-content-start align-items-start my-2 my-lg-0">
-                        {truncateString(userInfo.name, 10)}
+                      <div className="d-inline text-center my-2 my-lg-0">
+                        {truncateString(userInfo.name, 7)}
                       </div>
                     }
                     id="username"
+                    className="text-center d-lg-flex align-items-center"
                   >
                     <LinkContainer to="/profile">
                       <NavDropdown.Item>Mi Perfil</NavDropdown.Item>
@@ -102,7 +152,11 @@ const Header = () => {
                   </LinkContainer>
                 )}
                 {userInfo && userInfo.isAdmin && (
-                  <NavDropdown title="Admin" id="adminmenu">
+                  <NavDropdown
+                    title="Admin"
+                    id="adminmenu"
+                    className="text-center d-lg-flex align-items-center my-2 my-lg-0"
+                  >
                     <LinkContainer to="/admin/userlist">
                       <NavDropdown.Item>Usuarios</NavDropdown.Item>
                     </LinkContainer>
@@ -119,6 +173,9 @@ const Header = () => {
           </Container>
         </Navbar>
       </header>
+      {(currentPath === "/" || currentPath.startsWith("/page/1")) && (
+        <BannerVideo />
+      )}
     </>
   );
 };
