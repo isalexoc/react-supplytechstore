@@ -163,7 +163,7 @@ const Header = () => {
                   </NavDropdown>
                 ) : (
                   <LinkContainer to="/login">
-                    <Nav.Link>
+                    <Nav.Link className="text-center mb-2">
                       <FaUser /> Iniciar Sesión
                     </Nav.Link>
                   </LinkContainer>

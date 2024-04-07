@@ -106,7 +106,7 @@ const ProfileScreen = () => {
       </Col>
 
       {userInfo?.isAdmin === false && (
-        <Col md={9}>
+        <Col md={9} className="my-5 my-md-0">
           <h2>Mis Órdenes</h2>
           {isLoading ? (
             <Loader />
@@ -162,7 +162,7 @@ const ProfileScreen = () => {
       )}
 
       {userInfo?.isAdmin && (
-        <Col md={9}>
+        <Col md={9} className="my-5 my-md-0">
           <ShowCategories />
         </Col>
       )}

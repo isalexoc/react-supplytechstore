@@ -50,11 +50,14 @@ const CartScreen = () => {
                     <Col md={2}>
                       <Image src={item.image} alt={item.name} fluid rounded />
                     </Col>
-                    <Col md={3}>
+                    <Col md={3} className="mt-3 mt-lg-0">
                       <Link to={`/product/${item._id}`}>{item.name}</Link>
                     </Col>
-                    <Col md={2}>${item.price}</Col>
-                    <Col md={2}>
+                    <Col md={2} className="mt-3 mt-lg-0">
+                      ${item.price}
+                    </Col>
+                    <Col md={2} className="mt-3 mt-lg-0">
+                      Cantidad:
                       <Form.Control
                         as="select"
                         value={item.qty}
@@ -69,7 +72,7 @@ const CartScreen = () => {
                         ))}
                       </Form.Control>
                     </Col>
-                    <Col md={2}>
+                    <Col md={2} className="mt-3">
                       <Button
                         type="button"
                         variant="light"
