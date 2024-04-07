@@ -21,6 +21,7 @@ import Raiting from "../components/Raiting";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { addToCart } from "../slices/cartSlice";
+import BackTo from "../components/BackTo";
 
 const ProductScreen = () => {
   const { id: productId } = useParams();
@@ -68,10 +69,6 @@ const ProductScreen = () => {
 
   return (
     <>
-      <Link className="btn btn-light my-3" to="/">
-        Ir Atrás
-      </Link>
-
       {isLoading ? (
         <Loader />
       ) : error ? (
@@ -227,6 +224,7 @@ const ProductScreen = () => {
           </Row>
         </>
       )}
+      <BackTo />
     </>
   );
 };

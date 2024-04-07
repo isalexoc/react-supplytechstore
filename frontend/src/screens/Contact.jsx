@@ -13,6 +13,7 @@ import { useContactFormMutation } from "../slices/usersApiSlice";
 import { toast } from "react-toastify";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
+import BackTo from "../components/BackTo";
 
 const Contact = () => {
   const [email, setEmail] = useState("");
@@ -144,6 +145,7 @@ const Contact = () => {
           </div>
         </Col>
       </Row>
+      <BackTo />
     </Container>
   );
 };
