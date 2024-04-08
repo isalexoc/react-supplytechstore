@@ -1,20 +1,15 @@
-import { useState, useEffect } from "react";
-import { Table, Button, Form, Row, Colm } from "react-bootstrap";
-import { LinkContainer } from "react-router-bootstrap";
-import { useDispatch, useSelector } from "react-redux";
+import { useState } from "react";
+import { Button, Form } from "react-bootstrap";
+import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-import Message from "../components/Message";
 import Loader from "../components/Loader";
-import { FaTimes } from "react-icons/fa";
-import { useProfileMutation } from "../slices/usersApiSlice";
+import { useResetPasswordMutation } from "../slices/usersApiSlice";
 import { setCredentials } from "../slices/authSlice";
-import { useGetMyOrdersQuery } from "../slices/orderApiSlice";
-import ShowCategories from "../components/ShowCategories";
 import { useParams, useNavigate } from "react-router-dom";
 import FormContainer from "../components/FormContainer";
 
 const ResetPassword = () => {
-  const { token } = useParams();
+  const { id, token } = useParams();
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -22,7 +17,29 @@ const ResetPassword = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const submitHandler = async (e) => {};
+  const [resetPassword, { isLoading: loadingResetPassword }] =
+    useResetPasswordMutation();
+
+  const submitHandler = async (e) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      toast.error("Las contraseñas no coinciden");
+      return;
+    } else {
+      try {
+        const res = await resetPassword({
+          id,
+          token,
+          password,
+        }).unwrap();
+        dispatch(setCredentials(res));
+        toast.success("Contraseña actualizada");
+        navigate("/profile");
+      } catch (err) {
+        toast.error(err?.data?.message || err.error);
+      }
+    }
+  };
 
   return (
     <FormContainer>
@@ -49,8 +66,9 @@ const ResetPassword = () => {
         </Form.Group>
 
         <Button type="submit" variant="primary" className="mt-3">
-          Actualizar
+          Actualizar e Iniciar Sesión
         </Button>
+        {loadingResetPassword && <Loader />}
       </Form>
     </FormContainer>
   );

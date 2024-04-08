@@ -467,6 +467,57 @@ const forgotPassword = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "Email enviado" });
 });
 
+// @desc    Reset password form lost password email
+// @route   POST /api/users/resetpassword
+// @access  Public
+const resetPassword = asyncHandler(async (req, res) => {
+  const { id, token, password } = req.body;
+
+  // Verify the token first
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Check if the ID from the token matches the user ID from the request
+    if (id !== decoded.id) {
+      return res.status(401).json({ message: "Unauthorized access." });
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
+
+    // Hash the new password before saving
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    user.password = hashedPassword;
+    await user.save();
+
+    generateToken(res, user._id); // Ensure generateToken is implemented correctly to handle token creation
+
+    return res.status(200).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+    });
+  } catch (error) {
+    if (error.name === "TokenExpiredError") {
+      return res
+        .status(401)
+        .json({ message: "Link de recuperación de contraseña expirado." });
+    } else if (error.name === "JsonWebTokenError") {
+      return res
+        .status(401)
+        .json({ message: "Link de recuperación de contraseña inválido." });
+    } else {
+      // For unexpected errors
+      return res.status(500).json({ message: "Error del servidor." });
+    }
+  }
+});
+
 const generateTokenForPassword = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: "10m",
@@ -489,4 +540,5 @@ export {
   contactForm,
   googleLogin,
   forgotPassword,
+  resetPassword,
 };

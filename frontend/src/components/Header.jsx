@@ -163,8 +163,8 @@ const Header = () => {
                   </NavDropdown>
                 ) : (
                   <LinkContainer to="/login">
-                    <Nav.Link className="text-center mb-2">
-                      <FaUser /> Iniciar Sesión
+                    <Nav.Link className="d-flex flex-lg-column justify-content-center align-items-center align-items-lg-center my-2 my-lg-0">
+                      <FaUser /> <span className="ms-2">Iniciar Sesión</span>
                     </Nav.Link>
                   </LinkContainer>
                 )}
