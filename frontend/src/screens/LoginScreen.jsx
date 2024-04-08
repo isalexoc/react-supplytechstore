@@ -4,9 +4,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { Form, Button, Row, Col } from "react-bootstrap";
 import FormContainer from "../components/FormContainer";
 import Loader from "../components/Loader";
-import { useLoginMutation } from "../slices/usersApiSlice";
+import {
+  useLoginMutation,
+  useGoogleLoginMutation,
+} from "../slices/usersApiSlice";
 import { setCredentials } from "../slices/authSlice";
 import { toast } from "react-toastify";
+import { GoogleLogin } from "@react-oauth/google";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
@@ -16,6 +20,7 @@ const LoginScreen = () => {
   const navigate = useNavigate();
 
   const [login, { isLoading }] = useLoginMutation();
+  const [googleLogin, { isLoading: googleLoading }] = useGoogleLoginMutation();
 
   const { userInfo } = useSelector((state) => state.auth);
 
@@ -39,6 +44,17 @@ const LoginScreen = () => {
       toast.error(err?.data?.message || err.error);
     }
   };
+
+  const handleGoogleSubmit = async (credentialResponse) => {
+    try {
+      const res = await googleLogin(credentialResponse).unwrap();
+      dispatch(setCredentials({ ...res }));
+      navigate(redirect);
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
+  };
+
   return (
     <FormContainer>
       <h1>Iniciar Sesión</h1>
@@ -62,7 +78,6 @@ const LoginScreen = () => {
             onChange={(e) => setPassword(e.target.value)}
           ></Form.Control>
         </Form.Group>
-
         <Button
           type="submit"
           variant="primary"
@@ -74,6 +89,21 @@ const LoginScreen = () => {
 
         {isLoading && <Loader />}
       </Form>
+      <p className="mt-3">
+        También puedes iniciar sesión con tu cuenta de google
+      </p>
+      <div className="mt-3">
+        <GoogleLogin
+          language="es"
+          onSuccess={(credentialResponse) => {
+            handleGoogleSubmit(credentialResponse);
+          }}
+          onError={() => {
+            console.log("Login Failed");
+          }}
+        />
+      </div>
+      {googleLoading && <Loader />}
 
       <Row className="py-3">
         <Col>

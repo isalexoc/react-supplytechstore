@@ -4,9 +4,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { Form, Button, Row, Col } from "react-bootstrap";
 import FormContainer from "../components/FormContainer";
 import Loader from "../components/Loader";
-import { useRegisterMutation } from "../slices/usersApiSlice";
+import {
+  useRegisterMutation,
+  useGoogleLoginMutation,
+} from "../slices/usersApiSlice";
 import { setCredentials } from "../slices/authSlice";
 import { toast } from "react-toastify";
+import { GoogleLogin } from "@react-oauth/google";
 
 const RegisterScreen = () => {
   const [name, setName] = useState("");
@@ -18,6 +22,8 @@ const RegisterScreen = () => {
   const navigate = useNavigate();
 
   const [register, { isLoading }] = useRegisterMutation();
+
+  const [googleLogin, { isLoading: googleLoading }] = useGoogleLoginMutation();
 
   const { userInfo } = useSelector((state) => state.auth);
 
@@ -46,6 +52,17 @@ const RegisterScreen = () => {
       }
     }
   };
+
+  const handleGoogleSubmit = async (credentialResponse) => {
+    try {
+      const res = await googleLogin(credentialResponse).unwrap();
+      dispatch(setCredentials({ ...res }));
+      navigate(redirect);
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
+  };
+
   return (
     <FormContainer>
       <h1>Registro nuevo cliente</h1>
@@ -99,6 +116,22 @@ const RegisterScreen = () => {
 
         {isLoading && <Loader />}
       </Form>
+
+      <p className="mt-3">
+        También te puedes registrar con tu cuenta de google
+      </p>
+      <div className="mt-3">
+        <GoogleLogin
+          language="es"
+          onSuccess={(credentialResponse) => {
+            handleGoogleSubmit(credentialResponse);
+          }}
+          onError={() => {
+            console.log("Login Failed");
+          }}
+        />
+      </div>
+      {googleLoading && <Loader />}
 
       <Row className="py-3">
         <Col>

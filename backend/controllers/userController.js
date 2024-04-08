@@ -3,6 +3,8 @@ import User from "../models/userModel.js";
 import Subscriber from "../models/subscriberModel.js";
 import generateToken from "../utils/generateToken.js";
 import nodemailer from "nodemailer";
+import { jwtDecode } from "jwt-decode";
+import bcrypt from "bcryptjs";
 
 // @desc    Auth user & get token
 // @route   POST /api/users/login
@@ -44,6 +46,50 @@ const registerUser = asyncHandler(async (req, res) => {
     name,
     email,
     password,
+  });
+
+  if (user) {
+    generateToken(res, user._id);
+    res.status(201).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+    });
+  } else {
+    res.status(400);
+    throw new Error("Datos de usuario invalidos");
+  }
+});
+
+// @desc    Login With Google Auth
+// @route   POST /api/users/googlelogin
+// @access  Public
+const googleLogin = asyncHandler(async (req, res) => {
+  const credentials = req.body;
+  const credentialResponseDecoded = jwtDecode(credentials.credential);
+
+  const userExists = await User.findOne({
+    email: credentialResponseDecoded.email,
+  });
+
+  if (userExists) {
+    generateToken(res, userExists._id);
+    return res.status(200).json({
+      _id: userExists._id,
+      name: userExists.name,
+      email: userExists.email,
+      isAdmin: userExists.isAdmin,
+    });
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(credentials.credential, salt);
+
+  const user = await User.create({
+    name: credentialResponseDecoded.name,
+    email: credentialResponseDecoded.email,
+    password: hashedPassword,
   });
 
   if (user) {
@@ -387,4 +433,5 @@ export {
   checkSubscriber,
   unsubscribeNewsletter,
   contactForm,
+  googleLogin,
 };

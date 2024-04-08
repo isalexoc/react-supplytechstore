@@ -34,6 +34,7 @@ import ProductListScreen from "./screens/admin/ProductListScreen";
 import ProductEditScreen from "./screens/admin/ProductEditScreen";
 import UserListScreen from "./screens/admin/UserListScreen";
 import UserEditScreen from "./screens/admin/UserEditScreen";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -84,13 +85,15 @@ const router = createBrowserRouter(
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <HelmetProvider>
-      <Provider store={store}>
-        <PayPalScriptProvider deferLoading={true}>
-          <RouterProvider router={router} />
-        </PayPalScriptProvider>
-      </Provider>
-    </HelmetProvider>
+    <GoogleOAuthProvider clientId="679298053905-gpeof9cold4qv77d6ikgqasn4sqcp1c2.apps.googleusercontent.com">
+      <HelmetProvider>
+        <Provider store={store}>
+          <PayPalScriptProvider deferLoading={true}>
+            <RouterProvider router={router} />
+          </PayPalScriptProvider>
+        </Provider>
+      </HelmetProvider>
+    </GoogleOAuthProvider>
   </React.StrictMode>
 );
 
