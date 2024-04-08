@@ -34,6 +34,8 @@ import ProductListScreen from "./screens/admin/ProductListScreen";
 import ProductEditScreen from "./screens/admin/ProductEditScreen";
 import UserListScreen from "./screens/admin/UserListScreen";
 import UserEditScreen from "./screens/admin/UserEditScreen";
+import ForgotPassword from "./screens/ForgotPassword";
+import ResetPassword from "./screens/ResetPassword";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const router = createBrowserRouter(
@@ -57,6 +59,8 @@ const router = createBrowserRouter(
         element={<Catalog />}
       />
       <Route path="/contact" element={<Contact />} />
+      <Route path="/forgotpassword" element={<ForgotPassword />} />
+      <Route path="/resetpassword/:id/:token" element={<ResetPassword />} />
 
       <Route path="" element={<PrivateRoute />}>
         <Route path="/shipping" element={<ShippingScreen />} />

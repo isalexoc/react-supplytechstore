@@ -88,6 +88,11 @@ const LoginScreen = () => {
             onChange={(e) => setPassword(e.target.value)}
           ></Form.Control>
         </Form.Group>
+        <div className="text-end my-1">
+          <Link to="/forgotpassword" className="btn btn-link">
+            ¿Olvidaste tu contraseña?
+          </Link>
+        </div>
         <Button
           type="submit"
           variant="primary"

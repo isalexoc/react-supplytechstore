@@ -5,6 +5,9 @@ import generateToken from "../utils/generateToken.js";
 import nodemailer from "nodemailer";
 import { jwtDecode } from "jwt-decode";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+
+const emailAdminUser = "isaac87usa@gmail.com";
 
 // @desc    Auth user & get token
 // @route   POST /api/users/login
@@ -257,7 +260,7 @@ const saveSubscriber = asyncHandler(async (req, res) => {
   var transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "isaac87usa@gmail.com",
+      user: emailAdminUser,
       pass: "icdq iclp rccg onhn",
     },
   });
@@ -368,7 +371,7 @@ const contactForm = asyncHandler(async (req, res) => {
   var transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "isaac87usa@gmail.com", // Your Gmail
+      user: emailAdminUser, // Your Gmail
       pass: "icdq iclp rccg onhn", // Your Gmail App Password
     },
   });
@@ -419,6 +422,57 @@ const contactForm = asyncHandler(async (req, res) => {
   });
 });
 
+// @desc    Forgot password
+// @route   POST /api/users/forgotpassword
+// @access  Public
+const forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    res.status(404);
+    throw new Error("Usuario no encontrado");
+  }
+
+  const token = generateTokenForPassword(user._id);
+
+  const link = `https://www.supplytechstore.com/resetpassword/${user._id}/${token}`;
+
+  var transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: emailAdminUser,
+      pass: "icdq iclp rccg onhn",
+    },
+  });
+
+  var mailOptions = {
+    from: "supplytech.soldaduras@gmail.com",
+    to: user.email,
+    subject: "Recuperar contraseña para SupplyTech Store",
+    text:
+      "Por favor haga click en el siguiente link para recuperar su contraseña: " +
+      link,
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Email sent: " + info.response);
+    }
+  });
+
+  res.status(200).json({ message: "Email enviado" });
+});
+
+const generateTokenForPassword = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: "10m",
+  });
+};
+
 export {
   authUser,
   registerUser,
@@ -434,4 +488,5 @@ export {
   unsubscribeNewsletter,
   contactForm,
   googleLogin,
+  forgotPassword,
 };
