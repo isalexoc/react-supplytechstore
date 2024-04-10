@@ -77,6 +77,8 @@ const Footer = () => {
               <div className="d-flex mb-5 mt-4">
                 <a
                   href="https://maps.app.goo.gl/ggoGpA6aXhvwSwP17"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="group d-flex flex-column justify-content-center align-items-center group-hover text-decoration-none me-5"
                 >
                   <FaMapMarkerAlt

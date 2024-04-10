@@ -7,7 +7,8 @@ import { jwtDecode } from "jwt-decode";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-const emailAdminUser = "isaac87usa@gmail.com";
+const emailAdminUser = "supplytech.soldaduras@gmail.com";
+const passCodeGoogle = "urir iifu hanl uqmc";
 
 // @desc    Auth user & get token
 // @route   POST /api/users/login
@@ -261,7 +262,7 @@ const saveSubscriber = asyncHandler(async (req, res) => {
     service: "gmail",
     auth: {
       user: emailAdminUser,
-      pass: "icdq iclp rccg onhn",
+      pass: passCodeGoogle,
     },
   });
 
@@ -372,7 +373,7 @@ const contactForm = asyncHandler(async (req, res) => {
     service: "gmail",
     auth: {
       user: emailAdminUser, // Your Gmail
-      pass: "icdq iclp rccg onhn", // Your Gmail App Password
+      pass: passCodeGoogle, // Your Gmail App Password
     },
   });
 
@@ -443,7 +444,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
     service: "gmail",
     auth: {
       user: emailAdminUser,
-      pass: "icdq iclp rccg onhn",
+      pass: passCodeGoogle,
     },
   });
 

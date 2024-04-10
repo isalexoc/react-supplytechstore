@@ -210,6 +210,24 @@ table th {
   background-color: #128c7e; /* Darker green on hover for visual feedback */
 }
 
+.whatsapp-link2 {
+  background-color: #25d366; /* WhatsApp brand color */
+  color: white; /* Icon color */
+  padding: 10px; /* Padding around the icon */
+  border-radius: 1rem; /* Circular button */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Optional: adds shadow for better visibility */
+  display: flex; /* Ensures the icon is centered within the button */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  text-decoration: none; /* Removes underline from the icon/link */
+  transition: scale 0.2s; /* Smooth scaling effect */
+}
+
+.whatsapp-link2:hover {
+  background-color: #128c7e; /* Darker green on hover for visual feedback */
+  scale: 1.1;
+}
+
 /*Footer*/
 .group-hover:hover,
 .group-hover:hover .text-primary {

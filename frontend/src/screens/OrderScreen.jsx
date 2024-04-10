@@ -1,17 +1,19 @@
-import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Row, Col, Image, ListGroup, Card, Button } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
-import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
+//import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
 import {
   useGetOrderDetailsQuery,
-  usePayOrderMutation,
-  useGetPayPalClientIdQuery,
   useDeliverOrderMutation,
 } from "../slices/orderApiSlice";
+import { SiZelle } from "react-icons/si";
+import { FaWhatsapp } from "react-icons/fa";
+import { GiCardExchange } from "react-icons/gi";
+import { GiCash } from "react-icons/gi";
+import { FaMapMarkerAlt, FaPhoneAlt } from "react-icons/fa";
 
 const OrderScreen = () => {
   const { id: orderId } = useParams();
@@ -23,79 +25,12 @@ const OrderScreen = () => {
     isLoading,
   } = useGetOrderDetailsQuery(orderId);
 
-  const [payOrder, { isLoading: loadingPay }] = usePayOrderMutation();
-
   const [deliverOrder, { isLoading: loadingDeliver }] =
     useDeliverOrderMutation();
 
-  const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
-
-  const {
-    data: paypal,
-    isLoading: loadingPaypal,
-    error: errorPaypal,
-  } = useGetPayPalClientIdQuery();
+  //const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
 
   const { userInfo } = useSelector((state) => state.auth);
-
-  useEffect(() => {
-    if (!errorPaypal && !loadingPaypal && paypal.clientId) {
-      const loadPayPalScript = async () => {
-        paypalDispatch({
-          type: "resetOptions",
-          value: {
-            "client-id": paypal.clientId,
-            currency: "USD",
-          },
-        });
-        paypalDispatch({ type: "setLoadingStatus", value: "pending" });
-      };
-      if (order && !order.isPaid) {
-        if (!window.paypal) {
-          loadPayPalScript();
-        }
-      }
-    }
-  }, [order, paypal, errorPaypal, loadingPaypal, paypalDispatch]);
-
-  function onApprove(data, actions) {
-    return actions.order.capture().then(async function (details) {
-      try {
-        await payOrder({ orderId, details }).unwrap();
-        refetch();
-        toast.success("Pago exitoso");
-      } catch (err) {
-        toast.error(err?.data?.message || err.error);
-      }
-    });
-  }
-
-  /* async function onApproveTest() {
-    await payOrder({ orderId, details: { payer: {} } });
-    refetch();
-
-    toast.success("Pago exitoso");
-  } */
-
-  function onError(err) {
-    toast.error(err.message);
-  }
-
-  //bug fixed
-
-  function createOrder(data, actions) {
-    return actions.order
-      .create({
-        purchase_units: [
-          {
-            amount: { value: order.totalPrice },
-          },
-        ],
-      })
-      .then((orderID) => {
-        return orderID;
-      });
-  }
 
   const deliverOrderHandler = async () => {
     try {
@@ -207,30 +142,102 @@ const OrderScreen = () => {
               </ListGroup.Item>
 
               {/* PAY ORDER PLACEHOLDER */}
-              {!order.isPaid && (
-                <ListGroup.Item>
-                  {loadingPay && <Loader />}
+              {order.paymentMethod === "Zelle" && (
+                <>
+                  <ListGroup.Item className="d-flex justify-content-center align-items-center">
+                    <SiZelle size={30} /> <span className="h3 mb-0">Zelle</span>
+                  </ListGroup.Item>
+                  <ListGroup.Item className="d-flex flex-column justify-content-center align-items-center">
+                    <h5>
+                      Para pagar por zelle contacte por whatsapp para recibir
+                      los datos de transferencia a través del siguiente botón:
+                    </h5>
+                    <a
+                      href={`https://wa.me/584241234567?text=Hola,%20quiero%20pagar%20mi%20orden%20con%20*Zelle*%20.%20Esta%20es%20mi%20orden:%20https://www.supplytechstore.com/order/${order._id}%20.%20Mi%20nombre%20es:%20${order.user.name}%20.%20Mi%20correo%20es:%20${order.user.email}.%20Gracias!`}
+                      target="_blank"
+                      className="whatsapp-link2"
+                      rel="noopener noreferrer"
+                    >
+                      <FaWhatsapp size={50} />{" "}
+                      <span className="h5 mb-0">Pagar con Zelle</span>
+                    </a>
+                    <Link className="mt-3 text-decoration-none" to="">
+                      <GiCardExchange /> Cambiar el tipo de pago
+                    </Link>
+                  </ListGroup.Item>
+                </>
+              )}
 
-                  {isPending ? (
-                    <Loader />
-                  ) : (
-                    <div>
-                      {/* <Button
-                        onClick={onApproveTest}
-                        style={{ marginBottom: "10px" }}
+              {order.paymentMethod === "Efectivo" && (
+                <>
+                  <ListGroup.Item className="d-flex justify-content-center align-items-center">
+                    <GiCash size={30} />{" "}
+                    <span className="h3 mb-0">Efectivo</span>
+                  </ListGroup.Item>
+                  <ListGroup.Item className="d-flex flex-column justify-content-center align-items-center">
+                    <h5>
+                      Dirígase a nuestra tienda para pagar en efectivo y retirar
+                      productos
+                    </h5>
+                    <p>
+                      Av. Bolivar Oeste #150 C/C Av. Ayacucho, Edificio Don
+                      Antonio, Piso B, Local 2, Sector casco central de Maracay,
+                      Edo. Aragua, Zona postal 2101
+                    </p>
+                    <div className="d-flex mt-2">
+                      <a
+                        href="https://maps.app.goo.gl/ggoGpA6aXhvwSwP17"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group d-flex flex-column justify-content-center align-items-center group-hover text-decoration-none me-5 btn btn-light"
                       >
-                        Pago de prueba
-                      </Button> */}
-                      <div>
-                        <PayPalButtons
-                          createOrder={createOrder}
-                          onApprove={onApprove}
-                          onError={onError}
-                        />
-                      </div>
+                        <FaMapMarkerAlt size={20} className="text-danger" />
+                        Ir al mapa
+                      </a>
+                      <a
+                        href="tel:+584122763933"
+                        className="group d-flex flex-column justify-content-center align-items-center group-hover text-decoration-none me-5 btn btn-light"
+                      >
+                        <FaPhoneAlt size={20} className="text-success mb-1" />
+                        Llamar ahora
+                      </a>
                     </div>
-                  )}
-                </ListGroup.Item>
+                    <Link className="mt-3 text-decoration-none" to="">
+                      <GiCardExchange /> Cambiar el tipo de pago
+                    </Link>
+                  </ListGroup.Item>
+                </>
+              )}
+              {order.paymentMethod === "PagoMovil" && (
+                <>
+                  <ListGroup.Item className="d-flex justify-content-center align-items-center">
+                    <img src="/images/pagomovil.png" alt="pagomovil" />
+                    <span className="h3 mb-0 ms-2">Pago Movil</span>
+                  </ListGroup.Item>
+                  <ListGroup.Item className="d-flex flex-column justify-content-center align-items-center">
+                    <h5>
+                      Pague directamente a través de Pago Móvil con el siguiente
+                      botón:
+                    </h5>
+
+                    <Button className="btn-light">
+                      <img src="/images/pagomovil.png" alt="pagomovil" />
+                    </Button>
+
+                    <Link className="mt-3 text-decoration-none" to="">
+                      <GiCardExchange /> Cambiar el tipo de pago
+                    </Link>
+                  </ListGroup.Item>
+                </>
+              )}
+              {order.paymentMethod === "Transferencia" && (
+                <p>Transferencia Bancaria</p>
+              )}
+              {order.paymentMethod === "Transferencia" && (
+                <p>Transferencia Bancaria</p>
+              )}
+              {order.paymentMethod === "Tarjeta" && (
+                <p>Tarjeta de Débito o Crédito</p>
               )}
 
               {/* MARK AS DELIVERED PLACEHOLDER */}
