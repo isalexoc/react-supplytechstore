@@ -125,7 +125,7 @@ table th {
   overflow: hidden;
   width: 100%;
   /* Adjust the height as needed or use padding-bottom for aspect ratio */
-  height: 85vh;
+  height: 100vh;
   margin-top: -80px;
 }
 

@@ -74,7 +74,9 @@ const Newsletter = () => {
     try {
       await subscribeNewsletter({ email, userName }).unwrap();
       toast("¡Gracias por suscribirte a nuestros boletines. Chequea tu email!");
-      setIsSubscribed(true);
+      if (userInfo && userInfo.email) {
+        setIsSubscribed(true);
+      }
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }

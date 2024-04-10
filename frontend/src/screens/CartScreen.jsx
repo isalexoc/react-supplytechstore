@@ -47,16 +47,36 @@ const CartScreen = () => {
               {cartItems.map((item) => (
                 <ListGroup.Item key={item._id}>
                   <Row>
-                    <Col md={2}>
+                    <Col
+                      xs={4}
+                      sm={2}
+                      md={2}
+                      className="d-flex justify-content-center align-items-center"
+                    >
                       <Image src={item.image} alt={item.name} fluid rounded />
                     </Col>
-                    <Col md={3} className="mt-3 mt-lg-0">
+                    <Col
+                      xs={8}
+                      sm={10}
+                      md={3}
+                      className="d-flex justify-content-center align-items-center"
+                    >
                       <Link to={`/product/${item._id}`}>{item.name}</Link>
                     </Col>
-                    <Col md={2} className="mt-3 mt-lg-0">
+                    <Col
+                      xs={4}
+                      sm={1}
+                      md={2}
+                      className="d-flex justify-content-center align-items-center mt-2 mt-sm-0"
+                    >
                       ${item.price}
                     </Col>
-                    <Col md={2} className="mt-3 mt-lg-0">
+                    <Col
+                      xs={4}
+                      sm={9}
+                      md={4}
+                      className="d-flex flex-column justify-content-center align-items-start mt-2 mt-sm-0"
+                    >
                       Cantidad:
                       <Form.Control
                         as="select"
@@ -72,7 +92,12 @@ const CartScreen = () => {
                         ))}
                       </Form.Control>
                     </Col>
-                    <Col md={2} className="mt-3">
+                    <Col
+                      xs={4}
+                      sm={2}
+                      md={1}
+                      className="d-flex justify-content-center align-items-center mt-2 mt-sm-0"
+                    >
                       <Button
                         type="button"
                         variant="light"

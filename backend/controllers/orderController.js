@@ -3,6 +3,9 @@ import Order from "../models/orderModel.js";
 import Product from "../models/productModel.js";
 import { calcPrices } from "../utils/calcPrices.js";
 import { verifyPayPalPayment, checkIfNewTransaction } from "../utils/paypal.js";
+import sendEmailHandler from "../utils/sendEmailHandler.js";
+
+const adminEmail = process.env.ADMIN_EMAIL;
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -48,6 +51,31 @@ const addOrderItems = asyncHandler(async (req, res) => {
     });
 
     const createdOrder = await order.save();
+
+    //send email to user and admin
+
+    const emailDataUser = {
+      to: req.user.email,
+      name: req.user.name,
+      admin: false,
+      subject: "Orden de compra",
+      text: `Hola ${req.user.name}. /n
+         Gracias por tu orden de compra en nuestra tienda. Tu orden ha sido recibida y será procesada en breve. /n 
+         Recuerda que puedes ver el estado de tu orden en tu perfil: https://www.supplytechstore.com/profile /n
+         También puedes contactarnos si tienes alguna pregunta.`,
+    };
+    await sendEmailHandler(emailDataUser);
+
+    const emailDataAdmin = {
+      to: adminEmail,
+      admin: true,
+      subject: "Tienes una nueva orden",
+      clientUser: req.user.name,
+      clientEmail: req.user.email,
+      clientOrder: createdOrder._id,
+      clientId: req.user._id,
+    };
+    await sendEmailHandler(emailDataAdmin);
 
     res.status(201).json(createdOrder);
   }

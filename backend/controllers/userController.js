@@ -6,6 +6,7 @@ import nodemailer from "nodemailer";
 import { jwtDecode } from "jwt-decode";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import sendEmailHandler from "../utils/sendEmailHandler.js";
 
 const emailAdminUser = "supplytech.soldaduras@gmail.com";
 const passCodeGoogle = "urir iifu hanl uqmc";
@@ -267,7 +268,7 @@ const saveSubscriber = asyncHandler(async (req, res) => {
   });
 
   var mailOptions = {
-    from: "supplytech.soldaduras@gmail.com",
+    from: emailAdminUser,
     to: email,
     subject: "Subscripción a nuestro boletín informativo",
     text: "Gracias por suscribirse a nuestro boletín informativo. Le mantendremos informado de todas las novedades de supplytechstore.com.",
@@ -280,6 +281,17 @@ const saveSubscriber = asyncHandler(async (req, res) => {
       console.log("Email sent to subscriber: " + info.response);
     }
   });
+
+  var mailOptionsAdmin = {
+    typeEmail: "newSubscriber",
+    from: emailAdminUser,
+    to: emailAdminUser,
+    subject: "Tienes un nuevo suscriptor al boletín informativo",
+    userInfo: userExists ? userExists.name : null,
+    email,
+  };
+
+  await sendEmailHandler(mailOptionsAdmin);
 
   // save subscriber to the database
   const subscriber = new Subscriber({
