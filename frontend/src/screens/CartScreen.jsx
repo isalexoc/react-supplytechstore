@@ -13,6 +13,7 @@ import {
 import { FaTrash } from "react-icons/fa";
 import Message from "../components/Message";
 import BackTo from "../components/BackTo";
+import Meta from "../components/Meta";
 
 const CartScreen = () => {
   const navigate = useNavigate();
@@ -35,6 +36,7 @@ const CartScreen = () => {
 
   return (
     <>
+      <Meta title="Carrito de Compras" />
       <Row className="mb-5">
         <Col md={8}>
           <h1 style={{ marginBottom: "20px" }}>Carrito de Compras</h1>

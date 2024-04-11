@@ -12,6 +12,7 @@ import {
   useGetCategoriesQuery,
 } from "../../slices/productsApiSlice";
 import { capitalizeString } from "../../utils/capitlizeString";
+import Meta from "../../components/Meta";
 
 const ProductEditScreen = () => {
   const { id: productID } = useParams();
@@ -101,6 +102,7 @@ const ProductEditScreen = () => {
   else {
     return (
       <>
+        <Meta title="Admin-Editar Producto" />
         <Link to="/admin/productlist" className="btn btn-light my-3">
           Ir Atrás
         </Link>

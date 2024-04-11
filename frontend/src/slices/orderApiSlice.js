@@ -1,5 +1,5 @@
 import { apiSlice } from "./apiSlice";
-import { ORDERS_URL, PAYPAL_URL } from "../constants";
+import { ORDERS_URL, PAYPAL_URL, UPLOAD_URL } from "../constants";
 
 export const orderApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -47,6 +47,20 @@ export const orderApiSlice = apiSlice.injectEndpoints({
         method: "PUT",
       }),
     }),
+    ChangePay: builder.mutation({
+      query: (data) => ({
+        url: `${ORDERS_URL}/changePay`,
+        method: "PUT",
+        body: data,
+      }),
+    }),
+    uploadPaymentCapture: builder.mutation({
+      query: (data) => ({
+        url: `${UPLOAD_URL}/uploadzelle`,
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -58,4 +72,6 @@ export const {
   useGetMyOrdersQuery,
   useGetOrdersQuery,
   useDeliverOrderMutation,
+  useChangePayMutation,
+  useUploadPaymentCaptureMutation,
 } = orderApiSlice;

@@ -8,6 +8,7 @@ import {
   useGetUsersQuery,
   useDeleteUserMutation,
 } from "../../slices/usersApiSlice";
+import Meta from "../../components/Meta";
 
 const UserListScreen = () => {
   const { data: users, error, isLoading, refetch } = useGetUsersQuery();
@@ -28,6 +29,7 @@ const UserListScreen = () => {
 
   return (
     <>
+      <Meta title="Admin-Usuarios" />
       <h1>Usuarios</h1>
       {loadingDelete && <Loader />}
       {isLoading ? (

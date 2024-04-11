@@ -74,4 +74,43 @@ router.post("/", (req, res) => {
   });
 });
 
+router.post("/uploadzelle", (req, res) => {
+  uploadSingleImage(req, res, async (err) => {
+    if (err) {
+      return res.status(400).send({ message: err.message });
+    }
+
+    // Specify transformations: crop to 500x500 and auto adjust quality for web use
+    const transformations = {
+      quality: "auto:good", // Automatically adjust quality for smaller size with good visual results
+      fetch_format: "auto", // Automatically select the best file format depending on the client
+    };
+
+    try {
+      // Upload image to Cloudinary with transformations
+      const result = await cloudinary.uploader.upload(
+        req.file.path,
+        transformations
+      );
+
+      // Remove image from uploads folder after successful upload
+      await fs.unlink(req.file.path);
+
+      return res.status(200).send({
+        message: "Imagen subida correctamente",
+        image: result.secure_url,
+      });
+    } catch (error) {
+      // Attempt to delete the temporary file even if the upload fails
+      try {
+        await fs.unlink(req.file.path);
+      } catch (unlinkErr) {
+        console.error("Error deleting temporary file:", unlinkErr);
+      }
+
+      return res.status(400).send({ message: error.message });
+    }
+  });
+});
+
 export default router;

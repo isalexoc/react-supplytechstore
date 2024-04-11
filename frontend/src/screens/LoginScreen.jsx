@@ -12,6 +12,7 @@ import { setCredentials } from "../slices/authSlice";
 import { toast } from "react-toastify";
 import { GoogleLogin } from "@react-oauth/google";
 import GoogleOneTabUtil from "../components/GoogleOneTabUtil";
+import Meta from "../components/Meta";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
@@ -61,6 +62,7 @@ const LoginScreen = () => {
 
   return (
     <>
+      <Meta title="Iniciar Sesión" />
       {googleTU && <GoogleOneTabUtil />}
       <FormContainer>
         <h1>Iniciar Sesión</h1>

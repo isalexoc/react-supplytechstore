@@ -10,6 +10,7 @@ import { useProfileMutation } from "../slices/usersApiSlice";
 import { setCredentials } from "../slices/authSlice";
 import { useGetMyOrdersQuery } from "../slices/orderApiSlice";
 import ShowCategories from "../components/ShowCategories";
+import Meta from "../components/Meta";
 
 const ProfileScreen = () => {
   const [name, setName] = useState("");
@@ -57,116 +58,119 @@ const ProfileScreen = () => {
   };
 
   return (
-    <Row>
-      <Col md={3}>
-        <h2>Perfil de Usuario</h2>
+    <>
+      <Meta title="Perfil de Usuario" />
+      <Row>
+        <Col md={3}>
+          <h2>Perfil de Usuario</h2>
 
-        <Form onSubmit={submitHandler}>
-          <Form.Group>
-            <Form.Label>Nombre</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Ingrese su nombre"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            ></Form.Control>
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Email</Form.Label>
-            <Form.Control
-              type="email"
-              placeholder="Ingrese su email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            ></Form.Control>
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Contraseña</Form.Label>
-            <Form.Control
-              type="password"
-              placeholder="Ingrese su contraseña"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            ></Form.Control>
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Confirmar Contraseña</Form.Label>
-            <Form.Control
-              type="password"
-              placeholder="Confirme su contraseña"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            ></Form.Control>
-          </Form.Group>
-          <Button type="submit" variant="primary" className="my-2">
-            Actualizar
-          </Button>
-          {loadingUpdateProfile && <Loader />}
-        </Form>
-      </Col>
+          <Form onSubmit={submitHandler}>
+            <Form.Group>
+              <Form.Label>Nombre</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Ingrese su nombre"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              ></Form.Control>
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="Ingrese su email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              ></Form.Control>
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Contraseña</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Ingrese su contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              ></Form.Control>
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Confirmar Contraseña</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Confirme su contraseña"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              ></Form.Control>
+            </Form.Group>
+            <Button type="submit" variant="primary" className="my-2">
+              Actualizar
+            </Button>
+            {loadingUpdateProfile && <Loader />}
+          </Form>
+        </Col>
 
-      {userInfo?.isAdmin === false && (
-        <Col md={9} className="my-5 my-md-0">
-          <h2>Mis Órdenes</h2>
-          {isLoading ? (
-            <Loader />
-          ) : error ? (
-            <Message variant="danger">
-              {error?.data?.message || error.error}
-            </Message>
-          ) : (
-            <Table striped hover responsive className="table-sm">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>FECHA</th>
-                  <th>TOTAL</th>
-                  <th>PAGADO</th>
-                  <th>ENTREGADO</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {orders?.map((order) => (
-                  <tr key={order._id}>
-                    <td>{order._id}</td>
-                    <td>{order.createdAt.substring(0, 10)}</td>
-                    <td>${order.totalPrice}</td>
-                    <td>
-                      {order.isPaid ? (
-                        order.paidAt.substring(0, 10)
-                      ) : (
-                        <FaTimes style={{ color: "red" }}></FaTimes>
-                      )}
-                    </td>
-                    <td>
-                      {order.isDelivered ? (
-                        order.deliveredAt.substring(0, 10)
-                      ) : (
-                        <FaTimes style={{ color: "red" }}></FaTimes>
-                      )}
-                    </td>
-                    <td>
-                      <LinkContainer to={`/order/${order._id}`}>
-                        <Button className="btn-sm" variant="light">
-                          Detalles
-                        </Button>
-                      </LinkContainer>
-                    </td>
+        {userInfo?.isAdmin === false && (
+          <Col md={9} className="my-5 my-md-0">
+            <h2>Mis Órdenes</h2>
+            {isLoading ? (
+              <Loader />
+            ) : error ? (
+              <Message variant="danger">
+                {error?.data?.message || error.error}
+              </Message>
+            ) : (
+              <Table striped hover responsive className="table-sm">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>FECHA</th>
+                    <th>TOTAL</th>
+                    <th>PAGADO</th>
+                    <th>ENTREGADO</th>
+                    <th></th>
                   </tr>
-                ))}
-              </tbody>
-            </Table>
-          )}
-        </Col>
-      )}
+                </thead>
+                <tbody>
+                  {orders?.map((order) => (
+                    <tr key={order._id}>
+                      <td>{order._id}</td>
+                      <td>{order.createdAt.substring(0, 10)}</td>
+                      <td>${order.totalPrice}</td>
+                      <td>
+                        {order.isPaid ? (
+                          order.paidAt.substring(0, 10)
+                        ) : (
+                          <FaTimes style={{ color: "red" }}></FaTimes>
+                        )}
+                      </td>
+                      <td>
+                        {order.isDelivered ? (
+                          order.deliveredAt.substring(0, 10)
+                        ) : (
+                          <FaTimes style={{ color: "red" }}></FaTimes>
+                        )}
+                      </td>
+                      <td>
+                        <LinkContainer to={`/order/${order._id}`}>
+                          <Button className="btn-sm" variant="light">
+                            Detalles
+                          </Button>
+                        </LinkContainer>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            )}
+          </Col>
+        )}
 
-      {userInfo?.isAdmin && (
-        <Col md={9} className="my-5 my-md-0">
-          <ShowCategories />
-        </Col>
-      )}
-    </Row>
+        {userInfo?.isAdmin && (
+          <Col md={9} className="my-5 my-md-0">
+            <ShowCategories />
+          </Col>
+        )}
+      </Row>
+    </>
   );
 };
 

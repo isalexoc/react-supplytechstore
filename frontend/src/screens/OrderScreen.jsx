@@ -1,19 +1,20 @@
 import { Link, useParams } from "react-router-dom";
+import { useEffect } from "react";
 import { Row, Col, Image, ListGroup, Card, Button } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 //import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
+import ZellePayment from "../components/ZellePayment";
 import {
   useGetOrderDetailsQuery,
   useDeliverOrderMutation,
 } from "../slices/orderApiSlice";
-import { SiZelle } from "react-icons/si";
-import { FaWhatsapp } from "react-icons/fa";
 import { GiCardExchange } from "react-icons/gi";
 import { GiCash } from "react-icons/gi";
 import { FaMapMarkerAlt, FaPhoneAlt } from "react-icons/fa";
+import Meta from "../components/Meta";
 
 const OrderScreen = () => {
   const { id: orderId } = useParams();
@@ -32,6 +33,11 @@ const OrderScreen = () => {
 
   const { userInfo } = useSelector((state) => state.auth);
 
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line
+  }, []);
+
   const deliverOrderHandler = async () => {
     try {
       await deliverOrder(orderId);
@@ -48,6 +54,7 @@ const OrderScreen = () => {
     <Message variant="danger">{error?.data?.message || error.error}</Message>
   ) : (
     <>
+      <Meta title={`Orden ${order._id}`} />
       <h5>Orden: {order._id}</h5>
       <Row>
         <Col md={8}>
@@ -95,13 +102,13 @@ const OrderScreen = () => {
               {order.orderItems.map((item, index) => (
                 <ListGroup.Item key={index}>
                   <Row>
-                    <Col md={1}>
+                    <Col xs={6} sm={4} md={3} lg={2}>
                       <Image src={item.image} alt={item.name} fluid rounded />
                     </Col>
-                    <Col>
+                    <Col xs={6} sm={4} md={6}>
                       <Link to={`/product/${item.product}`}>{item.name}</Link>
                     </Col>
-                    <Col md={4}>
+                    <Col md={3} sm={4} className="text-center">
                       {item.qty} x ${item.price} = ${item.qty * item.price}
                     </Col>
                   </Row>
@@ -143,29 +150,7 @@ const OrderScreen = () => {
 
               {/* PAY ORDER PLACEHOLDER */}
               {order.paymentMethod === "Zelle" && (
-                <>
-                  <ListGroup.Item className="d-flex justify-content-center align-items-center">
-                    <SiZelle size={30} /> <span className="h3 mb-0">Zelle</span>
-                  </ListGroup.Item>
-                  <ListGroup.Item className="d-flex flex-column justify-content-center align-items-center">
-                    <h5>
-                      Para pagar por zelle contacte por whatsapp para recibir
-                      los datos de transferencia a través del siguiente botón:
-                    </h5>
-                    <a
-                      href={`https://wa.me/584241234567?text=Hola,%20quiero%20pagar%20mi%20orden%20con%20*Zelle*%20.%20Esta%20es%20mi%20orden:%20https://www.supplytechstore.com/order/${order._id}%20.%20Mi%20nombre%20es:%20${order.user.name}%20.%20Mi%20correo%20es:%20${order.user.email}.%20Gracias!`}
-                      target="_blank"
-                      className="whatsapp-link2"
-                      rel="noopener noreferrer"
-                    >
-                      <FaWhatsapp size={50} />{" "}
-                      <span className="h5 mb-0">Pagar con Zelle</span>
-                    </a>
-                    <Link className="mt-3 text-decoration-none" to="">
-                      <GiCardExchange /> Cambiar el tipo de pago
-                    </Link>
-                  </ListGroup.Item>
-                </>
+                <ZellePayment order={order} />
               )}
 
               {order.paymentMethod === "Efectivo" && (
@@ -202,7 +187,10 @@ const OrderScreen = () => {
                         Llamar ahora
                       </a>
                     </div>
-                    <Link className="mt-3 text-decoration-none" to="">
+                    <Link
+                      className="mt-3 text-decoration-none"
+                      to={`/changepay/${order._id}`}
+                    >
                       <GiCardExchange /> Cambiar el tipo de pago
                     </Link>
                   </ListGroup.Item>
@@ -224,7 +212,10 @@ const OrderScreen = () => {
                       <img src="/images/pagomovil.png" alt="pagomovil" />
                     </Button>
 
-                    <Link className="mt-3 text-decoration-none" to="">
+                    <Link
+                      className="mt-3 text-decoration-none"
+                      to={`/changepay/${order._id}`}
+                    >
                       <GiCardExchange /> Cambiar el tipo de pago
                     </Link>
                   </ListGroup.Item>

@@ -8,6 +8,7 @@ import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { useCreateOrderMutation } from "../slices/orderApiSlice";
 import { clearCartItems } from "../slices/cartSlice";
+import Meta from "../components/Meta";
 
 const PlaceOrderScreen = () => {
   const navigate = useNavigate();
@@ -45,6 +46,7 @@ const PlaceOrderScreen = () => {
 
   return (
     <>
+      <Meta title="Realizar Pedido" />
       <CheckoutSteps step1 step2 step3 step4 />
       <Row>
         <Col md={8}>
@@ -72,7 +74,7 @@ const PlaceOrderScreen = () => {
                   {cart.cartItems.map((item, index) => (
                     <ListGroup.Item key={index}>
                       <Row>
-                        <Col md={1}>
+                        <Col xs={6} sm={4} md={3}>
                           <Image
                             src={item.image}
                             alt={item.name}
@@ -80,10 +82,10 @@ const PlaceOrderScreen = () => {
                             rounded
                           />
                         </Col>
-                        <Col>
+                        <Col xs={6} sm={4} md={5}>
                           <Link to={`/product/${item._id}`}>{item.name}</Link>
                         </Col>
-                        <Col md={4}>
+                        <Col md={4} sm={4} className="text-center">
                           {item.qty} x ${item.price} = $
                           {(item.qty * item.price).toFixed(2)}
                         </Col>

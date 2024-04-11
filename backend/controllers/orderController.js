@@ -170,6 +170,26 @@ const getOrders = asyncHandler(async (req, res) => {
   res.status(200).json(orders);
 });
 
+// @des   Update payment method
+// @route PUT /api/orders/changePay
+// @access Private
+const updatePaymentMethod = asyncHandler(async (req, res) => {
+  const { orderId, paymentMethod } = req.body;
+
+  const order = await Order.findById(orderId);
+
+  if (order) {
+    order.paymentMethod = paymentMethod;
+
+    const updatedOrder = await order.save();
+
+    res.json(updatedOrder);
+  } else {
+    res.status(404);
+    throw new Error("Order not found");
+  }
+});
+
 export {
   addOrderItems,
   getMyOrders,
@@ -177,4 +197,5 @@ export {
   updateOrderToPaid,
   updateOrderToDelivered,
   getOrders,
+  updatePaymentMethod,
 };

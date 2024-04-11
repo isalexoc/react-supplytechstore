@@ -1,12 +1,13 @@
-import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Form, Button, Col } from "react-bootstrap";
 import FormContainer from "../components/FormContainer";
 import CheckoutSteps from "../components/CheckoutSteps";
-import { toast } from "react-toastify";
-import { savePaymentMethod } from "../slices/cartSlice";
+import { useChangePayMutation } from "../slices/orderApiSlice";
+import Message from "../components/Message";
+import Loader from "../components/Loader";
 import { FaCcMastercard, FaCcVisa, FaCcDiscover } from "react-icons/fa";
+import { toast } from "react-toastify";
 import { FaCcAmex } from "react-icons/fa6";
 import { MdCreditCard } from "react-icons/md";
 import { BsBank2 } from "react-icons/bs";
@@ -17,23 +18,15 @@ import { SiZelle } from "react-icons/si";
 import Meta from "../components/Meta";
 
 const PaymentScreen = () => {
+  const { id: orderId } = useParams();
   const [paymentMethod, setPaymentMethod] = useState("");
-
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const cart = useSelector((state) => state.cart);
-  const { shippingAddress } = cart;
+  const [changePaymentMethod, { isLoading, error }] = useChangePayMutation();
 
   const pagoMovilImage = "/images/pagomovil.png";
 
-  useEffect(() => {
-    if (!shippingAddress.address) {
-      navigate("/shipping");
-    }
-  }, [shippingAddress, navigate]);
-
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
 
     if (!paymentMethod) {
@@ -41,11 +34,27 @@ const PaymentScreen = () => {
       return;
     }
 
-    dispatch(savePaymentMethod(paymentMethod));
-    navigate("/placeorder");
+    const dataToSend = {
+      orderId,
+      paymentMethod,
+    };
+    try {
+      await changePaymentMethod(dataToSend).unwrap();
+      navigate(`/order/${orderId}`);
+    } catch (error) {
+      toast.error(
+        error?.data?.message ||
+          error.error ||
+          "Algo salió mal. Intente de nuevo."
+      );
+    }
   };
 
-  return (
+  return error ? (
+    <Message variant="danger">{error?.data?.message || error.error}</Message>
+  ) : isLoading ? (
+    <Loader />
+  ) : (
     <>
       <Meta title="Método de Pago" />
       <FormContainer>

@@ -11,6 +11,7 @@ import {
   useCreateProductMutation,
   useDeleteProductMutation,
 } from "../../slices/productsApiSlice";
+import Meta from "../../components/Meta";
 
 const ProductListScreen = () => {
   const { pageNumber } = useParams();
@@ -50,6 +51,7 @@ const ProductListScreen = () => {
 
   return (
     <>
+      <Meta title="Admin-Productos" />
       <Row className="align-items-center">
         <Col>
           <h1>Productos</h1>

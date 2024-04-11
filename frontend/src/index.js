@@ -36,6 +36,7 @@ import UserListScreen from "./screens/admin/UserListScreen";
 import UserEditScreen from "./screens/admin/UserEditScreen";
 import ForgotPassword from "./screens/ForgotPassword";
 import ResetPassword from "./screens/ResetPassword";
+import ChangePaymentMethodScreen from "./screens/ChangePaymentMethodScreen";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const router = createBrowserRouter(
@@ -68,6 +69,7 @@ const router = createBrowserRouter(
         <Route path="/placeorder" element={<PlaceOrderScreen />} />
         <Route path="/order/:id" element={<OrderScreen />} />
         <Route path="/profile" element={<ProfileScreen />} />
+        <Route path="/changepay/:id" element={<ChangePaymentMethodScreen />} />
       </Route>
 
       <Route path="" element={<AdminRoute />}>

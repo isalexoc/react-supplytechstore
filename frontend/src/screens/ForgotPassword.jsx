@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Loader from "../components/Loader";
 import FormContainer from "../components/FormContainer";
+import Meta from "../components/Meta";
 
 function ForgotPassword() {
   const [formData, setFormData] = useState({
@@ -76,38 +77,41 @@ function ForgotPassword() {
   }
 
   return (
-    <div className="container">
-      <section className="my-3 text-center">
-        <h1>
-          <FaUser />
-          <br /> Recuperar contraseña
-        </h1>
-        <p>Por favor ingresa tu email</p>
-      </section>
+    <>
+      <Meta title="Recuperar contraseña" />
+      <div className="container">
+        <section className="my-3 text-center">
+          <h1>
+            <FaUser />
+            <br /> Recuperar contraseña
+          </h1>
+          <p>Por favor ingresa tu email</p>
+        </section>
 
-      <section>
-        <form onSubmit={onSubmit}>
-          <FormContainer>
-            <input
-              type="email"
-              className="form-control"
-              id="email"
-              name="email"
-              value={email}
-              onChange={onChange}
-              placeholder="Ingresa tu email"
-              required
-            />
-          </FormContainer>
-          <div className="text-center my-5">
-            <button type="submit" className="btn btn-primary">
-              Recuperar contraseña
-            </button>
-            {passwordLoading && <Loader />}
-          </div>
-        </form>
-      </section>
-    </div>
+        <section>
+          <form onSubmit={onSubmit}>
+            <FormContainer>
+              <input
+                type="email"
+                className="form-control"
+                id="email"
+                name="email"
+                value={email}
+                onChange={onChange}
+                placeholder="Ingresa tu email"
+                required
+              />
+            </FormContainer>
+            <div className="text-center my-5">
+              <button type="submit" className="btn btn-primary">
+                Recuperar contraseña
+              </button>
+              {passwordLoading && <Loader />}
+            </div>
+          </form>
+        </section>
+      </div>
+    </>
   );
 }
 
