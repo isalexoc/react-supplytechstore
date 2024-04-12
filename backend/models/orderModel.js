@@ -69,6 +69,11 @@ const orderSchema = mongoose.Schema(
     paidAt: {
       type: Date,
     },
+    paymentConfirmation: {
+      referenceType: { type: String },
+      code: { type: String },
+      image: { type: String },
+    },
     isDelivered: {
       type: Boolean,
       required: true,

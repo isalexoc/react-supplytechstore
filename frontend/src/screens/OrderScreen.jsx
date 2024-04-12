@@ -150,7 +150,7 @@ const OrderScreen = () => {
 
               {/* PAY ORDER PLACEHOLDER */}
               {order.paymentMethod === "Zelle" && (
-                <ZellePayment order={order} />
+                <ZellePayment order={order} refetch={refetch} />
               )}
 
               {order.paymentMethod === "Efectivo" && (

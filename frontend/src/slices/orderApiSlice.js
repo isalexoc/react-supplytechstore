@@ -61,6 +61,13 @@ export const orderApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    updateOrderZelle: builder.mutation({
+      query: (data) => ({
+        url: `${ORDERS_URL}/updateOrderZelle`,
+        method: "PUT",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -74,4 +81,5 @@ export const {
   useDeliverOrderMutation,
   useChangePayMutation,
   useUploadPaymentCaptureMutation,
+  useUpdateOrderZelleMutation,
 } = orderApiSlice;

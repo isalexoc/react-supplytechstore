@@ -105,6 +105,82 @@ const emailTemplateNewSubscriber = ({ subject, userInfo, email }) => {
   `;
 };
 
+const emailTemplatePaymentConfirmation = ({
+  admin,
+  type,
+  name,
+  to,
+  userEmail,
+  code,
+  orderId,
+  image,
+}) => {
+  if (admin) {
+    return `
+      <html>
+        <head>
+          <style>
+            .email-body { font-family: Arial, sans-serif; }
+            .email-header { background-color: #f3f3f3; padding: 10px; text-align: center; }
+            .email-content { margin: 20px; }
+            .button { display: inline-block; padding: 10px 20px; background-color: #d5d6d9; color: #000; text-decoration: none; border-radius: 5px; }
+          </style>
+        </head>
+        <body>
+          <div class="email-body">
+            <div class="email-header">
+              <img src="https://res.cloudinary.com/isaacdev/image/upload/v1712762382/logosup_xadbto.png" width="200" style="height: auto;" alt="Logo">
+              <h2>Confirmación de pago por: ${type}</h2>
+            </div>
+            <div class="email-content">
+              <p>Usuario: ${name}</p>
+              <p>Email: ${userEmail}</p>
+              <a href="mailto:${userEmail}" class="button">Enviar Email</a>
+              <p>Número de referencia: ${code}</p>
+              <p>Orden ID: ${orderId}</p>
+              <a href="https://www.supplytechstore.com/order/${orderId}" class="button">Ver Orden</a>
+              <p>Imagen de la transferencia:</p>
+              <img src="${image}" width="200" style="height: auto;" alt="Imagen de la transferencia">
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+  } else {
+    return `
+      <html>
+        <head>
+          <style>
+            .email-body { font-family: Arial, sans-serif; }
+            .email-header { background-color: #f3f3f3; padding: 10px; text-align: center; }
+            .email-content { margin: 20px; }
+            .button { display: inline-block; padding: 10px 20px; background-color: #d5d6d9; color: #000; text-decoration: none; border-radius: 5px; }
+          </style>
+        </head>
+        <body>
+          <div class="email-body">
+            <div class="email-header">
+              <img src="https://res.cloudinary.com/isaacdev/image/upload/v1712762382/logosup_xadbto.png" width="200" style="height: auto;" alt="Logo">
+              <h2>Confirmación de pago por: ${type}</h2>
+            </div>
+            <div class="email-content">
+            <p>Gracias por enviar la confirmación de pago. Tu comprobante de pago ha sido recibido y será procesado en breve.</p>
+              
+              <p>Nombre: ${name}</p>
+              <p>Email: ${to}</p>
+              <p>Número de referencia: ${code}</p>
+              <p>Orden ID: ${orderId}</p>
+              <a href="https://www.supplytechstore.com/order/${orderId}" class="button">Ver Orden</a>
+              <p>Imagen de la transferencia:</p>
+              <img src="${image}" width="200" style="height: auto;" alt="Imagen de la transferencia">
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+  }
+};
+
 const sendEmailHandler = async (data) => {
   var transporter = nodemailer.createTransport({
     service: "gmail",
@@ -149,4 +225,31 @@ const sendEmailHandler = async (data) => {
   return;
 };
 
+export const paymentConfirmationEmail = async (data) => {
+  var transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: emailAdminUser,
+      pass: passCodeGoogle,
+    },
+  });
+
+  // Use the emailTemplate function to generate the HTML content
+  var mailOptions = {
+    from: emailAdminUser,
+    to: data.to,
+    subject: data.subject,
+    html: emailTemplatePaymentConfirmation(data), // Pass userName and any other data needed
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Email sent: " + info.response);
+    }
+  });
+
+  return;
+};
 export default sendEmailHandler;

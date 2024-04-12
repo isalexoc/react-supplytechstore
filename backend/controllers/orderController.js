@@ -1,9 +1,11 @@
 import asyncHandler from "../middleware/asyncHandler.js";
 import Order from "../models/orderModel.js";
+import User from "../models/userModel.js";
 import Product from "../models/productModel.js";
 import { calcPrices } from "../utils/calcPrices.js";
 import { verifyPayPalPayment, checkIfNewTransaction } from "../utils/paypal.js";
 import sendEmailHandler from "../utils/sendEmailHandler.js";
+import { paymentConfirmationEmail } from "../utils/sendEmailHandler.js";
 
 const adminEmail = process.env.ADMIN_EMAIL;
 
@@ -190,6 +192,79 @@ const updatePaymentMethod = asyncHandler(async (req, res) => {
   }
 });
 
+// @des   Update order zelle
+// @route PUT /api/orders/updateOrderZelle
+// @access Private
+const updateOrderZelle = asyncHandler(async (req, res) => {
+  const { orderId, referenceType, code, image } = req.body;
+
+  console.log(orderId);
+  const order = await Order.findById(orderId);
+  const user = await User.findById(order.user);
+
+  if (order) {
+    if (referenceType === "delete") {
+      order.paymentConfirmation = {
+        referenceType: "",
+        code: "",
+        image: "",
+      };
+    }
+    if (referenceType === "ReferenceNumber") {
+      order.paymentConfirmation = {
+        referenceType,
+        code,
+      };
+    }
+
+    if (referenceType === "ReferenceImage") {
+      order.paymentConfirmation = {
+        referenceType,
+        image,
+      };
+    }
+
+    if (referenceType === "both") {
+      order.paymentConfirmation = {
+        referenceType,
+        code,
+        image,
+      };
+    }
+    console.log(referenceType);
+    console.log(order.paymentConfirmation);
+
+    try {
+      const updatedOrder = await order.save();
+      res.json(updatedOrder);
+
+      //send email to user and admin
+      if (referenceType !== "delete") {
+        const emailDataUser = {
+          to: user.email,
+          userEmail: user.email,
+          name: user.name,
+          admin: false,
+          type: "ZELLE",
+          code,
+          image,
+          orderId: updatedOrder._id,
+          subject: "Confirmación de pago",
+        };
+        await paymentConfirmationEmail(emailDataUser);
+        emailDataUser.admin = true;
+        emailDataUser.to = adminEmail;
+        await paymentConfirmationEmail(emailDataUser);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  } else {
+    res.status(404);
+    throw new Error("Order not found");
+  }
+});
+
 export {
   addOrderItems,
   getMyOrders,
@@ -198,4 +273,5 @@ export {
   updateOrderToDelivered,
   getOrders,
   updatePaymentMethod,
+  updateOrderZelle,
 };

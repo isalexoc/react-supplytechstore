@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { useUploadPaymentCaptureMutation } from "../slices/orderApiSlice";
+import {
+  useUploadPaymentCaptureMutation,
+  useUpdateOrderZelleMutation,
+} from "../slices/orderApiSlice";
 import { Button, Form, ListGroup } from "react-bootstrap";
 import { FaArrowDown, FaWhatsapp } from "react-icons/fa";
 import { GiCardExchange } from "react-icons/gi";
@@ -9,7 +12,7 @@ import Message from "./Message";
 import { toast } from "react-toastify";
 import Loader from "./Loader";
 
-const ZellePayment = ({ order }) => {
+const ZellePayment = ({ order, refetch }) => {
   const [zelleReference, setZelleReference] = useState("");
   const [imagen, setImagen] = useState("");
 
@@ -18,13 +21,60 @@ const ZellePayment = ({ order }) => {
     { isLoading: loadingUpload, error: errorUpload },
   ] = useUploadPaymentCaptureMutation();
 
-  const submitHandler = (e) => {
+  const [updateOrder, { isLoading: loadingSubmit, error: errorSubmit }] =
+    useUpdateOrderZelleMutation();
+
+  const submitHandler = async (e) => {
     e.preventDefault();
     if (zelleReference === "" && imagen === "") {
       toast.error(
         "Por favor ingrese el número de referencia o suba el capture de la transferencia."
       );
       return;
+    }
+
+    let zelleInfo = {};
+
+    if (zelleReference !== "" && imagen === "") {
+      if (
+        window.confirm(
+          `¿Estás seguro de enviar el número de referencia de ZELLE: ${zelleReference}?`
+        )
+      ) {
+        zelleInfo = {
+          referenceType: "ReferenceNumber",
+          code: zelleReference,
+        };
+      }
+    } else if (zelleReference === "" && imagen !== "") {
+      zelleInfo = {
+        referenceType: "ReferenceImage",
+        image: imagen,
+      };
+    } else if (zelleReference !== "" && imagen !== "") {
+      zelleInfo = {
+        referenceType: "both",
+        image: imagen,
+        code: zelleReference,
+      };
+    } else {
+      toast.error("Error al enviar la información de Zelle");
+      return;
+    }
+
+    try {
+      await updateOrder({
+        orderId: order._id,
+        referenceType: zelleInfo.referenceType,
+        code: zelleInfo.code || "",
+        image: zelleInfo.image || "",
+      }).unwrap();
+      toast.success(
+        "Número de referencia enviado con éxito. Espere confirmación del pago. Gracias!. Puede contactar por whatsapp para mayor información."
+      );
+      refetch();
+    } catch (error) {
+      toast.error(error?.data?.message || error.error);
     }
   };
 
@@ -39,10 +89,103 @@ const ZellePayment = ({ order }) => {
     }
   };
 
+  const deleteConfimation = async () => {
+    console.log("delete");
+    try {
+      await updateOrder({
+        orderId: order._id,
+        referenceType: "delete",
+      }).unwrap();
+      setImagen("");
+      setZelleReference("");
+      refetch();
+    } catch (error) {
+      toast.error(error?.data?.message || error.error);
+    }
+  };
+
   return errorUpload ? (
     <Message variant="danger">
       {errorUpload?.data?.message || errorUpload.error}
     </Message>
+  ) : errorSubmit ? (
+    <Message variant="danger">
+      {errorSubmit?.data?.message || errorSubmit.error}
+    </Message>
+  ) : order?.paymentConfirmation?.referenceType === "ReferenceImage" ||
+    order?.paymentConfirmation?.referenceType === "ReferenceNumber" ||
+    order?.paymentConfirmation?.referenceType === "both" ? (
+    <>
+      <ListGroup.Item className="d-flex justify-content-center align-items-center">
+        <SiZelle size={30} /> <span className="h3 mb-0">Zelle</span>
+      </ListGroup.Item>
+      <ListGroup.Item className="d-flex flex-column justify-content-center align-items-center">
+        <h5>
+          Su comprobante de pago ha sido enviado. Espere confirmación del pago.
+          Gracias!
+        </h5>
+        <h6>COMPROBANTE DE PAGO</h6>
+        {order?.paymentConfirmation?.referenceType === "ReferenceNumber" && (
+          <div>
+            <h6>Número de referencia:</h6>
+            <Form.Control
+              type="text"
+              value={order?.paymentConfirmation?.code}
+              readOnly
+              className="bg-light outline-none focus:outline-none focus:ring-0 border-none mb-3"
+            />
+          </div>
+        )}
+        {order?.paymentConfirmation?.referenceType === "ReferenceImage" && (
+          <>
+            <h6>Capture:</h6>
+            <div className="d-flex justify-content-center p-2 bg-light mb-2">
+              <img
+                src={order?.paymentConfirmation?.image}
+                width={200}
+                height="auto"
+                alt="Capture de la transferencia"
+                className="img-fluid shadow-lg"
+              />
+            </div>
+          </>
+        )}
+        {order?.paymentConfirmation?.referenceType === "both" && (
+          <>
+            <h6>Número de referencia: </h6>
+            <Form.Control
+              type="text"
+              value={order?.paymentConfirmation?.code}
+              readOnly
+              className="bg-light outline-none focus:outline-none focus:ring-0 border-none mb-3"
+            />
+            <h6>Capture:</h6>
+            <div className="d-flex justify-content-center p-2 bg-light mb-2">
+              <img
+                src={order?.paymentConfirmation?.image}
+                width={200}
+                height="auto"
+                alt="Capture de la transferencia"
+                className="img-fluid shadow-lg"
+              />
+            </div>
+          </>
+        )}
+        <Button
+          className="btn btn-primary text-decoration-none"
+          type="button"
+          onClick={deleteConfimation}
+        >
+          Editar
+        </Button>
+        <Link
+          className="mt-3 text-decoration-none"
+          to={`/changepay/${order._id}`}
+        >
+          <GiCardExchange /> Cambiar el tipo de pago
+        </Link>
+      </ListGroup.Item>
+    </>
   ) : (
     <>
       <ListGroup.Item className="d-flex justify-content-center align-items-center">
@@ -91,6 +234,7 @@ const ZellePayment = ({ order }) => {
             value={imagen}
             onChange={(e) => setImagen(e.target.value)}
             placeholder="Imagen"
+            hidden
           ></Form.Control>
           <Form.Group controlId="zelleCapture">
             <Form.Control
@@ -100,10 +244,22 @@ const ZellePayment = ({ order }) => {
               onChange={uploadFileHandler}
             />
           </Form.Group>
+          {imagen && (
+            <div className="d-flex justify-content-center p-3">
+              <img
+                src={imagen}
+                width={200}
+                height="auto"
+                alt="Capture de la transferencia"
+                className="img-fluid shadow-lg"
+              />
+            </div>
+          )}
           <Button type="submit" className="btn-primary mt-3">
             Enviar
           </Button>
           {loadingUpload && <Loader />}
+          {loadingSubmit && <Loader />}
         </Form>
 
         <Link
