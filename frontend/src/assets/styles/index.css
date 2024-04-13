@@ -192,11 +192,11 @@ table th {
 /* Whatsapp Button */
 .whatsapp-button {
   position: fixed; /* Fixed positioning relative to the viewport */
-  bottom: 20px; /* 20px from the bottom */
-  right: 20px; /* 20px from the right */
+  bottom: 15px; /* 20px from the bottom */
+  right: 15px; /* 20px from the right */
   background-color: #25d366; /* WhatsApp brand color */
   color: white; /* Icon color */
-  padding: 10px; /* Padding around the icon */
+  padding: 7px; /* Padding around the icon */
   border-radius: 50%; /* Circular button */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Optional: adds shadow for better visibility */
   display: flex; /* Ensures the icon is centered within the button */

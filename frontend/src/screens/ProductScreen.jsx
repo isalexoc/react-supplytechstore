@@ -147,7 +147,7 @@ const ProductScreen = () => {
                   )}
 
                   <ListGroup.Item>
-                    {userInfo && !userInfo.isAdmin && (
+                    {userInfo && !userInfo?.isAdmin && (
                       <Button
                         className="btn-block"
                         type="button"
@@ -158,7 +158,7 @@ const ProductScreen = () => {
                       </Button>
                     )}
 
-                    {userInfo && userInfo.isAdmin && (
+                    {userInfo && userInfo?.isAdmin && (
                       <Button
                         className="btn-block"
                         type="button"
@@ -191,7 +191,7 @@ const ProductScreen = () => {
                 ))}
                 <ListGroup.Item>
                   {loadingProductReview && <Loader />}
-                  {userInfo && !userInfo.isAdmin ? (
+                  {userInfo && !userInfo?.isAdmin ? (
                     <>
                       <h2>Escribe una reseña</h2>
                       <Form onSubmit={submitHandler}>
@@ -228,7 +228,7 @@ const ProductScreen = () => {
                         </Button>
                       </Form>
                     </>
-                  ) : !userInfo.isAdmin ? (
+                  ) : !userInfo?.isAdmin ? (
                     <>
                       <h2>Escribe una reseña</h2>
                       <Message>

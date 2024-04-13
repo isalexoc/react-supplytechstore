@@ -7,14 +7,13 @@ import { useSelector } from "react-redux";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
 import ZellePayment from "../components/ZellePayment";
+import CashPayment from "../components/CashPayment";
 import {
   useGetOrderDetailsQuery,
   useDeliverOrderMutation,
   useMarkAsPaidMutation,
 } from "../slices/orderApiSlice";
 import { GiCardExchange } from "react-icons/gi";
-import { GiCash } from "react-icons/gi";
-import { FaMapMarkerAlt, FaPhoneAlt } from "react-icons/fa";
 import Meta from "../components/Meta";
 
 const OrderScreen = () => {
@@ -169,52 +168,12 @@ const OrderScreen = () => {
                 <ZellePayment
                   order={order}
                   refetch={refetch}
-                  isAdmin={userInfo.isAdmin}
+                  isAdmin={userInfo?.isAdmin}
                 />
               )}
 
-              {order.paymentMethod === "Efectivo" && (
-                <>
-                  <ListGroup.Item className="d-flex justify-content-center align-items-center">
-                    <GiCash size={30} />{" "}
-                    <span className="h3 mb-0">Efectivo</span>
-                  </ListGroup.Item>
-                  <ListGroup.Item className="d-flex flex-column justify-content-center align-items-center">
-                    <h5>
-                      Dirígase a nuestra tienda para pagar en efectivo y retirar
-                      productos
-                    </h5>
-                    <p>
-                      Av. Bolivar Oeste #150 C/C Av. Ayacucho, Edificio Don
-                      Antonio, Piso B, Local 2, Sector casco central de Maracay,
-                      Edo. Aragua, Zona postal 2101
-                    </p>
-                    <div className="d-flex mt-2">
-                      <a
-                        href="https://maps.app.goo.gl/ggoGpA6aXhvwSwP17"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group d-flex flex-column justify-content-center align-items-center group-hover text-decoration-none me-5 btn btn-light"
-                      >
-                        <FaMapMarkerAlt size={20} className="text-danger" />
-                        Ir al mapa
-                      </a>
-                      <a
-                        href="tel:+584122763933"
-                        className="group d-flex flex-column justify-content-center align-items-center group-hover text-decoration-none me-5 btn btn-light"
-                      >
-                        <FaPhoneAlt size={20} className="text-success mb-1" />
-                        Llamar ahora
-                      </a>
-                    </div>
-                    <Link
-                      className="mt-3 text-decoration-none"
-                      to={`/changepay/${order._id}`}
-                    >
-                      <GiCardExchange /> Cambiar el tipo de pago
-                    </Link>
-                  </ListGroup.Item>
-                </>
+              {order.paymentMethod === "Efectivo" && !order.isPaid && (
+                <CashPayment orderId={order._id} />
               )}
               {order.paymentMethod === "PagoMovil" && (
                 <>
@@ -254,7 +213,7 @@ const OrderScreen = () => {
               {/* MARK AS DELIVERED PLACEHOLDER */}
               {loadingDeliver && <Loader />}
               {userInfo &&
-                userInfo.isAdmin &&
+                userInfo?.isAdmin &&
                 order.isPaid &&
                 !order.isDelivered && (
                   <ListGroup.Item>
@@ -269,7 +228,7 @@ const OrderScreen = () => {
                 )}
 
               {/* MARK AS PAID */}
-              {userInfo && userInfo.isAdmin && !order.isPaid && (
+              {userInfo && userInfo?.isAdmin && !order.isPaid && (
                 <ListGroup.Item className="text-center">
                   <Button
                     type="button"
