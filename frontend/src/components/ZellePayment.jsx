@@ -12,7 +12,7 @@ import Message from "./Message";
 import { toast } from "react-toastify";
 import Loader from "./Loader";
 
-const ZellePayment = ({ order, refetch }) => {
+const ZellePayment = ({ order, refetch, isAdmin }) => {
   const [zelleReference, setZelleReference] = useState("");
   const [imagen, setImagen] = useState("");
 
@@ -120,10 +120,13 @@ const ZellePayment = ({ order, refetch }) => {
         <SiZelle size={30} /> <span className="h3 mb-0">Zelle</span>
       </ListGroup.Item>
       <ListGroup.Item className="d-flex flex-column justify-content-center align-items-center">
-        <h5>
-          Su comprobante de pago ha sido enviado. Espere confirmación del pago.
-          Gracias!
-        </h5>
+        {!isAdmin && !order.isPaid && (
+          <h5>
+            Su comprobante de pago ha sido enviado. Espere confirmación del
+            pago. Gracias!
+          </h5>
+        )}
+
         <h6>COMPROBANTE DE PAGO</h6>
         {order?.paymentConfirmation?.referenceType === "ReferenceNumber" && (
           <div>
@@ -171,19 +174,23 @@ const ZellePayment = ({ order, refetch }) => {
             </div>
           </>
         )}
-        <Button
-          className="btn btn-primary text-decoration-none"
-          type="button"
-          onClick={deleteConfimation}
-        >
-          Editar
-        </Button>
-        <Link
-          className="mt-3 text-decoration-none"
-          to={`/changepay/${order._id}`}
-        >
-          <GiCardExchange /> Cambiar el tipo de pago
-        </Link>
+        {!isAdmin && !order.isPaid && (
+          <>
+            <Button
+              className="btn btn-primary text-decoration-none"
+              type="button"
+              onClick={deleteConfimation}
+            >
+              Editar
+            </Button>
+            <Link
+              className="mt-3 text-decoration-none"
+              to={`/changepay/${order._id}`}
+            >
+              <GiCardExchange /> Cambiar el tipo de pago
+            </Link>
+          </>
+        )}
       </ListGroup.Item>
     </>
   ) : (

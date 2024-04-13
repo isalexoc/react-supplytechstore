@@ -147,14 +147,28 @@ const ProductScreen = () => {
                   )}
 
                   <ListGroup.Item>
-                    <Button
-                      className="btn-block"
-                      type="button"
-                      disabled={product.countInStock === 0}
-                      onClick={addToCartHandler}
-                    >
-                      Añadir al Carrito
-                    </Button>
+                    {userInfo && !userInfo.isAdmin && (
+                      <Button
+                        className="btn-block"
+                        type="button"
+                        disabled={product.countInStock === 0}
+                        onClick={addToCartHandler}
+                      >
+                        Añadir al Carrito
+                      </Button>
+                    )}
+
+                    {userInfo && userInfo.isAdmin && (
+                      <Button
+                        className="btn-block"
+                        type="button"
+                        onClick={() =>
+                          navigate(`/admin/product/${product._id}/edit`)
+                        }
+                      >
+                        Editar
+                      </Button>
+                    )}
                   </ListGroup.Item>
                 </ListGroup>
               </Card>
@@ -176,47 +190,54 @@ const ProductScreen = () => {
                   </ListGroup.Item>
                 ))}
                 <ListGroup.Item>
-                  <h2>Escribe una reseña</h2>
                   {loadingProductReview && <Loader />}
-                  {userInfo ? (
-                    <Form onSubmit={submitHandler}>
-                      <Form.Group controlId="rating" className="my-2">
-                        <Form.Label>Calificación</Form.Label>
-                        <Form.Control
-                          as="select"
-                          value={rating}
-                          onChange={(e) => setRating(Number(e.target.value))}
+                  {userInfo && !userInfo.isAdmin ? (
+                    <>
+                      <h2>Escribe una reseña</h2>
+                      <Form onSubmit={submitHandler}>
+                        <Form.Group controlId="rating" className="my-2">
+                          <Form.Label>Calificación</Form.Label>
+                          <Form.Control
+                            as="select"
+                            value={rating}
+                            onChange={(e) => setRating(Number(e.target.value))}
+                          >
+                            <option value="">Seleccionar...</option>
+                            <option value="1">1 - Malo</option>
+                            <option value="2">2 - Regular</option>
+                            <option value="3">3 - Bueno</option>
+                            <option value="4">4 - Muy Bueno</option>
+                            <option value="5">5 - Excelente</option>
+                          </Form.Control>
+                        </Form.Group>
+                        <Form.Group controlId="comment">
+                          <Form.Label>Comentario</Form.Label>
+                          <Form.Control
+                            as="textarea"
+                            row="3"
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                          ></Form.Control>
+                        </Form.Group>
+                        <Button
+                          disabled={loadingProductReview}
+                          type="submit"
+                          variant="primary"
                         >
-                          <option value="">Seleccionar...</option>
-                          <option value="1">1 - Malo</option>
-                          <option value="2">2 - Regular</option>
-                          <option value="3">3 - Bueno</option>
-                          <option value="4">4 - Muy Bueno</option>
-                          <option value="5">5 - Excelente</option>
-                        </Form.Control>
-                      </Form.Group>
-                      <Form.Group controlId="comment">
-                        <Form.Label>Comentario</Form.Label>
-                        <Form.Control
-                          as="textarea"
-                          row="3"
-                          value={comment}
-                          onChange={(e) => setComment(e.target.value)}
-                        ></Form.Control>
-                      </Form.Group>
-                      <Button
-                        disabled={loadingProductReview}
-                        type="submit"
-                        variant="primary"
-                      >
-                        Enviar
-                      </Button>
-                    </Form>
+                          Enviar
+                        </Button>
+                      </Form>
+                    </>
+                  ) : !userInfo.isAdmin ? (
+                    <>
+                      <h2>Escribe una reseña</h2>
+                      <Message>
+                        Por favor <Link to="/login">inicia sesión</Link> para
+                        escribir una reseña
+                      </Message>
+                    </>
                   ) : (
-                    <Message>
-                      Por favor <Link to="/login">inicia sesión</Link> para
-                      escribir una reseña
-                    </Message>
+                    ""
                   )}
                 </ListGroup.Item>
               </ListGroup>

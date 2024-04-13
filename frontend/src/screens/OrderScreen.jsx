@@ -10,6 +10,7 @@ import ZellePayment from "../components/ZellePayment";
 import {
   useGetOrderDetailsQuery,
   useDeliverOrderMutation,
+  useMarkAsPaidMutation,
 } from "../slices/orderApiSlice";
 import { GiCardExchange } from "react-icons/gi";
 import { GiCash } from "react-icons/gi";
@@ -29,6 +30,9 @@ const OrderScreen = () => {
   const [deliverOrder, { isLoading: loadingDeliver }] =
     useDeliverOrderMutation();
 
+  const [markAsPaid, { isLoading: loadingMarkAsPaid }] =
+    useMarkAsPaidMutation();
+
   //const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
 
   const { userInfo } = useSelector((state) => state.auth);
@@ -45,6 +49,18 @@ const OrderScreen = () => {
       toast.success("Orden entregada");
     } catch (err) {
       toast.error(err?.data?.message || err.error);
+    }
+  };
+
+  const markAsPaidHandler = async () => {
+    if (window.confirm("¿Estás seguro de marcar la orden como pagada?")) {
+      try {
+        await markAsPaid(orderId);
+        refetch();
+        toast.success("Orden marcada como pagada");
+      } catch (err) {
+        toast.error(err?.data?.message || err.error);
+      }
     }
   };
 
@@ -150,7 +166,11 @@ const OrderScreen = () => {
 
               {/* PAY ORDER PLACEHOLDER */}
               {order.paymentMethod === "Zelle" && (
-                <ZellePayment order={order} refetch={refetch} />
+                <ZellePayment
+                  order={order}
+                  refetch={refetch}
+                  isAdmin={userInfo.isAdmin}
+                />
               )}
 
               {order.paymentMethod === "Efectivo" && (
@@ -247,6 +267,20 @@ const OrderScreen = () => {
                     </Button>
                   </ListGroup.Item>
                 )}
+
+              {/* MARK AS PAID */}
+              {userInfo && userInfo.isAdmin && !order.isPaid && (
+                <ListGroup.Item className="text-center">
+                  <Button
+                    type="button"
+                    className="btn btn-block"
+                    onClick={markAsPaidHandler}
+                  >
+                    Marcar como pagada
+                  </Button>
+                  {loadingMarkAsPaid && <Loader />}
+                </ListGroup.Item>
+              )}
             </ListGroup>
           </Card>
         </Col>

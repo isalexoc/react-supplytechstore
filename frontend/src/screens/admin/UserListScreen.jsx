@@ -9,9 +9,12 @@ import {
   useDeleteUserMutation,
 } from "../../slices/usersApiSlice";
 import Meta from "../../components/Meta";
+import { useParams } from "react-router-dom";
+import Paginate from "../../components/Paginate";
 
 const UserListScreen = () => {
-  const { data: users, error, isLoading, refetch } = useGetUsersQuery();
+  const { pageNumber } = useParams();
+  const { data, error, isLoading, refetch } = useGetUsersQuery({ pageNumber });
 
   const [deleteUser, { isLoading: loadingDelete }] = useDeleteUserMutation();
 
@@ -37,48 +40,56 @@ const UserListScreen = () => {
       ) : error ? (
         <Message variant="danger">{error.data.message}</Message>
       ) : (
-        <Table striped bordered hover responsive className="table-sm">
-          <thead>
-            <tr>
-              <th>NOMBRE</th>
-              <th>EMAIL</th>
-              <th>ADMIN</th>
-              <th>ACCIONES</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user._id}>
-                <td>{user.name}</td>
-                <td>
-                  <a href={`mailto:${user.email}`}>{user.email}</a>
-                </td>
-                <td>
-                  {user.isAdmin ? (
-                    <FaCheck style={{ color: "green" }} />
-                  ) : (
-                    <FaTimes style={{ color: "red" }} />
-                  )}
-                </td>
-
-                <td>
-                  <LinkContainer to={`/admin/user/${user._id}/edit`}>
-                    <Button variant="light" className="btn-sm">
-                      <FaEdit />
-                    </Button>
-                  </LinkContainer>
-                  <Button
-                    onClick={() => deleteHandler(user._id)}
-                    variant="danger"
-                    className="btn-sm"
-                  >
-                    <FaTrash style={{ color: "white" }} />
-                  </Button>
-                </td>
+        <>
+          <Table striped bordered hover responsive className="table-sm">
+            <thead>
+              <tr>
+                <th>NOMBRE</th>
+                <th>EMAIL</th>
+                <th>ADMIN</th>
+                <th>ACCIONES</th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {data.users.map((user) => (
+                <tr key={user._id}>
+                  <td>{user.name}</td>
+                  <td>
+                    <a href={`mailto:${user.email}`}>{user.email}</a>
+                  </td>
+                  <td>
+                    {user.isAdmin ? (
+                      <FaCheck style={{ color: "green" }} />
+                    ) : (
+                      <FaTimes style={{ color: "red" }} />
+                    )}
+                  </td>
+
+                  <td>
+                    <LinkContainer to={`/admin/user/${user._id}/edit`}>
+                      <Button variant="light" className="btn-sm">
+                        <FaEdit />
+                      </Button>
+                    </LinkContainer>
+                    <Button
+                      onClick={() => deleteHandler(user._id)}
+                      variant="danger"
+                      className="btn-sm"
+                    >
+                      <FaTrash style={{ color: "white" }} />
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+
+          <Paginate
+            pages={data.pages}
+            page={data.page}
+            screen="admin/userlist"
+          />
+        </>
       )}
     </>
   );

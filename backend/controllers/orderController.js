@@ -5,7 +5,10 @@ import Product from "../models/productModel.js";
 import { calcPrices } from "../utils/calcPrices.js";
 import { verifyPayPalPayment, checkIfNewTransaction } from "../utils/paypal.js";
 import sendEmailHandler from "../utils/sendEmailHandler.js";
-import { paymentConfirmationEmail } from "../utils/sendEmailHandler.js";
+import {
+  paymentConfirmationEmail,
+  defaultEmail,
+} from "../utils/sendEmailHandler.js";
 
 const adminEmail = process.env.ADMIN_EMAIL;
 
@@ -168,8 +171,15 @@ const updateOrderToDelivered = asyncHandler(async (req, res) => {
 // @route GET /api/orders
 // @access Private/Admin
 const getOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find({}).populate("user", "id name");
-  res.status(200).json(orders);
+  const pageSize = process.env.PAGINATION_LIMIT || 12;
+  const page = Number(req.query.pageNumber) || 1;
+  const count = await Order.countDocuments();
+  const orders = await Order.find({})
+    .sort("-createdAt")
+    .limit(pageSize)
+    .skip(pageSize * (page - 1))
+    .populate("user", "id name");
+  res.status(200).json({ orders, page, pages: Math.ceil(count / pageSize) });
 });
 
 // @des   Update payment method
@@ -265,6 +275,49 @@ const updateOrderZelle = asyncHandler(async (req, res) => {
   }
 });
 
+// @des   Mark as paid
+// @route PUT /api/orders/:id/markAsPaid
+// @access Private/Admin
+const markAsPaid = asyncHandler(async (req, res) => {
+  const order = await Order.findById(req.params.id);
+  const user = await User.findById(order.user);
+
+  if (order) {
+    order.isPaid = true;
+    order.paidAt = Date.now();
+    order.paymentResult = {
+      id: order._id,
+      status: "COMPLETED BY ADMIN - MARKED AS PAID",
+      update_time: Date.now().toString(),
+      email_address: user.email,
+    };
+
+    const updatedOrder = await order.save();
+
+    //send email to user and admin
+    const emailDataUser = {
+      to: user.email,
+      name: user.name,
+      type: "Pago",
+      orderId: updatedOrder._id,
+      subject: `Pago confirmado de la orden ${updatedOrder._id}`,
+      message: `Tu orden ha sido marcada como pagada por el administrador. Gracias por tu compra. Puedes ver el estado de tu orden en tu perfil: https://www.supplytechstore.com/profile
+      si tienes alguna pregunta, no dudes en contactarnos.
+      
+      Datos de la orden:
+      Orden: ${updatedOrder._id}
+      Total: ${updatedOrder.totalPrice}
+      Método de pago: Marcado como pagado por el administrador`,
+    };
+    await defaultEmail(emailDataUser);
+
+    res.json(updatedOrder);
+  } else {
+    res.status(404);
+    throw new Error("Order not found");
+  }
+});
+
 export {
   addOrderItems,
   getMyOrders,
@@ -274,4 +327,5 @@ export {
   getOrders,
   updatePaymentMethod,
   updateOrderZelle,
+  markAsPaid,
 };

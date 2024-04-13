@@ -36,8 +36,9 @@ export const orderApiSlice = apiSlice.injectEndpoints({
       keepUnusedDataFor: 5,
     }),
     getOrders: builder.query({
-      query: () => ({
+      query: ({ pageNumber }) => ({
         url: ORDERS_URL,
+        params: { pageNumber },
       }),
       keepUnusedDataFor: 5,
     }),
@@ -68,6 +69,12 @@ export const orderApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    markAsPaid: builder.mutation({
+      query: (orderId) => ({
+        url: `${ORDERS_URL}/${orderId}/markAsPaid`,
+        method: "PUT",
+      }),
+    }),
   }),
 });
 
@@ -82,4 +89,5 @@ export const {
   useChangePayMutation,
   useUploadPaymentCaptureMutation,
   useUpdateOrderZelleMutation,
+  useMarkAsPaidMutation,
 } = orderApiSlice;
