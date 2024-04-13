@@ -173,7 +173,7 @@ const OrderScreen = () => {
               )}
 
               {order.paymentMethod === "Efectivo" && !order.isPaid && (
-                <CashPayment orderId={order._id} />
+                <CashPayment orderId={order._id} isAdmin={userInfo?.isAdmin} />
               )}
               {order.paymentMethod === "PagoMovil" && (
                 <>
