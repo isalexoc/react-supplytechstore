@@ -147,7 +147,7 @@ const ProductScreen = () => {
                   )}
 
                   <ListGroup.Item>
-                    {userInfo && !userInfo?.isAdmin && (
+                    {!userInfo?.isAdmin && (
                       <Button
                         className="btn-block"
                         type="button"
