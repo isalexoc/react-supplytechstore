@@ -8,12 +8,13 @@ import Message from "../components/Message";
 import Loader from "../components/Loader";
 import ZellePayment from "../components/ZellePayment";
 import CashPayment from "../components/CashPayment";
+import TransferPayment from "../components/TransferPayment";
+import PagoMovil from "../components/PagoMovil";
 import {
   useGetOrderDetailsQuery,
   useDeliverOrderMutation,
   useMarkAsPaidMutation,
 } from "../slices/orderApiSlice";
-import { GiCardExchange } from "react-icons/gi";
 import Meta from "../components/Meta";
 import getDollarPrice from "../utils/dollarPrice";
 
@@ -195,38 +196,26 @@ const OrderScreen = () => {
                 <CashPayment orderId={order._id} isAdmin={userInfo?.isAdmin} />
               )}
               {order.paymentMethod === "PagoMovil" && (
-                <>
-                  <ListGroup.Item className="d-flex justify-content-center align-items-center">
-                    <img src="/images/pagomovil.png" alt="pagomovil" />
-                    <span className="h3 mb-0 ms-2">Pago Movil</span>
-                  </ListGroup.Item>
-                  <ListGroup.Item className="d-flex flex-column justify-content-center align-items-center">
-                    <h5>
-                      Pague directamente a través de Pago Móvil con el siguiente
-                      botón:
-                    </h5>
-
-                    <Button className="btn-light">
-                      <img src="/images/pagomovil.png" alt="pagomovil" />
-                    </Button>
-
-                    <Link
-                      className="mt-3 text-decoration-none"
-                      to={`/changepay/${order._id}`}
-                    >
-                      <GiCardExchange /> Cambiar el tipo de pago
-                    </Link>
-                  </ListGroup.Item>
-                </>
+                <PagoMovil
+                  orderId={order._id}
+                  isAdmin={userInfo?.isAdmin}
+                  isCard={false}
+                />
               )}
               {order.paymentMethod === "Transferencia" && (
-                <p>Transferencia Bancaria</p>
+                <TransferPayment
+                  order={order}
+                  refetch={refetch}
+                  isAdmin={userInfo?.isAdmin}
+                />
               )}
-              {order.paymentMethod === "Transferencia" && (
-                <p>Transferencia Bancaria</p>
-              )}
+
               {order.paymentMethod === "Tarjeta" && (
-                <p>Tarjeta de Débito o Crédito</p>
+                <PagoMovil
+                  orderId={order._id}
+                  isAdmin={userInfo?.isAdmin}
+                  isCard={true}
+                />
               )}
 
               {/* MARK AS DELIVERED PLACEHOLDER */}

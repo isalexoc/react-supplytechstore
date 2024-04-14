@@ -1,19 +1,20 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   useUploadPaymentCaptureMutation,
   useUpdateOrderZelleMutation,
 } from "../slices/orderApiSlice";
 import { Button, Form, ListGroup } from "react-bootstrap";
-import { FaArrowDown, FaWhatsapp } from "react-icons/fa";
+import { FaArrowDown } from "react-icons/fa";
 import { GiCardExchange } from "react-icons/gi";
-import { SiZelle } from "react-icons/si";
-import { Link } from "react-router-dom";
 import Message from "./Message";
 import { toast } from "react-toastify";
 import Loader from "./Loader";
+import { BiTransfer } from "react-icons/bi";
+import { BsBank2 } from "react-icons/bs";
 
-const ZellePayment = ({ order, refetch, isAdmin }) => {
-  const [zelleReference, setZelleReference] = useState("");
+const TransferPayment = ({ order, refetch, isAdmin }) => {
+  const [paymentReference, setPaymentReference] = useState("");
   const [imagen, setImagen] = useState("");
 
   const [
@@ -26,7 +27,7 @@ const ZellePayment = ({ order, refetch, isAdmin }) => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    if (zelleReference === "" && imagen === "") {
+    if (paymentReference === "" && imagen === "") {
       toast.error(
         "Por favor ingrese el número de referencia o suba el capture de la transferencia."
       );
@@ -35,30 +36,30 @@ const ZellePayment = ({ order, refetch, isAdmin }) => {
 
     let zelleInfo = {};
 
-    if (zelleReference !== "" && imagen === "") {
+    if (paymentReference !== "" && imagen === "") {
       if (
         window.confirm(
-          `¿Estás seguro de enviar el número de referencia de ZELLE: ${zelleReference}?`
+          `¿Estás seguro de enviar el número de transferencia: ${paymentReference}?`
         )
       ) {
         zelleInfo = {
           referenceType: "ReferenceNumber",
-          code: zelleReference,
+          code: paymentReference,
         };
       }
-    } else if (zelleReference === "" && imagen !== "") {
+    } else if (paymentReference === "" && imagen !== "") {
       zelleInfo = {
         referenceType: "ReferenceImage",
         image: imagen,
       };
-    } else if (zelleReference !== "" && imagen !== "") {
+    } else if (paymentReference !== "" && imagen !== "") {
       zelleInfo = {
         referenceType: "both",
         image: imagen,
-        code: zelleReference,
+        code: paymentReference,
       };
     } else {
-      toast.error("Error al enviar la información de Zelle");
+      toast.error("Error al enviar la información de Transferencia");
       return;
     }
 
@@ -97,7 +98,7 @@ const ZellePayment = ({ order, refetch, isAdmin }) => {
         referenceType: "delete",
       }).unwrap();
       setImagen("");
-      setZelleReference("");
+      setPaymentReference("");
       refetch();
     } catch (error) {
       toast.error(error?.data?.message || error.error);
@@ -117,7 +118,12 @@ const ZellePayment = ({ order, refetch, isAdmin }) => {
     order?.paymentConfirmation?.referenceType === "both" ? (
     <>
       <ListGroup.Item className="d-flex justify-content-center align-items-center">
-        <SiZelle size={30} /> <span className="h3 mb-0">Zelle</span>
+        <div>
+          <BiTransfer size={30} style={{ color: "#1384C8" }} />{" "}
+          <BsBank2 size={30} style={{ color: "#1384C8" }} />{" "}
+          <BiTransfer size={30} style={{ color: "#1384C8" }} />
+        </div>{" "}
+        <span className="h3 mb-0">Tranferencia</span>
       </ListGroup.Item>
       <ListGroup.Item className="d-flex flex-column justify-content-center align-items-center">
         {!isAdmin && !order.isPaid && (
@@ -186,7 +192,7 @@ const ZellePayment = ({ order, refetch, isAdmin }) => {
             <Link
               className="mt-3 text-decoration-none"
               onClick={() => {
-                setZelleReference("");
+                setPaymentReference("");
                 setImagen("");
                 deleteConfimation();
               }}
@@ -201,35 +207,42 @@ const ZellePayment = ({ order, refetch, isAdmin }) => {
   ) : (
     <>
       <ListGroup.Item className="d-flex justify-content-center align-items-center">
-        <SiZelle size={30} /> <span className="h3 mb-0">Zelle</span>
+        <div>
+          <BiTransfer size={30} style={{ color: "#1384C8" }} />{" "}
+          <BsBank2 size={30} style={{ color: "#1384C8" }} />{" "}
+          <BiTransfer size={30} style={{ color: "#1384C8" }} />
+        </div>{" "}
+        <span className="h3 mb-0">Transferencia</span>
       </ListGroup.Item>
       <ListGroup.Item className="d-flex flex-column justify-content-center align-items-center">
-        <h5>
-          Para pagar por zelle contacte por whatsapp para recibir los datos de
-          transferencia a través del siguiente botón:
-        </h5>
-        <a
-          href={`https://wa.me/584241234567?text=Hola,%20quiero%20pagar%20mi%20orden%20con%20*Zelle*%20.%20Esta%20es%20mi%20orden:%20https://www.supplytechstore.com/order/${order._id}%20.%20Mi%20nombre%20es:%20${order.user.name}%20.%20Mi%20correo%20es:%20${order.user.email}.%20Gracias!`}
-          target="_blank"
-          className="whatsapp-link2"
-          rel="noopener noreferrer"
-        >
-          <FaWhatsapp size={50} />{" "}
-          <span className="h5 mb-0">Pagar con Zelle</span>
-        </a>
+        <h5>Datos para el pago</h5>
 
-        <h5 className="mt-3">
+        <div>
+          <h6 className="text-start mb-0">Banco Mercantil</h6>
+          <p>
+            Cta corriente Banco mercantil Supply tech C.A 01050100891100178104
+            supplytech.soldaduras@gmail.com J-405080078
+          </p>
+
+          <h6 className="text-start mb-0">Banco de Venezuela</h6>
+          <p>
+            Cta corriente banco de Venezuela SUPPLY TECH 0102-0358-91-0000749264
+            supplytech.soldaduras@gmail.com J-405080078
+          </p>
+        </div>
+
+        <p className="mt-3">
           Una vez realizado el pago, ingrese el número de referencia o capture
           la pantalla de la transferencia
-        </h5>
+        </p>
 
         <Form onSubmit={submitHandler}>
           <Form.Group controlId="zelleReference">
             <Form.Label>Número de referencia</Form.Label>
             <Form.Control
               type="text"
-              value={zelleReference}
-              onChange={(e) => setZelleReference(e.target.value)}
+              value={paymentReference}
+              onChange={(e) => setPaymentReference(e.target.value)}
               placeholder="Número de referencia"
             />
           </Form.Group>
@@ -277,7 +290,7 @@ const ZellePayment = ({ order, refetch, isAdmin }) => {
         <Link
           className="mt-3 text-decoration-none"
           onClick={() => {
-            setZelleReference("");
+            setPaymentReference("");
             setImagen("");
             deleteConfimation();
           }}
@@ -290,4 +303,4 @@ const ZellePayment = ({ order, refetch, isAdmin }) => {
   );
 };
 
-export default ZellePayment;
+export default TransferPayment;
