@@ -123,10 +123,18 @@ const Footer = () => {
                 <strong className="text-primary">Conéctate con nosotros</strong>
               </h5>
               <div className="d-flex gap-3 justify-content-center">
-                <a href="https://www.facebook.com/profile.php?id=100054573574236">
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href="https://www.facebook.com/profile.php?id=100054573574236"
+                >
                   <FaFacebook size={40} className="text-white" />
                 </a>
-                <a href="https://www.instagram.com/supply_tech/">
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href="https://www.instagram.com/supply_tech/"
+                >
                   <FaInstagram size={40} className="text-white" />
                 </a>
               </div>
