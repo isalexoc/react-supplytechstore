@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -22,6 +22,7 @@ import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { addToCart } from "../slices/cartSlice";
 import BackTo from "../components/BackTo";
+import getDollarPrice from "../utils/dollarPrice";
 
 const ProductScreen = () => {
   const { id: productId } = useParams();
@@ -43,6 +44,17 @@ const ProductScreen = () => {
     useCreateReviewMutation();
 
   const { userInfo } = useSelector((state) => state.auth);
+
+  const [dollar, setDollar] = useState(0);
+
+  useEffect(() => {
+    const fetchDollarPrice = async () => {
+      const currentDollarPrice = await getDollarPrice();
+      setDollar(currentDollarPrice);
+    };
+
+    fetchDollarPrice();
+  }, []);
 
   const addToCartHandler = () => {
     dispatch(addToCart({ ...product, qty }));
@@ -108,7 +120,14 @@ const ProductScreen = () => {
                     <Row>
                       <Col>Precio:</Col>
                       <Col>
-                        <strong>${product.price}</strong>
+                        <div>
+                          <strong>${product.price}</strong>
+                        </div>
+                        <div>
+                          {dollar > 0
+                            ? `Bs. ${(product.price * dollar).toFixed(2)}`
+                            : ""}
+                        </div>
                       </Col>
                     </Row>
                   </ListGroup.Item>

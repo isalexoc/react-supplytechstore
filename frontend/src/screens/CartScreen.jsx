@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { addToCart, removeFromCart } from "../slices/cartSlice";
@@ -14,6 +15,7 @@ import { FaTrash } from "react-icons/fa";
 import Message from "../components/Message";
 import BackTo from "../components/BackTo";
 import Meta from "../components/Meta";
+import getDollarPrice from "../utils/dollarPrice";
 
 const CartScreen = () => {
   const navigate = useNavigate();
@@ -33,6 +35,17 @@ const CartScreen = () => {
   const checkoutHandler = () => {
     navigate("/login?redirect=/shipping");
   };
+
+  const [dollar, setDollar] = useState(0);
+
+  useEffect(() => {
+    const fetchDollarPrice = async () => {
+      const currentDollarPrice = await getDollarPrice();
+      setDollar(currentDollarPrice);
+    };
+
+    fetchDollarPrice();
+  }, []);
 
   return (
     <>
@@ -126,6 +139,17 @@ const CartScreen = () => {
                 {cartItems
                   .reduce((acc, item) => acc + item.qty * item.price, 0)
                   .toFixed(2)}
+                {dollar > 0 && (
+                  <h6 className="mb-0">
+                    Bs.{" "}
+                    {(
+                      cartItems.reduce(
+                        (acc, item) => acc + item.qty * item.price,
+                        0
+                      ) * dollar
+                    ).toFixed(2)}
+                  </h6>
+                )}
               </ListGroup.Item>
               <ListGroup.Item>
                 <Button

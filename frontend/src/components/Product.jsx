@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Row, Col } from "react-bootstrap";
 import Raiting from "./Raiting";
 
-const Product = ({ product }) => {
+const Product = ({ product, dollar }) => {
   return (
     <Card className="my-1 p-1 my-sm-3 p-sm-3 rounded card-container">
       <Row>
@@ -25,7 +25,12 @@ const Product = ({ product }) => {
                 text={`${product.numReviews} comentarios`}
               />
             </Card.Text>
-            <Card.Text as="h3">${product.price}</Card.Text>
+            <Card.Text as="h3" className="mb-0">
+              ${product.price}
+            </Card.Text>
+            <Card.Text as="p">
+              {dollar > 0 ? `Bs. ${(product.price * dollar).toFixed(2)}` : ""}
+            </Card.Text>
           </Card.Body>
         </Col>
       </Row>

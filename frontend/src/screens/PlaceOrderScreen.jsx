@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { Button, Row, Col, ListGroup, Image, Card } from "react-bootstrap";
@@ -9,6 +9,7 @@ import Message from "../components/Message";
 import { useCreateOrderMutation } from "../slices/orderApiSlice";
 import { clearCartItems } from "../slices/cartSlice";
 import Meta from "../components/Meta";
+import getDollarPrice from "../utils/dollarPrice";
 
 const PlaceOrderScreen = () => {
   const navigate = useNavigate();
@@ -17,6 +18,17 @@ const PlaceOrderScreen = () => {
   const cart = useSelector((state) => state.cart);
 
   const [createOrder, { isLoading, error }] = useCreateOrderMutation();
+
+  const [dollar, setDollar] = useState(0);
+
+  useEffect(() => {
+    const fetchDollarPrice = async () => {
+      const currentDollarPrice = await getDollarPrice();
+      setDollar(currentDollarPrice);
+    };
+
+    fetchDollarPrice();
+  }, []);
 
   useEffect(() => {
     if (!cart.shippingAddress.address) {
@@ -124,7 +136,14 @@ const PlaceOrderScreen = () => {
               <ListGroup.Item>
                 <Row>
                   <Col>Total</Col>
-                  <Col>${cart.totalPrice}</Col>
+                  <Col>
+                    <div>${cart.totalPrice}</div>
+                    <div>
+                      {dollar > 0
+                        ? `Bs. ${(cart.totalPrice * dollar).toFixed(2)}`
+                        : ""}
+                    </div>
+                  </Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>

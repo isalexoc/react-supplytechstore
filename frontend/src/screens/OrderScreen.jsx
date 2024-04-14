@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Row, Col, Image, ListGroup, Card, Button } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
@@ -15,6 +15,7 @@ import {
 } from "../slices/orderApiSlice";
 import { GiCardExchange } from "react-icons/gi";
 import Meta from "../components/Meta";
+import getDollarPrice from "../utils/dollarPrice";
 
 const OrderScreen = () => {
   const { id: orderId } = useParams();
@@ -35,6 +36,17 @@ const OrderScreen = () => {
   //const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
 
   const { userInfo } = useSelector((state) => state.auth);
+
+  const [dollar, setDollar] = useState(0);
+
+  useEffect(() => {
+    const fetchDollarPrice = async () => {
+      const currentDollarPrice = await getDollarPrice();
+      setDollar(currentDollarPrice);
+    };
+
+    fetchDollarPrice();
+  }, []);
 
   useEffect(() => {
     refetch();
@@ -159,7 +171,14 @@ const OrderScreen = () => {
               <ListGroup.Item>
                 <Row>
                   <Col>Total</Col>
-                  <Col>${order.totalPrice}</Col>
+                  <Col>
+                    <div>${order.totalPrice}</div>
+                    <div>
+                      {dollar > 0
+                        ? `Bs. ${(order.totalPrice * dollar).toFixed(2)}`
+                        : ""}
+                    </div>
+                  </Col>
                 </Row>
               </ListGroup.Item>
 

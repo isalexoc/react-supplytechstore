@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Row, Col } from "react-bootstrap";
 import { Link, useParams } from "react-router-dom";
 import Product from "../components/Product";
@@ -10,6 +11,7 @@ import ProductCarousel from "../components/ProductCarousel";
 import Brands from "../components/Brands";
 import ShowMap from "../components/ShowMap";
 import CategoriesSlider from "../components/CategoriesSlider";
+import getDollarPrice from "../utils/dollarPrice";
 
 const HomeScreen = () => {
   const { pageNumber, keyword } = useParams();
@@ -18,6 +20,17 @@ const HomeScreen = () => {
     keyword,
     pageNumber,
   });
+
+  const [dollar, setDollar] = useState(0);
+
+  useEffect(() => {
+    const fetchDollarPrice = async () => {
+      const currentDollarPrice = await getDollarPrice();
+      setDollar(currentDollarPrice);
+    };
+
+    fetchDollarPrice();
+  }, []);
 
   return (
     <>
@@ -37,7 +50,7 @@ const HomeScreen = () => {
           ) : (
             <>
               <h2 className="mt-3">Productos Destacados</h2>
-              <ProductCarousel />
+              <ProductCarousel dollar={dollar} />
               <h2 className="mt-5">Nuestra Marcas</h2>
               {data.page === 1 && <Brands />}
               <h2 className="mt-5">Categorías</h2>
@@ -48,7 +61,7 @@ const HomeScreen = () => {
             </>
           )}
 
-          <Row>
+          <Row className="overflow-hidden">
             {data.products.map((product) => (
               <Col
                 key={product._id}
@@ -59,7 +72,7 @@ const HomeScreen = () => {
                 xl={2}
                 className="px-1"
               >
-                <Product product={product} />
+                <Product product={product} dollar={dollar} />
               </Col>
             ))}
           </Row>

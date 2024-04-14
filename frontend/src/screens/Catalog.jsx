@@ -10,6 +10,7 @@ import Paginate from "../components/Paginate";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import Meta from "../components/Meta";
+import getDollarPrice from "../utils/dollarPrice";
 
 const Catalog = () => {
   const { category: currentCategory, pageNumber: currentPageNumber } =
@@ -35,6 +36,16 @@ const Catalog = () => {
 
   // To store and display categories
   const [categoriesMapping, setCategoriesMapping] = useState({});
+  const [dollar, setDollar] = useState(0);
+
+  useEffect(() => {
+    const fetchDollarPrice = async () => {
+      const currentDollarPrice = await getDollarPrice();
+      setDollar(currentDollarPrice);
+    };
+
+    fetchDollarPrice();
+  }, []);
 
   useEffect(() => {
     if (allProducts) {
@@ -120,7 +131,7 @@ const Catalog = () => {
               </ListGroup>
             </Col>
             <Col md={9}>
-              <Row>
+              <Row className="overflow-hidden">
                 {data?.products?.map((product) => (
                   <Col
                     key={product._id}
@@ -131,7 +142,7 @@ const Catalog = () => {
                     xl={3}
                     className="px-1"
                   >
-                    <Product product={product} />
+                    <Product product={product} dollar={dollar} />
                   </Col>
                 ))}
               </Row>
