@@ -94,6 +94,8 @@ const ProductScreen = () => {
             contentImage={product.image}
             contentDescription={product.description}
             contentTitle={product.name}
+            serviceUrl={`	https://www.supplytechstore.com/product/${product._id}`}
+            serviceType="product"
           />
           <Row>
             <Col md={6}>
