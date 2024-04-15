@@ -91,6 +91,9 @@ const ProductScreen = () => {
             title={product.name}
             description={product.description}
             keywords={product.name}
+            contentImage={product.image}
+            contentDescription={product.description}
+            contentTitle={product.name}
           />
           <Row>
             <Col md={6}>

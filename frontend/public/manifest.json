@@ -1,6 +1,7 @@
 {
   "short_name": "SupplyTechStore",
   "name": "Herramientas de Suministro",
+  "description": "Materiales especializados en soldadura, corte, medición, seguridad industrial, y ferreteria",
   "icons": [
     {
       "src": "/images/logo64.png",
