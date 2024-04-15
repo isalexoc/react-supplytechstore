@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import {
   FaHeadset,
@@ -11,6 +12,43 @@ import {
 import Newsletter from "./Newsletter";
 
 const Footer = () => {
+  const [isAppInstalled, setIsAppInstalled] = useState(true);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+
+  useEffect(() => {
+    const beforeInstallPromptHandler = (e) => {
+      // Prevent Chrome 67 and earlier from automatically showing the prompt
+      e.preventDefault();
+      // Stash the event so it can be triggered later.
+      setDeferredPrompt(e);
+      // Update UI to notify the user they can add to home screen
+      setIsAppInstalled(false);
+    };
+
+    window.addEventListener("beforeinstallprompt", beforeInstallPromptHandler);
+
+    return () => {
+      window.removeEventListener(
+        "beforeinstallprompt",
+        beforeInstallPromptHandler
+      );
+    };
+  }, []);
+
+  const installAppHandler = async () => {
+    // Show the prompt
+    if (deferredPrompt !== null) {
+      deferredPrompt.prompt();
+      // Wait for the user to respond to the prompt
+      const { outcome } = await deferredPrompt.userChoice;
+      // Optionally, send analytics event with the response of the user
+      console.log(`User response to the install prompt: ${outcome}`);
+      // We've used the prompt, and can't use it again, discard it
+      setDeferredPrompt(null);
+      setIsAppInstalled(true);
+    }
+  };
+
   return (
     <>
       {/* Support Banner */}
@@ -137,6 +175,29 @@ const Footer = () => {
                 >
                   <FaInstagram size={40} className="text-white" />
                 </a>
+              </div>
+            </Col>
+            <Col md={12} className="mt-4">
+              {/* Bonton para instalar la app */}
+              <div
+                className="d-flex justify-content-center align-items-center"
+                id="install-button"
+              >
+                {/* Mostrar solo si la app no está instalada */}
+                {!isAppInstalled && (
+                  <div className="d-flex flex-column align-items-center">
+                    <p className="text-center">
+                      Instala nuestra app para disfrutar de una mejor
+                      experiencia de compra
+                    </p>
+                    <button
+                      className="btn btn-outline-light btn-lg"
+                      onClick={installAppHandler}
+                    >
+                      Instalar
+                    </button>
+                  </div>
+                )}
               </div>
             </Col>
           </Row>
