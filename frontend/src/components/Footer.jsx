@@ -49,6 +49,12 @@ const Footer = () => {
     }
   };
 
+  const openAppHandler = () => {
+    alert(
+      "La aplicación ha sido instalada. Por favor, ábrela desde tu pantalla de inicio o el cajón de aplicaciones."
+    );
+  };
+
   return (
     <>
       {/* Support Banner */}
@@ -184,7 +190,7 @@ const Footer = () => {
                 id="install-button"
               >
                 {/* Mostrar solo si la app no está instalada */}
-                {!isAppInstalled && (
+                {!isAppInstalled ? (
                   <div className="d-flex flex-column align-items-center">
                     <p className="text-center">
                       Instala nuestra app para disfrutar de una mejor
@@ -195,6 +201,18 @@ const Footer = () => {
                       onClick={installAppHandler}
                     >
                       Instalar
+                    </button>
+                  </div>
+                ) : (
+                  <div>
+                    <p className="text-center">
+                      ¡Gracias por instalar nuestra app!
+                    </p>
+                    <button
+                      className="btn btn-outline-light btn-lg"
+                      onClick={openAppHandler}
+                    >
+                      Abrir app
                     </button>
                   </div>
                 )}
