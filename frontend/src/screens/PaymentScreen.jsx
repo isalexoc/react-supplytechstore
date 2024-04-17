@@ -23,15 +23,15 @@ const PaymentScreen = () => {
   const navigate = useNavigate();
 
   const cart = useSelector((state) => state.cart);
-  const { shippingAddress } = cart;
+  const { shippingAddress, shippingMethod } = cart;
 
   const pagoMovilImage = "/images/pagomovil.png";
 
   useEffect(() => {
-    if (!shippingAddress.address) {
+    if (shippingMethod === "address" && !shippingAddress.address) {
       navigate("/shipping");
     }
-  }, [shippingAddress, navigate]);
+  }, [shippingAddress, shippingMethod, navigate]);
 
   const submitHandler = (e) => {
     e.preventDefault();

@@ -127,12 +127,13 @@ const PlaceOrderScreen = () => {
                   <Col>${cart.shippingPrice}</Col>
                 </Row>
               </ListGroup.Item>
-              <ListGroup.Item>
+              {/* <ListGroup.Item>
                 <Row>
                   <Col>Impuestos</Col>
                   <Col>${cart.taxPrice}</Col>
                 </Row>
-              </ListGroup.Item>
+              </ListGroup.Item> */}{" "}
+              {/* Benjamín no necesita impuestos para la app */}
               <ListGroup.Item>
                 <Row>
                   <Col>Total</Col>

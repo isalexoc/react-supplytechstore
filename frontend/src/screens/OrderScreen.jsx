@@ -163,12 +163,13 @@ const OrderScreen = () => {
                   <Col>${order.shippingPrice}</Col>
                 </Row>
               </ListGroup.Item>
-              <ListGroup.Item>
+              {/* <ListGroup.Item>
                 <Row>
                   <Col>Impuestos</Col>
                   <Col>${order.taxPrice}</Col>
                 </Row>
-              </ListGroup.Item>
+              </ListGroup.Item> */}{" "}
+              {/* Benjamín no necesita taxes */}
               <ListGroup.Item>
                 <Row>
                   <Col>Total</Col>
@@ -182,7 +183,6 @@ const OrderScreen = () => {
                   </Col>
                 </Row>
               </ListGroup.Item>
-
               {/* PAY ORDER PLACEHOLDER */}
               {order.paymentMethod === "Zelle" && (
                 <ZellePayment
@@ -191,7 +191,6 @@ const OrderScreen = () => {
                   isAdmin={userInfo?.isAdmin}
                 />
               )}
-
               {order.paymentMethod === "Efectivo" && !order.isPaid && (
                 <CashPayment orderId={order._id} isAdmin={userInfo?.isAdmin} />
               )}
@@ -209,7 +208,6 @@ const OrderScreen = () => {
                   isAdmin={userInfo?.isAdmin}
                 />
               )}
-
               {order.paymentMethod === "Tarjeta" && (
                 <PagoMovil
                   orderId={order._id}
@@ -217,7 +215,6 @@ const OrderScreen = () => {
                   isCard={true}
                 />
               )}
-
               {/* MARK AS DELIVERED PLACEHOLDER */}
               {loadingDeliver && <Loader />}
               {userInfo &&
@@ -234,7 +231,6 @@ const OrderScreen = () => {
                     </Button>
                   </ListGroup.Item>
                 )}
-
               {/* MARK AS PAID */}
               {userInfo && userInfo?.isAdmin && !order.isPaid && (
                 <ListGroup.Item className="text-center">
