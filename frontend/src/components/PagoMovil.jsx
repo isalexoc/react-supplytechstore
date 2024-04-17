@@ -3,7 +3,7 @@ import { Button, ListGroup } from "react-bootstrap";
 import { GiCardExchange } from "react-icons/gi";
 import { Link } from "react-router-dom";
 
-const PagoMovil = ({ orderId, isAdmin, isCard }) => {
+const PagoMovil = ({ order, isAdmin, isCard }) => {
   return (
     <>
       <ListGroup.Item className="d-flex justify-content-center align-items-center">
@@ -12,7 +12,7 @@ const PagoMovil = ({ orderId, isAdmin, isCard }) => {
         </span>
       </ListGroup.Item>
 
-      {!isAdmin && (
+      {!isAdmin && !order.isPaid && (
         <ListGroup.Item className="d-flex flex-column justify-content-center align-items-center">
           <h5>
             Pague directamente a través de Pago Móvil con el siguiente botón:
@@ -24,7 +24,7 @@ const PagoMovil = ({ orderId, isAdmin, isCard }) => {
 
           <Link
             className="mt-3 text-decoration-none"
-            to={`/changepay/${orderId}`}
+            to={`/changepay/${order._id}`}
           >
             <GiCardExchange /> Cambiar el tipo de pago
           </Link>

@@ -55,17 +55,19 @@ const OrderScreen = () => {
   }, []);
 
   const deliverOrderHandler = async () => {
-    try {
-      await deliverOrder(orderId);
-      refetch();
-      toast.success("Orden entregada");
-    } catch (err) {
-      toast.error(err?.data?.message || err.error);
+    if (window.confirm("¿Estás seguro de marcar la orden como ENTREGADA?")) {
+      try {
+        await deliverOrder(orderId);
+        refetch();
+        toast.success("Orden entregada");
+      } catch (err) {
+        toast.error(err?.data?.message || err.error);
+      }
     }
   };
 
   const markAsPaidHandler = async () => {
-    if (window.confirm("¿Estás seguro de marcar la orden como pagada?")) {
+    if (window.confirm("¿Estás seguro de marcar la orden como PAGADA?")) {
       try {
         await markAsPaid(orderId);
         refetch();
@@ -191,12 +193,12 @@ const OrderScreen = () => {
                   isAdmin={userInfo?.isAdmin}
                 />
               )}
-              {order.paymentMethod === "Efectivo" && !order.isPaid && (
-                <CashPayment orderId={order._id} isAdmin={userInfo?.isAdmin} />
+              {order.paymentMethod === "Efectivo" && (
+                <CashPayment order={order} isAdmin={userInfo?.isAdmin} />
               )}
               {order.paymentMethod === "PagoMovil" && (
                 <PagoMovil
-                  orderId={order._id}
+                  order={order}
                   isAdmin={userInfo?.isAdmin}
                   isCard={false}
                 />
@@ -210,7 +212,7 @@ const OrderScreen = () => {
               )}
               {order.paymentMethod === "Tarjeta" && (
                 <PagoMovil
-                  orderId={order._id}
+                  order={order}
                   isAdmin={userInfo?.isAdmin}
                   isCard={true}
                 />

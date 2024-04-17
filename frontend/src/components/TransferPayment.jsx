@@ -206,99 +206,104 @@ const TransferPayment = ({ order, refetch, isAdmin }) => {
     </>
   ) : (
     <>
-      <ListGroup.Item className="d-flex justify-content-center align-items-center">
-        <div>
-          <BiTransfer size={30} style={{ color: "#1384C8" }} />{" "}
-          <BsBank2 size={30} style={{ color: "#1384C8" }} />{" "}
-          <BiTransfer size={30} style={{ color: "#1384C8" }} />
-        </div>{" "}
-        <span className="h3 mb-0">Transferencia</span>
-      </ListGroup.Item>
-      <ListGroup.Item className="d-flex flex-column justify-content-center align-items-center">
-        <h5>Datos para el pago</h5>
+      {!isAdmin && (
+        <>
+          <ListGroup.Item className="d-flex justify-content-center align-items-center">
+            <div>
+              <BiTransfer size={30} style={{ color: "#1384C8" }} />{" "}
+              <BsBank2 size={30} style={{ color: "#1384C8" }} />{" "}
+              <BiTransfer size={30} style={{ color: "#1384C8" }} />
+            </div>{" "}
+            <span className="h3 mb-0">Transferencia</span>
+          </ListGroup.Item>
+          <ListGroup.Item className="d-flex flex-column justify-content-center align-items-center">
+            <h5>Datos para el pago</h5>
 
-        <div>
-          <h6 className="text-start mb-0">Banco Mercantil</h6>
-          <p>
-            Cta corriente Banco mercantil Supply tech C.A 01050100891100178104
-            supplytech.soldaduras@gmail.com J-405080078
-          </p>
+            <div>
+              <h6 className="text-start mb-0">Banco Mercantil</h6>
+              <p>
+                Cta corriente Banco mercantil Supply tech C.A
+                01050100891100178104 supplytech.soldaduras@gmail.com J-405080078
+              </p>
 
-          <h6 className="text-start mb-0">Banco de Venezuela</h6>
-          <p>
-            Cta corriente banco de Venezuela SUPPLY TECH 0102-0358-91-0000749264
-            supplytech.soldaduras@gmail.com J-405080078
-          </p>
-        </div>
-
-        <p className="mt-3">
-          Una vez realizado el pago, ingrese el número de referencia o capture
-          la pantalla de la transferencia
-        </p>
-
-        <Form onSubmit={submitHandler}>
-          <Form.Group controlId="zelleReference">
-            <Form.Label>Número de referencia</Form.Label>
-            <Form.Control
-              type="text"
-              value={paymentReference}
-              onChange={(e) => setPaymentReference(e.target.value)}
-              placeholder="Número de referencia"
-            />
-          </Form.Group>
-          <div className="mt-3">
-            <Message variant="info">
-              Si tiene el capture de la transferencia, súbalo aquí:{" "}
-              <FaArrowDown />
-            </Message>
-          </div>
-
-          <Form.Label className="mt-1">Imagen</Form.Label>
-          <Form.Control
-            type="text"
-            value={imagen}
-            onChange={(e) => setImagen(e.target.value)}
-            placeholder="Imagen"
-            hidden
-          ></Form.Control>
-          <Form.Group controlId="zelleCapture">
-            <Form.Control
-              type="file"
-              label="selecciona la imagen"
-              name="zelleCapture"
-              onChange={uploadFileHandler}
-            />
-          </Form.Group>
-          {imagen && (
-            <div className="d-flex justify-content-center p-3">
-              <img
-                src={imagen}
-                width={200}
-                height="auto"
-                alt="Capture de la transferencia"
-                className="img-fluid shadow-lg"
-              />
+              <h6 className="text-start mb-0">Banco de Venezuela</h6>
+              <p>
+                Cta corriente banco de Venezuela SUPPLY TECH
+                0102-0358-91-0000749264 supplytech.soldaduras@gmail.com
+                J-405080078
+              </p>
             </div>
-          )}
-          <Button type="submit" className="btn-primary mt-3">
-            Enviar
-          </Button>
-          {loadingUpload && <Loader />}
-          {loadingSubmit && <Loader />}
-        </Form>
 
-        <Link
-          className="mt-3 text-decoration-none"
-          onClick={() => {
-            setPaymentReference("");
-            setImagen("");
-            deleteConfimation();
-          }}
-          to={`/changepay/${order._id}`}
-        >
-          <GiCardExchange /> Cambiar el tipo de pago
-        </Link>
-      </ListGroup.Item>
+            <p className="mt-3">
+              Una vez realizado el pago, ingrese el número de referencia o
+              capture la pantalla de la transferencia
+            </p>
+
+            <Form onSubmit={submitHandler}>
+              <Form.Group controlId="zelleReference">
+                <Form.Label>Número de referencia</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={paymentReference}
+                  onChange={(e) => setPaymentReference(e.target.value)}
+                  placeholder="Número de referencia"
+                />
+              </Form.Group>
+              <div className="mt-3">
+                <Message variant="info">
+                  Si tiene el capture de la transferencia, súbalo aquí:{" "}
+                  <FaArrowDown />
+                </Message>
+              </div>
+
+              <Form.Label className="mt-1">Imagen</Form.Label>
+              <Form.Control
+                type="text"
+                value={imagen}
+                onChange={(e) => setImagen(e.target.value)}
+                placeholder="Imagen"
+                hidden
+              ></Form.Control>
+              <Form.Group controlId="zelleCapture">
+                <Form.Control
+                  type="file"
+                  label="selecciona la imagen"
+                  name="zelleCapture"
+                  onChange={uploadFileHandler}
+                />
+              </Form.Group>
+              {imagen && (
+                <div className="d-flex justify-content-center p-3">
+                  <img
+                    src={imagen}
+                    width={200}
+                    height="auto"
+                    alt="Capture de la transferencia"
+                    className="img-fluid shadow-lg"
+                  />
+                </div>
+              )}
+              <Button type="submit" className="btn-primary mt-3">
+                Enviar
+              </Button>
+              {loadingUpload && <Loader />}
+              {loadingSubmit && <Loader />}
+            </Form>
+
+            <Link
+              className="mt-3 text-decoration-none"
+              onClick={() => {
+                setPaymentReference("");
+                setImagen("");
+                deleteConfimation();
+              }}
+              to={`/changepay/${order._id}`}
+            >
+              <GiCardExchange /> Cambiar el tipo de pago
+            </Link>
+          </ListGroup.Item>
+        </>
+      )}
     </>
   );
 };

@@ -4,7 +4,7 @@ import { GiCardExchange } from "react-icons/gi";
 import { ListGroup } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
-const CashPayment = ({ orderId, isAdmin }) => {
+const CashPayment = ({ order, isAdmin }) => {
   return (
     <>
       <ListGroup.Item className="d-flex justify-content-center align-items-center">
@@ -39,12 +39,14 @@ const CashPayment = ({ orderId, isAdmin }) => {
               Llamar ahora
             </a>
           </div>
-          <Link
-            className="mt-3 text-decoration-none"
-            to={`/changepay/${orderId}`}
-          >
-            <GiCardExchange /> Cambiar el tipo de pago
-          </Link>
+          {!order.isPaid && (
+            <Link
+              className="mt-3 text-decoration-none"
+              to={`/changepay/${order._id}`}
+            >
+              <GiCardExchange /> Cambiar el tipo de pago
+            </Link>
+          )}
         </ListGroup.Item>
       )}
     </>

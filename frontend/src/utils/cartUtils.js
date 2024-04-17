@@ -9,7 +9,16 @@ export const updateCart = (state) => {
   );
 
   //Calculate the shipping price (free shipping if items price > 100)
-  state.shippingPrice = addDecimals(state.itemsPrice > 100 ? 0 : 10);
+  if (state.shippingMethod === "pickup") {
+    state.shippingPrice = 0;
+  } else {
+    state.shippingPrice = addDecimals(
+      state.shippingAddress.estado.toString().toLowerCase() === "maracay"
+        ? 5
+        : 10
+    );
+  }
+
   //Calculate the tax price (15% tax)
   state.taxPrice =
     Number(0); /* addDecimals(Number((0.15 * state.itemsPrice).toFixed(2))); */

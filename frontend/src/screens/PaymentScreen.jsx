@@ -105,7 +105,7 @@ const PaymentScreen = () => {
               <Form.Check
                 type="radio"
                 className="my-2"
-                label="Transferencia Bancaria"
+                label="Transferencia o depósito bancario"
                 id="Transferencia"
                 name="paymentMethod"
                 checked={paymentMethod === "Transferencia"}

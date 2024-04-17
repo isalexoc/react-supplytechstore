@@ -16,7 +16,8 @@ const adminEmail = process.env.ADMIN_EMAIL;
 // @route   POST /api/orders
 // @access  Private
 const addOrderItems = asyncHandler(async (req, res) => {
-  const { orderItems, shippingAddress, paymentMethod } = req.body;
+  const { orderItems, shippingAddress, paymentMethod, shippingMethod } =
+    req.body;
 
   if (orderItems && orderItems.length === 0) {
     res.status(400);
@@ -40,9 +41,21 @@ const addOrderItems = asyncHandler(async (req, res) => {
       };
     });
 
+    if (shippingMethod === "pickup") {
+      shippingAddress.address =
+        "Retiro en tienda, Av. Bolivar Oeste #150 C/C Av. Ayacucho, Edificio Don Antonio, Piso B, Local 2";
+      shippingAddress.estado = "Aragua";
+      shippingAddress.city = "Maracay";
+      shippingAddress.postalCode = "2101";
+      shippingAddress.country = "Venezuela";
+    }
+
     // calculate prices
-    const { itemsPrice, taxPrice, shippingPrice, totalPrice } =
-      calcPrices(dbOrderItems);
+    const { itemsPrice, taxPrice, shippingPrice, totalPrice } = calcPrices(
+      dbOrderItems,
+      shippingAddress.city,
+      shippingMethod
+    );
 
     const order = new Order({
       orderItems: dbOrderItems,
@@ -51,7 +64,7 @@ const addOrderItems = asyncHandler(async (req, res) => {
       paymentMethod,
       itemsPrice,
       taxPrice,
-      shippingPrice,
+      shippingPrice: shippingMethod === "pickup" ? 0 : shippingPrice,
       totalPrice,
     });
 

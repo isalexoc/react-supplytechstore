@@ -31,16 +31,17 @@ const PlaceOrderScreen = () => {
   }, []);
 
   useEffect(() => {
-    if (!cart.shippingAddress.address) {
+    if (cart.shippingMethod === "address" && !cart.shippingAddress.address) {
       navigate("/shipping");
     } else if (!cart.paymentMethod) {
       navigate("/payment");
     }
-  }, [cart.paymentMethod, cart.shippingAddress, navigate]);
+  }, [cart.paymentMethod, cart.shippingMethod, cart.shippingAddress, navigate]);
 
   const placeOrderHandler = async () => {
     try {
       const res = await createOrder({
+        shippingMethod: cart.shippingMethod,
         orderItems: cart.cartItems,
         shippingAddress: cart.shippingAddress,
         paymentMethod: cart.paymentMethod,
@@ -63,15 +64,30 @@ const PlaceOrderScreen = () => {
       <Row>
         <Col md={8}>
           <ListGroup variant="flush">
-            <ListGroup.Item>
-              <h2>Envío</h2>
-              <p>
-                <strong>Dirección: </strong>
-                {cart.shippingAddress.address}, {cart.shippingAddress.city},{" "}
-                {cart.shippingAddress.postalCode},{" "}
-                {cart.shippingAddress.country}
-              </p>
-            </ListGroup.Item>
+            {cart.shippingMethod === "address" && (
+              <ListGroup.Item>
+                <h2>Envío a domicilio</h2>
+                <p>
+                  <strong>Dirección: </strong>
+                  {cart.shippingAddress.address}, {cart.shippingAddress.city},{" "}
+                  Edo. {cart.shippingAddress.estado},{" "}
+                  {cart.shippingAddress.postalCode},{" "}
+                  {cart.shippingAddress.country}
+                </p>
+              </ListGroup.Item>
+            )}
+
+            {cart.shippingMethod === "pickup" && (
+              <ListGroup.Item>
+                <h2>Retiro en tienda</h2>
+                <p>
+                  Av. Bolivar Oeste #150 C/C Av. Ayacucho, Edificio Don Antonio,
+                  Piso B, Local 2, Sector casco central de Maracay, Edo. Aragua,
+                  Zona postal 2101
+                </p>
+              </ListGroup.Item>
+            )}
+
             <ListGroup.Item>
               <h2>Método de pago</h2>
               <strong>Método: </strong>
