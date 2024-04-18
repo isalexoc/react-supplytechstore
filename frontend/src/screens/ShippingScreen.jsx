@@ -61,7 +61,7 @@ const ShippingScreen = () => {
               label="Retiro en tienda"
               id="pickup"
               value="pickup"
-              checked={shippingMethod === "pickup"}
+              checked={shippingMethod2 === "pickup"}
               className="mb-2"
               onChange={(e) => {
                 dispatch(saveShippingMethod("pickup"));
@@ -72,7 +72,7 @@ const ShippingScreen = () => {
               type="radio"
               label="Envío a domicilio"
               id="direccion"
-              checked={shippingMethod === "address"}
+              checked={shippingMethod2 === "address"}
               value="address"
               onChange={(e) => {
                 dispatch(saveShippingMethod("address"));
