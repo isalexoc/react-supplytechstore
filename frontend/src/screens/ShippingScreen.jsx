@@ -7,6 +7,7 @@ import { saveShippingAddress, saveShippingMethod } from "../slices/cartSlice";
 import CheckoutSteps from "../components/CheckoutSteps";
 import Meta from "../components/Meta";
 import { toast } from "react-toastify";
+import Message from "../components/Message";
 
 const ShippingScreen = () => {
   const cart = useSelector((state) => state.cart);
@@ -81,7 +82,7 @@ const ShippingScreen = () => {
             ></Form.Check>
           </Form.Group>
 
-          {shippingMethod === "address" && (
+          {shippingMethod2 === "address" && (
             <>
               <Form.Group className="my-2">
                 <Form.Label>Estado: </Form.Label>
@@ -102,6 +103,12 @@ const ShippingScreen = () => {
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                 ></Form.Control>
+                {city?.toLowerCase() === "maracay" && (
+                  <Message className="text-success">
+                    $2 de costo de envío para Maracay Edo. Aragua (solo casco
+                    central de Maracay)
+                  </Message>
+                )}
               </Form.Group>
 
               <Form.Group className="my-2" controlId="postalCode">

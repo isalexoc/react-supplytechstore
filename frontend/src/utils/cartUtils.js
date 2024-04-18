@@ -13,9 +13,7 @@ export const updateCart = (state) => {
     state.shippingPrice = 0;
   } else {
     state.shippingPrice = addDecimals(
-      state.shippingAddress.estado.toString().toLowerCase() === "maracay"
-        ? 5
-        : 10
+      state.shippingAddress.city.toString().toLowerCase() === "maracay" ? 2 : 10
     );
   }
 

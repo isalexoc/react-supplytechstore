@@ -141,6 +141,13 @@ const PlaceOrderScreen = () => {
                 <Row>
                   <Col>Envío</Col>
                   <Col>${cart.shippingPrice}</Col>
+                  {cart.shippingMethod === "address" &&
+                    cart.shippingAddress?.city?.toLowerCase() === "maracay" && (
+                      <p>
+                        $2 de costo de envío para Maracay Edo. Aragua (solo
+                        casco central de Maracay
+                      </p>
+                    )}
                 </Row>
               </ListGroup.Item>
               {/* <ListGroup.Item>

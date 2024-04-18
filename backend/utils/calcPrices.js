@@ -8,12 +8,16 @@ export function calcPrices(orderItems, city, shippingMethod) {
     orderItems.reduce((acc, item) => acc + item.price * item.qty, 0)
   );
   const cityLowerCased = city.toString().toLowerCase();
+  let isMaracay = false;
+  if (cityLowerCased === "maracay") {
+    isMaracay = true;
+  }
   // Calculate the shipping price
   let shippingPrice;
   if (shippingMethod === "pickup") {
     shippingPrice = 0;
   } else {
-    shippingPrice = cityLowerCased === "maracay" ? 2 : 10;
+    shippingPrice = isMaracay ? 2 : 10;
   }
 
   // Calculate the tax price
