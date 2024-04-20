@@ -79,6 +79,7 @@ const HomeScreen = () => {
           <Paginate
             pages={data.pages}
             page={data.page}
+            screen={`products/todos%20los%20productos`}
             keyword={keyword ? keyword : ""}
           />
           {data.page === 1 && <ShowMap />}

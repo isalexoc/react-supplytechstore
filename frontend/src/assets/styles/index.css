@@ -180,8 +180,24 @@ table th {
   grid-template-columns: repeat(4, 1fr); /* Creates four columns */
   gap: 20px; /* Space between logos */
   justify-content: center;
+  align-items: center;
   padding: 20px;
   margin: auto;
+}
+
+.brands-grid img {
+  border-radius: 0.25rem; /* Rounded corners */
+  transition: transform 0.2s; /* Smooth scaling effect */
+
+  /* Optional: Add a box shadow for better visibility */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+
+  /* Optional: Add a border to separate logos */
+  border: 1px solid #000;
+
+  /* responsive for small screems*/
+  max-width: 100%;
+  height: auto;
 }
 
 .brand-logo {
@@ -242,14 +258,12 @@ table th {
 
 /* Category card for categorySlider component */
 
-.category-card {
-  width: 100%;
-}
-
 .category-image {
-  width: 100%;
-  display: block;
+  width: 100%; /* Make the image width responsive to the container size */
+  height: auto; /* Maintain aspect ratio */
+  object-fit: cover; /* Cover the container without stretching */
   border-radius: 0.25rem; /* Match Bootstrap's border-radius */
+  /*grow on hover*/
 }
 
 .category-card .category-overlay {
@@ -272,6 +286,66 @@ table th {
 
 .carousel-indicators {
   display: none;
+}
+
+/* styles.css */
+.scrollable-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; /* for momentum scrolling on mobile */
+  scrollbar-width: none; /* Hide scrollbar for Firefox */
+  -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
+  /* Hide scrollbar for chrome */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.scrollable-row {
+  display: flex;
+  flex-wrap: nowrap; /* Prevent wrapping */
+}
+
+.scrollable-row::-webkit-scrollbar {
+  display: none; /* Hide scrollbar for Chrome, Safari, and Opera */
+}
+
+.scrollable-row {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.category-card {
+  flex: 0 0 auto; /* Prevent flex items from growing or shrinking */
+  margin-right: 15px; /* Adjust spacing between items */
+  /* Set a fixed width or use width from content */
+  /* responsive width */
+  width: 250px;
+
+  /* Optional: Add a box shadow for better visibility */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.scroll-container-controls {
+  position: relative;
+}
+
+.scroll-left,
+.scroll-right {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #fff;
+  border: none;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.scroll-left {
+  left: 0;
+}
+
+.scroll-right {
+  right: 0;
 }
 
 /* Responsive s */
@@ -303,5 +377,13 @@ table th {
   /*Brands logos*/
   .brands-grid {
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+}
+
+/* Hide arrows on smaller screens */
+@media (max-width: 1199px) {
+  .scroll-left,
+  .scroll-right {
+    display: none;
   }
 }

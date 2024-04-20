@@ -9,6 +9,8 @@ import {
   paymentConfirmationEmail,
   defaultEmail,
 } from "../utils/sendEmailHandler.js";
+import buildPDF from "../libs/pdfKit.js";
+import { uploadFile } from "../utils/uploadToGoogle.js";
 
 const adminEmail = process.env.ADMIN_EMAIL;
 
@@ -307,6 +309,19 @@ const markAsPaid = asyncHandler(async (req, res) => {
 
     const updatedOrder = await order.save();
 
+    const filePath = "./backend/data/pueba.pdf";
+
+    async function main() {
+      try {
+        const publicUrl = await uploadFile(filePath);
+        console.log(`Successfully uploaded file to: ${publicUrl}`);
+      } catch (error) {
+        console.error("Error uploading file:", error);
+      }
+    }
+
+    main();
+
     //send email to user and admin
     const emailDataUser = {
       to: user.email,
@@ -331,6 +346,27 @@ const markAsPaid = asyncHandler(async (req, res) => {
   }
 });
 
+// @des   Get invoice
+// @route GET /api/orders/getInvoice/:id
+// @access Private
+const getInvoice = asyncHandler(async (req, res) => {
+  const order = await Order.findById(req.params.id);
+  const user = await User.findById(order.user);
+
+  if (order) {
+    const pdf = buildPDF(order, user);
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=invoice-${order._id}.pdf`
+    );
+    res.send(pdf);
+  } else {
+    res.status(404);
+    throw new Error("Order not found");
+  }
+});
+
 export {
   addOrderItems,
   getMyOrders,
@@ -341,4 +377,5 @@ export {
   updatePaymentMethod,
   updateOrderZelle,
   markAsPaid,
+  getInvoice,
 };

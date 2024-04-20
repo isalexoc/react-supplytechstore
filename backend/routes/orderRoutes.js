@@ -10,6 +10,7 @@ import {
   updatePaymentMethod,
   updateOrderZelle,
   markAsPaid,
+  getInvoice,
 } from "../controllers/orderController.js";
 import { protect, admin } from "../middleware/authMiddleware.js";
 
@@ -21,5 +22,6 @@ router.route("/:id/markAsPaid").put(protect, admin, markAsPaid);
 router.route("/:id/deliver").put(protect, admin, updateOrderToDelivered);
 router.route("/changePay").put(protect, updatePaymentMethod);
 router.route("/updateOrderZelle").put(protect, updateOrderZelle);
+router.route("/getInvoice/:id").get(protect, getInvoice);
 
 export default router;
