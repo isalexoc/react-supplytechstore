@@ -142,6 +142,7 @@ const OrderScreen = () => {
                   >
                     Descargar Factura
                   </a>
+                  <Button onClick={handlePdf}>Descargar Factura</Button>
                   {loadingGeneratePdf && <Loader />}
                   {PdfError && (
                     <Message variant="danger">
