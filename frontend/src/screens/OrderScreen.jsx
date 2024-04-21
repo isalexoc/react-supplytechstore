@@ -18,6 +18,7 @@ import {
 } from "../slices/orderApiSlice";
 import Meta from "../components/Meta";
 import getDollarPrice from "../utils/dollarPrice";
+import { ORDERS_URL } from "../constants";
 
 const OrderScreen = () => {
   const { id: orderId } = useParams();
@@ -134,13 +135,19 @@ const OrderScreen = () => {
               {order.isPaid ? (
                 <>
                   <Message variant="success">Pagado el {order.paidAt}</Message>
-                  <Button
-                    as="a"
-                    href={`https://www.supplytechstore.com:5000/api/orders/${orderId}/pdf`}
+                  <a
+                    href={`/${ORDERS_URL}/${orderId}/pdf`}
                     download
+                    className="bg-secondary text-white p-2 rounded text-decoration-none"
                   >
                     Descargar Factura
-                  </Button>
+                  </a>
+                  {loadingGeneratePdf && <Loader />}
+                  {PdfError && (
+                    <Message variant="danger">
+                      {PdfError?.data?.message}
+                    </Message>
+                  )}
                 </>
               ) : (
                 <Message variant="danger">No pagado</Message>

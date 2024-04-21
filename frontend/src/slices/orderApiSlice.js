@@ -79,7 +79,6 @@ export const orderApiSlice = apiSlice.injectEndpoints({
       query: (orderId) => ({
         url: `${ORDERS_URL}/${orderId}/pdf`,
         method: "GET",
-        download: true,
       }),
     }),
   }),
