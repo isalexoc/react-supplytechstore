@@ -135,13 +135,13 @@ const OrderScreen = () => {
               {order.isPaid ? (
                 <>
                   <Message variant="success">Pagado el {order.paidAt}</Message>
-                  <Link
-                    to={`${ORDERS_URL}/${orderId}/pdf`}
+                  <a
+                    href={`${ORDERS_URL}/${orderId}/pdf`}
                     download
                     className="bg-secondary text-white p-2 rounded text-decoration-none"
                   >
                     Descargar Factura
-                  </Link>
+                  </a>
                   {loadingGeneratePdf && <Loader />}
                   {PdfError && (
                     <Message variant="danger">

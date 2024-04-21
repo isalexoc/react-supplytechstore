@@ -368,7 +368,9 @@ const getInvoice = asyncHandler(async (req, res) => {
         },
         () => {
           stream.end();
-        }
+        },
+        order,
+        user
       );
     } catch (error) {
       console.log(error);
