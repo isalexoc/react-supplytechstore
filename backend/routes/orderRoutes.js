@@ -22,6 +22,6 @@ router.route("/:id/markAsPaid").put(protect, admin, markAsPaid);
 router.route("/:id/deliver").put(protect, admin, updateOrderToDelivered);
 router.route("/changePay").put(protect, updatePaymentMethod);
 router.route("/updateOrderZelle").put(protect, updateOrderZelle);
-router.route("/getInvoice/:id").get(protect, getInvoice);
+router.route("/:id/pdf").get(protect, getInvoice);
 
 export default router;

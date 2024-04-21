@@ -14,6 +14,7 @@ import {
   useGetOrderDetailsQuery,
   useDeliverOrderMutation,
   useMarkAsPaidMutation,
+  useGeneratePdfMutation,
 } from "../slices/orderApiSlice";
 import Meta from "../components/Meta";
 import getDollarPrice from "../utils/dollarPrice";
@@ -33,6 +34,9 @@ const OrderScreen = () => {
 
   const [markAsPaid, { isLoading: loadingMarkAsPaid }] =
     useMarkAsPaidMutation();
+
+  const [generatePdf, { isLoading: loadingGeneratePdf, error: PdfError }] =
+    useGeneratePdfMutation();
 
   //const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
 
@@ -78,6 +82,14 @@ const OrderScreen = () => {
     }
   };
 
+  const handlePdf = async () => {
+    try {
+      await generatePdf(orderId);
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
+  };
+
   return isLoading ? (
     <Loader />
   ) : error ? (
@@ -120,7 +132,16 @@ const OrderScreen = () => {
                 {order.paymentMethod}
               </p>
               {order.isPaid ? (
-                <Message variant="success">Pagado el {order.paidAt}</Message>
+                <>
+                  <Message variant="success">Pagado el {order.paidAt}</Message>
+                  <Button
+                    as="a"
+                    href={`https://www.supplytechstore.com:5000/api/orders/${orderId}/pdf`}
+                    download
+                  >
+                    Descargar Factura
+                  </Button>
+                </>
               ) : (
                 <Message variant="danger">No pagado</Message>
               )}

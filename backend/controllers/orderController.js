@@ -309,6 +309,8 @@ const markAsPaid = asyncHandler(async (req, res) => {
 
     const updatedOrder = await order.save();
 
+    //upload file to google cloud
+    /*  
     const filePath = "./backend/data/pueba.pdf";
 
     async function main() {
@@ -320,7 +322,7 @@ const markAsPaid = asyncHandler(async (req, res) => {
       }
     }
 
-    main();
+    main(); */
 
     //send email to user and admin
     const emailDataUser = {
@@ -354,13 +356,23 @@ const getInvoice = asyncHandler(async (req, res) => {
   const user = await User.findById(order.user);
 
   if (order) {
-    const pdf = buildPDF(order, user);
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader(
-      "Content-Disposition",
-      `attachment; filename=invoice-${order._id}.pdf`
-    );
-    res.send(pdf);
+    try {
+      const stream = res.writeHead(200, {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `attachment; filename=invoice-${req.params.id}.pdf`,
+      });
+
+      buildPDF(
+        (data) => {
+          stream.write(data);
+        },
+        () => {
+          stream.end();
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
   } else {
     res.status(404);
     throw new Error("Order not found");
