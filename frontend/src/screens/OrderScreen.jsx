@@ -130,6 +130,14 @@ const OrderScreen = () => {
                   >
                     Descargar Factura
                   </a>
+
+                  <a
+                    href={`http://localhost:5000${ORDERS_URL}/${orderId}/pdf`}
+                    download
+                    className="ms-5 bg-secondary text-white p-2 rounded text-decoration-none"
+                  >
+                    Descargar Factura
+                  </a>
                 </>
               ) : (
                 <Message variant="danger">No pagado</Message>
