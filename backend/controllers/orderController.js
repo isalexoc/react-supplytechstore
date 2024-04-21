@@ -374,6 +374,7 @@ const getInvoice = asyncHandler(async (req, res) => {
       );
     } catch (error) {
       console.log(error);
+      throw new Error("Error al generar la factura");
     }
   } else {
     res.status(404);

@@ -14,7 +14,6 @@ import {
   useGetOrderDetailsQuery,
   useDeliverOrderMutation,
   useMarkAsPaidMutation,
-  useGeneratePdfMutation,
 } from "../slices/orderApiSlice";
 import Meta from "../components/Meta";
 import getDollarPrice from "../utils/dollarPrice";
@@ -35,9 +34,6 @@ const OrderScreen = () => {
 
   const [markAsPaid, { isLoading: loadingMarkAsPaid }] =
     useMarkAsPaidMutation();
-
-  const [generatePdf, { isLoading: loadingGeneratePdf, error: PdfError }] =
-    useGeneratePdfMutation();
 
   //const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
 
@@ -80,14 +76,6 @@ const OrderScreen = () => {
       } catch (err) {
         toast.error(err?.data?.message || err.error);
       }
-    }
-  };
-
-  const handlePdf = async () => {
-    try {
-      await generatePdf(orderId);
-    } catch (err) {
-      toast.error(err?.data?.message || err.error);
     }
   };
 
@@ -142,13 +130,6 @@ const OrderScreen = () => {
                   >
                     Descargar Factura
                   </a>
-                  <Button onClick={handlePdf}>Descargar Factura</Button>
-                  {loadingGeneratePdf && <Loader />}
-                  {PdfError && (
-                    <Message variant="danger">
-                      {PdfError?.data?.message}
-                    </Message>
-                  )}
                 </>
               ) : (
                 <Message variant="danger">No pagado</Message>

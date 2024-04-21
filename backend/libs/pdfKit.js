@@ -7,9 +7,12 @@ function buildPDF(dataCallback, endCallback, order, user) {
   doc.on("end", endCallback);
 
   doc.fontSize(25).text("Factura", { underline: true });
-  doc.fontSize(15).text(`Order ID: ${order._id}`, { underline: false });
+  doc.fontSize(15).text(`ID de la orden: ${order._id}`, { underline: false });
   doc.text(`Nombre: ${user.name}`);
-  doc.text(`Total: $${order.totalPrice}`);
+  // leave 2 lines
+  doc.moveDown();
+  doc.moveDown();
+  doc.text(`Datos de la Orden`);
 
   doc.end();
 }

@@ -75,12 +75,6 @@ export const orderApiSlice = apiSlice.injectEndpoints({
         method: "PUT",
       }),
     }),
-    generatePdf: builder.mutation({
-      query: (orderId) => ({
-        url: `${ORDERS_URL}/${orderId}/pdf`,
-        method: "GET",
-      }),
-    }),
   }),
 });
 
