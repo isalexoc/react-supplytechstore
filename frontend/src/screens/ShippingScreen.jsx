@@ -42,6 +42,7 @@ const ShippingScreen = () => {
         dispatch(
           saveShippingAddress({ address, estado, city, postalCode, country })
         );
+        dispatch(saveShippingMethod(shippingMethod2));
         navigate("/payment");
       }
     }
@@ -65,7 +66,6 @@ const ShippingScreen = () => {
               checked={shippingMethod2 === "pickup"}
               className="mb-2"
               onChange={(e) => {
-                dispatch(saveShippingMethod("pickup"));
                 setShippingMethod2(e.target.value);
               }}
             ></Form.Check>
@@ -76,7 +76,6 @@ const ShippingScreen = () => {
               checked={shippingMethod2 === "address"}
               value="address"
               onChange={(e) => {
-                dispatch(saveShippingMethod("address"));
                 setShippingMethod2(e.target.value);
               }}
             ></Form.Check>
