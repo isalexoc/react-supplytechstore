@@ -104,15 +104,7 @@ const ZellePayment = ({ order, refetch, isAdmin }) => {
     }
   };
 
-  return errorUpload ? (
-    <Message variant="danger">
-      {errorUpload?.data?.message || errorUpload.error}
-    </Message>
-  ) : errorSubmit ? (
-    <Message variant="danger">
-      {errorSubmit?.data?.message || errorSubmit.error}
-    </Message>
-  ) : order?.paymentConfirmation?.referenceType === "ReferenceImage" ||
+  return order?.paymentConfirmation?.referenceType === "ReferenceImage" ||
     order?.paymentConfirmation?.referenceType === "ReferenceNumber" ||
     order?.paymentConfirmation?.referenceType === "both" ? (
     <>
@@ -200,7 +192,7 @@ const ZellePayment = ({ order, refetch, isAdmin }) => {
     </>
   ) : (
     <>
-      {!isAdmin && (
+      {!isAdmin && !order.isPaid && (
         <>
           <ListGroup.Item className="d-flex justify-content-center align-items-center">
             <SiZelle size={30} /> <span className="h3 mb-0">Zelle</span>
@@ -258,6 +250,7 @@ const ZellePayment = ({ order, refetch, isAdmin }) => {
                   onChange={uploadFileHandler}
                 />
               </Form.Group>
+
               {imagen && (
                 <div className="d-flex justify-content-center p-3">
                   <img
@@ -272,8 +265,19 @@ const ZellePayment = ({ order, refetch, isAdmin }) => {
               <Button type="submit" className="btn-primary mt-3">
                 Enviar
               </Button>
+
               {loadingUpload && <Loader />}
               {loadingSubmit && <Loader />}
+              {errorSubmit && (
+                <Message variant="danger">
+                  {errorSubmit?.data?.message || errorSubmit.error}
+                </Message>
+              )}
+              {errorUpload && (
+                <Message variant="danger">
+                  {errorUpload?.data?.message || errorUpload.error}
+                </Message>
+              )}
             </Form>
 
             <Link

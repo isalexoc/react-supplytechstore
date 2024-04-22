@@ -105,15 +105,7 @@ const TransferPayment = ({ order, refetch, isAdmin }) => {
     }
   };
 
-  return errorUpload ? (
-    <Message variant="danger">
-      {errorUpload?.data?.message || errorUpload.error}
-    </Message>
-  ) : errorSubmit ? (
-    <Message variant="danger">
-      {errorSubmit?.data?.message || errorSubmit.error}
-    </Message>
-  ) : order?.paymentConfirmation?.referenceType === "ReferenceImage" ||
+  return order?.paymentConfirmation?.referenceType === "ReferenceImage" ||
     order?.paymentConfirmation?.referenceType === "ReferenceNumber" ||
     order?.paymentConfirmation?.referenceType === "both" ? (
     <>
@@ -206,7 +198,7 @@ const TransferPayment = ({ order, refetch, isAdmin }) => {
     </>
   ) : (
     <>
-      {!isAdmin && (
+      {!isAdmin && !order.isPaid && (
         <>
           <ListGroup.Item className="d-flex justify-content-center align-items-center">
             <div>
@@ -288,6 +280,16 @@ const TransferPayment = ({ order, refetch, isAdmin }) => {
               </Button>
               {loadingUpload && <Loader />}
               {loadingSubmit && <Loader />}
+              {errorSubmit && (
+                <Message variant="danger">
+                  {errorSubmit?.data?.message || errorSubmit.error}
+                </Message>
+              )}
+              {errorUpload && (
+                <Message variant="danger">
+                  {errorUpload?.data?.message || errorUpload.error}
+                </Message>
+              )}
             </Form>
 
             <Link

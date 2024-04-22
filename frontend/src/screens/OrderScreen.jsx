@@ -18,6 +18,7 @@ import {
 import Meta from "../components/Meta";
 import getDollarPrice from "../utils/dollarPrice";
 import { ORDERS_URL } from "../constants";
+import formatDate from "../utils/formatDate";
 
 const OrderScreen = () => {
   const { id: orderId } = useParams();
@@ -108,7 +109,7 @@ const OrderScreen = () => {
               </p>
               {order.isDelivered ? (
                 <Message variant="success">
-                  Entregado el {order.deliveredAt}
+                  Entregado el {formatDate(order.deliveredAt)}
                 </Message>
               ) : (
                 <Message variant="danger">No entregado</Message>
@@ -123,14 +124,16 @@ const OrderScreen = () => {
               </p>
               {order.isPaid ? (
                 <>
-                  <Message variant="success">Pagado el {order.paidAt}</Message>
+                  <Message variant="success">
+                    Pagado el {formatDate(order.paidAt)}
+                  </Message>
                   {isPreparingDownload ? (
                     <Loader />
                   ) : (
                     <a
                       href={`${ORDERS_URL}/${orderId}/pdf`}
                       download
-                      className="bg-secondary text-white p-2 rounded text-decoration-none"
+                      className="bg-light text-black p-2 rounded border border-dark text-decoration-none"
                       onClick={() => {
                         setIsPreparingDownload(true);
                         setTimeout(() => {
@@ -138,7 +141,7 @@ const OrderScreen = () => {
                         }, 2000);
                       }}
                     >
-                      Descargar Factura
+                      Descargar Recibo
                     </a>
                   )}
                 </>

@@ -11,7 +11,7 @@ const CashPayment = ({ order, isAdmin }) => {
         <GiCash size={30} /> <span className="h3 mb-0">Efectivo</span>
       </ListGroup.Item>
 
-      {!isAdmin && (
+      {!isAdmin && !order.isPaid && (
         <ListGroup.Item className="d-flex flex-column justify-content-center align-items-center">
           <h5>
             Dirígase a nuestra tienda para pagar en efectivo y retirar productos
@@ -39,14 +39,13 @@ const CashPayment = ({ order, isAdmin }) => {
               Llamar ahora
             </a>
           </div>
-          {!order.isPaid && (
-            <Link
-              className="mt-3 text-decoration-none"
-              to={`/changepay/${order._id}`}
-            >
-              <GiCardExchange /> Cambiar el tipo de pago
-            </Link>
-          )}
+
+          <Link
+            className="mt-3 text-decoration-none"
+            to={`/changepay/${order._id}`}
+          >
+            <GiCardExchange /> Cambiar el tipo de pago
+          </Link>
         </ListGroup.Item>
       )}
     </>
