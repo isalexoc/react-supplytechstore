@@ -11,6 +11,7 @@ import {
 } from "../utils/sendEmailHandler.js";
 import buildPDF from "../libs/pdfKit.js";
 import { uploadFile } from "../utils/uploadToGoogle.js";
+import path from "path";
 
 const adminEmail = process.env.ADMIN_EMAIL;
 
@@ -357,6 +358,12 @@ const getInvoice = asyncHandler(async (req, res) => {
 
   if (order) {
     try {
+      const __dirname = path.resolve();
+      const logoPath = path.join(
+        __dirname,
+        "frontend/public/images/logo192.png"
+      );
+
       const stream = res.writeHead(200, {
         "Content-Type": "application/pdf",
         "Content-Disposition": `attachment; filename=invoice-${req.params.id}.pdf`,
@@ -370,7 +377,8 @@ const getInvoice = asyncHandler(async (req, res) => {
           stream.end();
         },
         order,
-        user
+        user,
+        logoPath
       );
     } catch (error) {
       console.log(error);
