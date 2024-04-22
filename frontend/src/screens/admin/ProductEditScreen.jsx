@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
 import Message from "../../components/Message";
@@ -13,6 +13,8 @@ import {
 } from "../../slices/productsApiSlice";
 import { capitalizeString } from "../../utils/capitlizeString";
 import Meta from "../../components/Meta";
+import Quill from "quill";
+import "quill/dist/quill.snow.css"; // import styles
 
 const ProductEditScreen = () => {
   const { id: productID } = useParams();
@@ -57,6 +59,27 @@ const ProductEditScreen = () => {
       setDescription(product.description === " " ? "" : product.description);
     }
   }, [product]);
+
+  const quillRef = useRef(null); // Add this line to create a ref for your Quill editor
+
+  useEffect(() => {
+    if (quillRef.current) {
+      const quillInstance = new Quill(quillRef.current, {
+        theme: "snow", // Specify theme
+        modules: {
+          toolbar: true, // Include toolbar
+        },
+      });
+
+      quillInstance.on("text-change", () => {
+        setDescription(quillInstance.root.innerHTML); // Update your state
+      });
+
+      if (product && product.description) {
+        quillInstance.root.innerHTML = product.description; // Initialize Quill's content
+      }
+    }
+  }, [product]); // Depend on product
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -190,13 +213,7 @@ const ProductEditScreen = () => {
 
               <Form.Group controlId="description" className="my-2">
                 <Form.Label>Descripción</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={10}
-                  placeholder="Descripción"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                ></Form.Control>
+                <div ref={quillRef}></div> {/* Attach Quill to this div */}
               </Form.Group>
 
               <Button type="submit" variant="primary" className="my-2">

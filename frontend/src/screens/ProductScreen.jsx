@@ -114,7 +114,11 @@ const ProductScreen = () => {
                 </ListGroup.Item>
                 <ListGroup.Item>Precio ${product.price}</ListGroup.Item>
                 <ListGroup.Item>
-                  Descripción: {product.description}
+                  <h3>Descripción</h3>
+                  {/* Use dangerouslySetInnerHTML to render HTML */}
+                  <div
+                    dangerouslySetInnerHTML={{ __html: product.description }}
+                  />
                 </ListGroup.Item>
               </ListGroup>
             </Col>

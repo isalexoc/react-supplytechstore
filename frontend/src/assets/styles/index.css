@@ -263,7 +263,14 @@ table th {
   height: auto; /* Maintain aspect ratio */
   object-fit: cover; /* Cover the container without stretching */
   border-radius: 0.25rem; /* Match Bootstrap's border-radius */
-  /*grow on hover*/
+}
+
+.category-card {
+  transition: transform 0.3s ease;
+}
+
+.category-card:hover {
+  transform: scale(1.05); /* Adjust scale value as needed */
 }
 
 .category-card .category-overlay {

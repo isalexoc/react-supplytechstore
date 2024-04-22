@@ -1,4 +1,4 @@
-import { useRef, useState, useLayoutEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import { LinkContainer } from "react-router-bootstrap";
 import { useGetCategoriesQuery } from "../slices/productsApiSlice";
 import Loader from "./Loader";
@@ -14,36 +14,40 @@ const CategoriesSlider = () => {
   const [showRightButton, setShowRightButton] = useState(true);
 
   const scroll = (scrollOffset) => {
-    scrollRef.current.scrollTo({
-      left: scrollRef.current.scrollLeft + scrollOffset,
-      behavior: "smooth",
-    });
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: scrollOffset, behavior: "smooth" });
+    }
+  };
+  const checkButtonsVisibility = () => {
+    if (scrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+      setShowLeftButton(scrollLeft > 0);
+      setShowRightButton(scrollLeft < scrollWidth - clientWidth);
+    }
   };
 
-  useLayoutEffect(() => {
-    const currentScrollRef = scrollRef.current;
+  useEffect(() => {
+    // Directly calling the function to handle initial render case
+    checkButtonsVisibility();
 
-    const checkScrollButtons = () => {
-      if (currentScrollRef) {
-        const { scrollLeft, scrollWidth, clientWidth } = currentScrollRef;
-        setShowLeftButton(scrollLeft > 0);
-        setShowRightButton(scrollLeft < scrollWidth - clientWidth);
-      }
+    // This function handles the scroll event
+    const handleScroll = () => {
+      checkButtonsVisibility();
     };
 
-    // Update button visibility initially and whenever the scroll position changes
-    checkScrollButtons();
+    // Safely adding event listener
+    const currentScrollRef = scrollRef.current;
     if (currentScrollRef) {
-      currentScrollRef.addEventListener("scroll", checkScrollButtons);
+      currentScrollRef.addEventListener("scroll", handleScroll);
     }
 
-    // Clean up the event listener when the component unmounts
+    // Cleanup function to remove event listener
     return () => {
       if (currentScrollRef) {
-        currentScrollRef.removeEventListener("scroll", checkScrollButtons);
+        currentScrollRef.removeEventListener("scroll", handleScroll);
       }
     };
-  }, []); // Empty dependency array means this effect runs once on mount and cleanup on unmount
+  }, [categories]);
 
   if (isLoading) return <Loader />;
   if (error) return <Message variant="danger">{error.toString()}</Message>;
