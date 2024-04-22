@@ -98,10 +98,10 @@ const ProductScreen = () => {
             serviceType="product"
           />
           <Row>
-            <Col md={6}>
+            <Col sm={6} md={6} lg={4}>
               <Image src={product.image} alt={product.name} fluid />
             </Col>
-            <Col md={3}>
+            <Col sm={6} md={6} lg={5}>
               <ListGroup variant="flush">
                 <ListGroup.Item>
                   <h3>{product.name}</h3>
@@ -113,16 +113,9 @@ const ProductScreen = () => {
                   />
                 </ListGroup.Item>
                 <ListGroup.Item>Precio ${product.price}</ListGroup.Item>
-                <ListGroup.Item>
-                  <h3>Descripción</h3>
-                  {/* Use dangerouslySetInnerHTML to render HTML */}
-                  <div
-                    dangerouslySetInnerHTML={{ __html: product.description }}
-                  />
-                </ListGroup.Item>
               </ListGroup>
             </Col>
-            <Col md={3}>
+            <Col className="d-none d-lg-block mb-5">
               <Card>
                 <ListGroup variant="flush">
                   <ListGroup.Item>
@@ -200,6 +193,80 @@ const ProductScreen = () => {
                   </ListGroup.Item>
                 </ListGroup>
               </Card>
+            </Col>
+          </Row>
+
+          <div className="d-lg-none mb-5">
+            <Card>
+              <Row className="p-2 justify-content-center align-items-center">
+                <Col xs={6} sm={4} md={3}>
+                  <p className="mb-0">Precio:</p>
+                  <div>
+                    <strong>${product.price}</strong>
+                  </div>
+                  <div>
+                    {dollar > 0
+                      ? `Bs. ${(product.price * dollar).toFixed(2)}`
+                      : ""}
+                  </div>
+                </Col>
+                <Col xs={6} sm={4} md={3}>
+                  <p className="mb-0">Estatus</p>
+                  <div>
+                    <strong>
+                      {product.countInStock > 0
+                        ? "Disponible"
+                        : "No Disponible"}
+                    </strong>
+                  </div>
+                </Col>
+                <Col xs={6} sm={4} md={3}>
+                  <p className="mb-0">Cantidad</p>
+                  <Form.Control
+                    as="select"
+                    value={qty}
+                    onChange={(e) => setQty(Number(e.target.value))}
+                  >
+                    {[...Array(product.countInStock).keys()].map((x) => (
+                      <option key={x + 1} value={x + 1}>
+                        {x + 1}
+                      </option>
+                    ))}
+                  </Form.Control>
+                </Col>
+                <Col xs={6} sm={12} md={3} className="text-center">
+                  {!userInfo?.isAdmin && (
+                    <Button
+                      className="btn-block mt-2 mt-md-0"
+                      type="button"
+                      disabled={product.countInStock === 0}
+                      onClick={addToCartHandler}
+                    >
+                      Añadir al Carrito
+                    </Button>
+                  )}
+
+                  {userInfo && userInfo?.isAdmin && (
+                    <Button
+                      className="btn-block"
+                      type="button"
+                      onClick={() =>
+                        navigate(`/admin/product/${product._id}/edit`)
+                      }
+                    >
+                      Editar
+                    </Button>
+                  )}
+                </Col>
+              </Row>
+            </Card>
+          </div>
+
+          <Row>
+            <Col md={12}>
+              <h3>Descripción</h3>
+              {/* Use dangerouslySetInnerHTML to render HTML */}
+              <div dangerouslySetInnerHTML={{ __html: product.description }} />
             </Col>
           </Row>
           <Row className="review">
