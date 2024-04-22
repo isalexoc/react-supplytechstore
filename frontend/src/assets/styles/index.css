@@ -355,6 +355,26 @@ table th {
   right: 0;
 }
 
+.product-animation {
+  position: fixed;
+  animation: moveToCart 2s forwards;
+}
+
+@keyframes moveToCart {
+  0% {
+    top: /* position of button */ ;
+    left: /* position of button */ ;
+    width: 100px;
+    height: 100px;
+  }
+  100% {
+    top: 0;
+    left: calc(100vw - 30vw);
+    width: 20px;
+    height: 20px;
+  }
+}
+
 /* Responsive s */
 @media (max-width: 768px) {
   .bannerVideoParent {

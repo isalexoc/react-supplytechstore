@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -46,6 +46,10 @@ const ProductScreen = () => {
   const { userInfo } = useSelector((state) => state.auth);
 
   const [dollar, setDollar] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [animationStyle, setAnimationStyle] = useState({});
+  const buttonRef = useRef(null);
+  const mobileButtonRef = useRef(null);
 
   useEffect(() => {
     const fetchDollarPrice = async () => {
@@ -58,7 +62,24 @@ const ProductScreen = () => {
 
   const addToCartHandler = () => {
     dispatch(addToCart({ ...product, qty }));
-    navigate("/cart");
+    const rect = buttonRef.current.getBoundingClientRect();
+    setAnimationStyle({
+      top: `${rect.top}px`,
+      left: `${rect.left}px`,
+    });
+    setIsAnimating(true);
+    //navigate("/cart");
+  };
+
+  const mobileAddToCartHandler = () => {
+    dispatch(addToCart({ ...product, qty }));
+    const rect = mobileButtonRef.current.getBoundingClientRect();
+    setAnimationStyle({
+      top: `${rect.top}px`,
+      left: `${rect.left}px`,
+    });
+    setIsAnimating(true);
+    //navigate("/cart");
   };
 
   const submitHandler = async (e) => {
@@ -169,14 +190,26 @@ const ProductScreen = () => {
 
                   <ListGroup.Item>
                     {!userInfo?.isAdmin && (
-                      <Button
-                        className="btn-block"
-                        type="button"
-                        disabled={product.countInStock === 0}
-                        onClick={addToCartHandler}
-                      >
-                        Añadir al Carrito
-                      </Button>
+                      <>
+                        <Button
+                          ref={buttonRef}
+                          className="btn-block"
+                          type="button"
+                          disabled={product.countInStock === 0}
+                          onClick={addToCartHandler}
+                        >
+                          Añadir al Carrito
+                        </Button>
+                        {isAnimating && (
+                          <img
+                            src={product.image}
+                            alt={product.name}
+                            className="product-animation"
+                            style={animationStyle}
+                            onAnimationEnd={() => setIsAnimating(false)}
+                          />
+                        )}
+                      </>
                     )}
 
                     {userInfo && userInfo?.isAdmin && (
@@ -236,14 +269,26 @@ const ProductScreen = () => {
                 </Col>
                 <Col xs={6} sm={12} md={3} className="text-center">
                   {!userInfo?.isAdmin && (
-                    <Button
-                      className="btn-block mt-2 mt-md-0"
-                      type="button"
-                      disabled={product.countInStock === 0}
-                      onClick={addToCartHandler}
-                    >
-                      Añadir al Carrito
-                    </Button>
+                    <>
+                      <Button
+                        ref={mobileButtonRef}
+                        className="btn-block mt-2 mt-md-0"
+                        type="button"
+                        disabled={product.countInStock === 0}
+                        onClick={mobileAddToCartHandler}
+                      >
+                        Añadir al Carrito
+                      </Button>
+                      {isAnimating && (
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="product-animation"
+                          style={animationStyle}
+                          onAnimationEnd={() => setIsAnimating(false)}
+                        />
+                      )}
+                    </>
                   )}
 
                   {userInfo && userInfo?.isAdmin && (
