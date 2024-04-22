@@ -40,6 +40,7 @@ const OrderScreen = () => {
   const { userInfo } = useSelector((state) => state.auth);
 
   const [dollar, setDollar] = useState(0);
+  const [isPreparingDownload, setIsPreparingDownload] = useState(false);
 
   useEffect(() => {
     const fetchDollarPrice = async () => {
@@ -123,13 +124,23 @@ const OrderScreen = () => {
               {order.isPaid ? (
                 <>
                   <Message variant="success">Pagado el {order.paidAt}</Message>
-                  <a
-                    href={`${ORDERS_URL}/${orderId}/pdf`}
-                    download
-                    className="bg-secondary text-white p-2 rounded text-decoration-none"
-                  >
-                    Descargar Factura
-                  </a>
+                  {isPreparingDownload ? (
+                    <Loader />
+                  ) : (
+                    <a
+                      href={`${ORDERS_URL}/${orderId}/pdf`}
+                      download
+                      className="bg-secondary text-white p-2 rounded text-decoration-none"
+                      onClick={() => {
+                        setIsPreparingDownload(true);
+                        setTimeout(() => {
+                          setIsPreparingDownload(false); // reset after 10 seconds, adjust as needed
+                        }, 2000);
+                      }}
+                    >
+                      Descargar Factura
+                    </a>
+                  )}
                 </>
               ) : (
                 <Message variant="danger">No pagado</Message>
