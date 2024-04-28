@@ -31,6 +31,44 @@ function fileFilter(req, file, cb) {
 
 const upload = multer({ storage, fileFilter });
 const uploadSingleImage = upload.single("image");
+const uploadImages = multer({ storage, fileFilter }).array("image", 6); // This handles up to 6 files
+
+router.post("/multiple", uploadImages, async (req, res) => {
+  if (!req.files || req.files.length === 0) {
+    return res.status(400).send({ message: "No se han cargado fotos" });
+  }
+
+  try {
+    const uploadPromises = req.files.map((file) => {
+      const transformations = {
+        width: 640,
+        height: 510,
+        crop: "fill",
+        quality: "auto:good",
+        fetch_format: "auto",
+      };
+      return cloudinary.uploader.upload(file.path, transformations);
+    });
+
+    const results = await Promise.all(uploadPromises);
+
+    // Once all files are uploaded, delete them from the local storage
+    const unlinkPromises = req.files.map((file) => fs.unlink(file.path));
+    await Promise.all(unlinkPromises);
+
+    return res.status(200).send({
+      message: "Imagenes subidas correctamente",
+      images: results.map((result) => result.secure_url),
+    });
+  } catch (error) {
+    // Attempt to delete all local files even if the upload fails
+    req.files.forEach((file) => {
+      fs.unlink(file.path).catch(console.error);
+    });
+    console.error(error);
+    return res.status(400).send({ message: error.message });
+  }
+});
 
 router.post("/", (req, res) => {
   uploadSingleImage(req, res, async (err) => {

@@ -1,5 +1,5 @@
 import { LinkContainer } from "react-router-bootstrap";
-import { Table, Button, Row, Col } from "react-bootstrap";
+import { Table, Button, Row, Col, Image } from "react-bootstrap";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import Message from "../../components/Message";
@@ -74,7 +74,7 @@ const ProductListScreen = () => {
             <thead>
               <tr>
                 <th>#</th>
-                <th>ID</th>
+                <th>Imagen</th>
                 <th>NOMBRE</th>
                 <th>PRECIO</th>
                 <th>CATEGORÍA</th>
@@ -90,8 +90,19 @@ const ProductListScreen = () => {
                       ? index + 1
                       : index + 1 + (data.page - 1) * 12}
                   </td>
-                  <td>{product._id}</td>
-                  <td>{product.name}</td>
+                  <td>
+                    <Image
+                      width={100}
+                      src={product.image}
+                      alt={product.name}
+                      fluid
+                    />
+                  </td>
+                  <td>
+                    <LinkContainer to={`/product/${product._id}`}>
+                      <div className="link-style">{product.name}</div>
+                    </LinkContainer>
+                  </td>
                   <td>${product.price}</td>
                   <td>{product.category}</td>
                   <td>{product.brand}</td>

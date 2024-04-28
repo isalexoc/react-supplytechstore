@@ -360,6 +360,11 @@ table th {
   animation: moveToCart 2s forwards;
 }
 
+.link-style {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
 @keyframes moveToCart {
   0% {
     top: /* position of button */ ;

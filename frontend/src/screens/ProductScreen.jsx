@@ -7,15 +7,7 @@ import {
   useCreateReviewMutation,
 } from "../slices/productsApiSlice";
 import { Link } from "react-router-dom";
-import {
-  Row,
-  Col,
-  Form,
-  Image,
-  ListGroup,
-  Card,
-  Button,
-} from "react-bootstrap";
+import { Row, Col, Form, ListGroup, Card, Button } from "react-bootstrap";
 import Meta from "../components/Meta";
 import Raiting from "../components/Raiting";
 import Loader from "../components/Loader";
@@ -23,6 +15,7 @@ import Message from "../components/Message";
 import { addToCart } from "../slices/cartSlice";
 import BackTo from "../components/BackTo";
 import getDollarPrice from "../utils/dollarPrice";
+import ProductImages from "../components/ProductImages";
 
 const ProductScreen = () => {
   const { id: productId } = useParams();
@@ -120,7 +113,7 @@ const ProductScreen = () => {
           />
           <Row>
             <Col sm={6} md={6} lg={4}>
-              <Image src={product.image} alt={product.name} fluid />
+              <ProductImages product={product} />
             </Col>
             <Col sm={6} md={6} lg={5}>
               <ListGroup variant="flush">
@@ -307,7 +300,7 @@ const ProductScreen = () => {
             </Card>
           </div>
 
-          <Row>
+          <Row className="mt-5">
             <Col md={12}>
               <h3>Descripción</h3>
               {/* Use dangerouslySetInnerHTML to render HTML */}

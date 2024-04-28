@@ -89,7 +89,6 @@ const createProduct = asyncHandler(async (req, res) => {
     name: " ",
     price: 0,
     user: req.user._id,
-    image: "/images/sample.jpg",
     brand: " ",
     category: " ",
     countInStock: 100,
@@ -105,18 +104,10 @@ const createProduct = asyncHandler(async (req, res) => {
 // @route   PUT /api/products/:id
 // @access  Private/Admin
 const updateProduct = asyncHandler(async (req, res) => {
-  const { name, price, description, image, brand, category, countInStock } =
+  const { name, price, description, images, brand, category, countInStock } =
     req.body;
 
-  if (
-    !name ||
-    !price ||
-    !description ||
-    !image ||
-    !brand ||
-    !category ||
-    !countInStock
-  ) {
+  if (!name || !price || !description || !brand || !category || !countInStock) {
     res.status(400);
     throw new Error("Por favor, rellena todos los campos");
   }
@@ -127,7 +118,7 @@ const updateProduct = asyncHandler(async (req, res) => {
     product.name = name;
     product.price = price;
     product.description = description;
-    product.image = image;
+    product.images = images;
     product.brand = brand;
     product.category = category;
     product.countInStock = countInStock;

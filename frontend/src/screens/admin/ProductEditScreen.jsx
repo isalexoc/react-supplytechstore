@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
 import Message from "../../components/Message";
@@ -8,21 +8,20 @@ import { toast } from "react-toastify";
 import {
   useUpdateProductMutation,
   useGetProductDetailsQuery,
-  useUploadProductImageMutation,
+  useUploadProductImagesMutation,
   useGetCategoriesQuery,
 } from "../../slices/productsApiSlice";
 import { capitalizeString } from "../../utils/capitlizeString";
 import Meta from "../../components/Meta";
-import Quill from "quill";
-import "quill/dist/quill.snow.css"; // import styles
+import TextEditor from "../../components/TextEditor";
 
 const ProductEditScreen = () => {
   const { id: productID } = useParams();
 
   const [name, setName] = useState("");
   const [price, setPrice] = useState(0);
-  const [image, setImage] = useState("");
   const [brand, setBrand] = useState("");
+  const [images, setImages] = useState([]);
   const [category, setCategory] = useState("");
   const [countInStock, setCountInStock] = useState(0);
   const [description, setDescription] = useState("");
@@ -37,8 +36,8 @@ const ProductEditScreen = () => {
   const [updateProduct, { isLoading: loadingUpdate }] =
     useUpdateProductMutation();
 
-  const [uploadProductImage, { isLoading: loadingUpload }] =
-    useUploadProductImageMutation();
+  const [uploadProductImages, { isLoading: loadingUpload }] =
+    useUploadProductImagesMutation();
 
   const {
     data: categories,
@@ -52,34 +51,13 @@ const ProductEditScreen = () => {
     if (product) {
       setName(product.name === " " ? "" : product.name);
       setPrice(product.price);
-      setImage(product.image);
       setBrand(product.brand === " " ? "" : product.brand);
+      setImages(product.images || []);
       setCategory(product.category === " " ? "" : product.category);
       setCountInStock(product.countInStock);
       setDescription(product.description === " " ? "" : product.description);
     }
   }, [product]);
-
-  const quillRef = useRef(null); // Add this line to create a ref for your Quill editor
-
-  useEffect(() => {
-    if (quillRef.current) {
-      const quillInstance = new Quill(quillRef.current, {
-        theme: "snow", // Specify theme
-        modules: {
-          toolbar: true, // Include toolbar
-        },
-      });
-
-      quillInstance.on("text-change", () => {
-        setDescription(quillInstance.root.innerHTML); // Update your state
-      });
-
-      if (product && product.description) {
-        quillInstance.root.innerHTML = product.description; // Initialize Quill's content
-      }
-    }
-  }, [product]); // Depend on product
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -92,10 +70,10 @@ const ProductEditScreen = () => {
         productId: productID,
         name,
         price,
-        image,
         brand,
         //on the category include "todos los productos" along with the rest of the categories
         category: category + ", todos los productos",
+        images,
         description,
         countInStock,
       }).unwrap(); // NOTE: here we need to unwrap the Promise to catch any rejection in our catch block
@@ -108,18 +86,36 @@ const ProductEditScreen = () => {
   };
 
   const uploadFileHandler = async (e) => {
+    const files = e.target.files;
     const formData = new FormData();
-    formData.append("image", e.target.files[0]);
+
+    // Append all files to the same form data object
+    Array.from(files).forEach((file, index) => {
+      formData.append("image", file);
+    });
+
+    try {
+      // Make a single request to upload all files
+      const res = await uploadProductImages(formData).unwrap();
+      setImages(res.images);
+      toast.success("Imagenes subidas exitosamente");
+    } catch (err) {
+      toast.error(err?.data?.message || err.error);
+    }
+
+    /* formData.append("image", e.target.files[0]);
     try {
       const res = await uploadProductImage(formData).unwrap();
       toast.success(res.message);
       setImage(res.image);
     } catch (err) {
       toast.error(err?.data?.message || err.error);
-    }
+    } */
   };
 
-  if (categoriesLoading) return <Loader />;
+  const uploadVideoHandler = async (e) => {};
+
+  if (categoriesLoading || isLoading) return <Loader />;
   else if (categoriesError)
     return <Message variant="danger">{categoriesError?.data?.message}</Message>;
   else {
@@ -159,22 +155,49 @@ const ProductEditScreen = () => {
                 ></Form.Control>
               </Form.Group>
 
-              <Form.Group controlId="image" className="my-2">
-                <Form.Label>Imagen</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Imagen"
-                  value={image}
-                  onChange={(e) => setImage(e.target.value)}
-                ></Form.Control>
+              {images.length > 0 && (
+                // Display the uploaded images
+                <div className="my-2" style={{ overflow: "hidden" }}>
+                  {" "}
+                  {/* Add overflow: 'hidden' here */}
+                  <Form.Label>Imágenes Subidas</Form.Label>
+                  <div className="d-flex flex-wrap justify-content-center gap-1">
+                    {images.map((image, index) => (
+                      <img
+                        key={index}
+                        src={image}
+                        alt={`Imagen-${index}`}
+                        className="img-small"
+                        style={{ width: "100px" }} // Set the width to 100px
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <Form.Group controlId="images" className="my-2">
+                <Form.Label>
+                  Imágenes (Máximo 6) Formato: JPG, JPEG o PNG
+                </Form.Label>
                 <Form.Control
                   type="file"
-                  label="Selecciona la imagen"
-                  name="image"
+                  label="Selecciona las imágenes"
+                  name="images"
+                  multiple // Add this line to allow multiple files
                   onChange={uploadFileHandler}
                 ></Form.Control>
               </Form.Group>
               {loadingUpload && <Loader />}
+
+              <Form.Group controlId="video" className="my-2">
+                <Form.Label>Video</Form.Label>
+                <Form.Control
+                  type="file"
+                  label="Ingresa un video"
+                  name="video"
+                  onChange={uploadVideoHandler}
+                ></Form.Control>
+              </Form.Group>
 
               <Form.Group controlId="brand" className="my-2">
                 <Form.Label>Marca</Form.Label>
@@ -213,7 +236,10 @@ const ProductEditScreen = () => {
 
               <Form.Group controlId="description" className="my-2">
                 <Form.Label>Descripción</Form.Label>
-                <div ref={quillRef}></div> {/* Attach Quill to this div */}
+                <TextEditor
+                  description={description}
+                  setDescription={setDescription}
+                />
               </Form.Group>
 
               <Button type="submit" variant="primary" className="my-2">
