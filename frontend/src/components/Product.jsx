@@ -9,7 +9,10 @@ const Product = ({ product, dollar }) => {
       <Row>
         <Col sm={12}>
           <Link to={`/product/${product._id}`}>
-            <Card.Img src={product.image} variant="top" />
+            <Card.Img
+              src={product?.images[0] ? product?.images[0].url : product.image}
+              variant="top"
+            />
           </Link>
         </Col>
         <Col sm={12} className="px-0">

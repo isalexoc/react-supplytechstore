@@ -36,8 +36,12 @@ const addOrderItems = asyncHandler(async (req, res) => {
       const matchingItemFromDB = itemsFromDB.find(
         (itemFromDB) => itemFromDB._id.toString() === itemFromClient._id
       );
+
       return {
         ...itemFromClient,
+        image: matchingItemFromDB?.images[0]
+          ? matchingItemFromDB?.images[0].url
+          : matchingItemFromDB.image,
         product: itemFromClient._id,
         price: matchingItemFromDB.price,
         _id: undefined,
@@ -224,7 +228,6 @@ const updatePaymentMethod = asyncHandler(async (req, res) => {
 const updateOrderZelle = asyncHandler(async (req, res) => {
   const { orderId, referenceType, code, image } = req.body;
 
-  console.log(orderId);
   const order = await Order.findById(orderId);
   const user = await User.findById(order.user);
 
@@ -257,8 +260,6 @@ const updateOrderZelle = asyncHandler(async (req, res) => {
         image,
       };
     }
-    console.log(referenceType);
-    console.log(order.paymentConfirmation);
 
     try {
       const updatedOrder = await order.save();

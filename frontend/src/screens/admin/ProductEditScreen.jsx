@@ -17,6 +17,7 @@ import { setImagesToState, clearImages } from "../../slices/authSlice";
 import { capitalizeString } from "../../utils/capitlizeString";
 import Meta from "../../components/Meta";
 import TextEditor from "../../components/TextEditor";
+import ImageDisplay from "../../components/ImageDisplay";
 
 const ProductEditScreen = () => {
   const { id: productID } = useParams();
@@ -181,45 +182,22 @@ const ProductEditScreen = () => {
                 ></Form.Control>
               </Form.Group>
 
-              {images.length > 0 && imageUrls?.length === 0 && (
-                // Display the uploaded images
-                <div className="my-2" style={{ overflow: "hidden" }}>
-                  {" "}
-                  {/* Add overflow: 'hidden' here */}
-                  <Form.Label>Imágenes Actuales</Form.Label>
-                  <div className="d-flex flex-wrap justify-content-center gap-1">
-                    {images.map((image, index) => (
-                      <img
-                        key={index}
-                        src={image.url}
-                        alt={`Imagen-${index}`}
-                        className="img-small"
-                        style={{ width: "100px" }} // Set the width to 100px
-                      />
-                    ))}
-                  </div>
-                </div>
+              {imageUrls.length === 0 && images && (
+                <ImageDisplay
+                  images={images}
+                  label="Imágenes Actuales"
+                  setImages={setImages}
+                />
               )}
 
               {imageUrls.length > 0 && (
-                // Display the uploaded images
-                <div className="my-2" style={{ overflow: "hidden" }}>
-                  {" "}
-                  {/* Add overflow: 'hidden' here */}
-                  <Form.Label>Imágenes por subir</Form.Label>
-                  <div className="d-flex flex-wrap justify-content-center gap-1">
-                    {imageUrls.map((image, index) => (
-                      <img
-                        key={index}
-                        src={image.url}
-                        alt={`Imagen-${index}`}
-                        className="img-small"
-                        style={{ width: "100px" }} // Set the width to 100px
-                      />
-                    ))}
-                  </div>
-                </div>
+                <ImageDisplay
+                  images={imageUrls}
+                  label="Imágenes por subir"
+                  setImages={setImages}
+                />
               )}
+
               <Form.Group controlId="images" className="my-2">
                 <Form.Label>
                   Imágenes (Máximo 6) Formato: JPG, JPEG o PNG

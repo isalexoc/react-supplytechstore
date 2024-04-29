@@ -104,7 +104,9 @@ const PlaceOrderScreen = () => {
                       <Row>
                         <Col xs={6} sm={4} md={3}>
                           <Image
-                            src={item.image}
+                            src={
+                              item?.images[0] ? item?.images[0].url : item.image
+                            }
                             alt={item.name}
                             fluid
                             rounded

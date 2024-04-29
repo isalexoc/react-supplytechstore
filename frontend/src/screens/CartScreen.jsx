@@ -68,7 +68,12 @@ const CartScreen = () => {
                       md={2}
                       className="d-flex justify-content-center align-items-center"
                     >
-                      <Image src={item.image} alt={item.name} fluid rounded />
+                      <Image
+                        src={item?.images[0] ? item?.images[0].url : item.image}
+                        alt={item.name}
+                        fluid
+                        rounded
+                      />
                     </Col>
                     <Col
                       xs={8}

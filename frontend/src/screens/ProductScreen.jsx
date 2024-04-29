@@ -195,7 +195,11 @@ const ProductScreen = () => {
                         </Button>
                         {isAnimating && (
                           <img
-                            src={product.image}
+                            src={
+                              product?.images[0]
+                                ? product?.images[0].url
+                                : product.image
+                            }
                             alt={product.name}
                             className="product-animation"
                             style={animationStyle}
