@@ -4,8 +4,8 @@ import "react-image-gallery/styles/css/image-gallery.css";
 
 const ProductImages = ({ product }) => {
   const images = product?.images?.map((image) => ({
-    original: image,
-    thumbnail: image,
+    original: image.url,
+    thumbnail: image.url,
   }));
 
   return (

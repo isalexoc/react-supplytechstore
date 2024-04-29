@@ -39,9 +39,12 @@ const productSchema = mongoose.Schema(
     image: {
       type: String, // String to store one image URL
     },
-    images: {
-      type: [String], // Array of strings to store multiple image URLs
-    },
+    images: [
+      {
+        url: String,
+        public_id: String,
+      },
+    ],
     video: {
       type: String, // String to store one video URL
     },

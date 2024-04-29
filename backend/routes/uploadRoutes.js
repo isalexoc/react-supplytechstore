@@ -29,6 +29,15 @@ function fileFilter(req, file, cb) {
   }
 }
 
+//delete image fro cloudinary using the public id
+const deleteImage = async (public_id) => {
+  try {
+    await cloudinary.uploader.destroy(public_id);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 const upload = multer({ storage, fileFilter });
 const uploadSingleImage = upload.single("image");
 const uploadImages = multer({ storage, fileFilter }).array("image", 6); // This handles up to 6 files
@@ -59,12 +68,57 @@ router.post("/multiple", uploadImages, async (req, res) => {
     return res.status(200).send({
       message: "Imagenes subidas correctamente",
       images: results.map((result) => result.secure_url),
+      imageData: results.map((result) => ({
+        url: result.secure_url,
+        public_id: result.public_id,
+      })),
     });
   } catch (error) {
     // Attempt to delete all local files even if the upload fails
     req.files.forEach((file) => {
       fs.unlink(file.path).catch(console.error);
     });
+    console.error(error);
+    return res.status(400).send({ message: error.message });
+  }
+});
+
+// remove images from cloudinary using the public ids
+router.post("/removeImages", async (req, res) => {
+  const { imagesData } = req.body;
+  if (!imagesData || imagesData.length === 0) {
+    return res.status(400).send({ message: "No se han seleccionado imágenes" });
+  }
+
+  try {
+    const deletePromises = imagesData.map((imageData) =>
+      deleteImage(imageData.public_id)
+    );
+    await Promise.all(deletePromises);
+
+    return res
+      .status(200)
+      .send({ message: "Imagenes eliminadas correctamente" });
+  } catch (error) {
+    console.error(error);
+    return res.status(400).send({ message: error.message });
+  }
+});
+
+// remove single image from cloudinary using the public id
+router.post("/removeSingleImage", async (req, res) => {
+  const { imageData } = req.body;
+  if (!imageData) {
+    return res
+      .status(400)
+      .send({ message: "No se ha seleccionado una imagen" });
+  }
+
+  try {
+    imageData.forEach((image) => deleteImage(image.public_id));
+
+    return res.status(200).send({ message: "Imagen eliminada correctamente" });
+  } catch (error) {
     console.error(error);
     return res.status(400).send({ message: error.message });
   }
@@ -98,6 +152,7 @@ router.post("/", (req, res) => {
       return res.status(200).send({
         message: "Imagen subida correctamente",
         image: result.secure_url,
+        imageData: [{ url: result.secure_url, public_id: result.public_id }],
       });
     } catch (error) {
       // Attempt to delete the temporary file even if the upload fails

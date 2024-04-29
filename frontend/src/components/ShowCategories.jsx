@@ -6,6 +6,8 @@ import {
   useDeleteCategoryMutation,
   useUpdateCategoryMutation,
 } from "../slices/productsApiSlice";
+import { useDispatch } from "react-redux";
+import { setImagesToState } from "../slices/authSlice";
 import { capitalizeString } from "../utils/capitlizeString";
 import { Form, Table, Button } from "react-bootstrap";
 import Loader from "./Loader";
@@ -14,6 +16,8 @@ import { toast } from "react-toastify";
 import { FaEdit, FaTrash } from "react-icons/fa";
 
 const ShowCategories = () => {
+  const dispatch = useDispatch();
+
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [image, setImage] = useState("");
   const [name, setName] = useState("");
@@ -42,6 +46,7 @@ const ShowCategories = () => {
     formData.append("image", e.target.files[0]);
     try {
       const res = await uploadProductImage(formData).unwrap();
+      dispatch(setImagesToState(res.imageData));
       toast.success(res.message);
       setImage(res.image);
     } catch (err) {

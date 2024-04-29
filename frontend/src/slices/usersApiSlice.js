@@ -109,6 +109,13 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    setProductImages: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/images`,
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -128,4 +135,5 @@ export const {
   useContactFormMutation,
   useForgotPasswordMutation,
   useResetPasswordMutation,
+  useSetProductImagesMutation,
 } = usersApiSlice;

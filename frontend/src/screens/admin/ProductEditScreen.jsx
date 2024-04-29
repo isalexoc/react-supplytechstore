@@ -1,30 +1,29 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useState, useEffect, useCallback } from "react";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
 import Message from "../../components/Message";
 import Loader from "../../components/Loader";
 import FormContainer from "../../components/FormContainer";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
 import {
   useUpdateProductMutation,
   useGetProductDetailsQuery,
   useUploadProductImagesMutation,
   useGetCategoriesQuery,
+  useDeleteImagesMutation,
 } from "../../slices/productsApiSlice";
+import { setImagesToState, clearImages } from "../../slices/authSlice";
 import { capitalizeString } from "../../utils/capitlizeString";
 import Meta from "../../components/Meta";
 import TextEditor from "../../components/TextEditor";
 
 const ProductEditScreen = () => {
   const { id: productID } = useParams();
-
-  const [name, setName] = useState("");
-  const [price, setPrice] = useState(0);
-  const [brand, setBrand] = useState("");
-  const [images, setImages] = useState([]);
-  const [category, setCategory] = useState("");
-  const [countInStock, setCountInStock] = useState(0);
-  const [description, setDescription] = useState("");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  // Get the image URLs from the Redux state
+  const imageUrls = useSelector((state) => state.auth.images);
 
   const {
     data: product,
@@ -39,13 +38,21 @@ const ProductEditScreen = () => {
   const [uploadProductImages, { isLoading: loadingUpload }] =
     useUploadProductImagesMutation();
 
+  const [deleteImages] = useDeleteImagesMutation();
+
   const {
     data: categories,
     isLoading: categoriesLoading,
     error: categoriesError,
   } = useGetCategoriesQuery();
 
-  const navigate = useNavigate();
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState(0);
+  const [brand, setBrand] = useState("");
+  const [images, setImages] = useState([]);
+  const [category, setCategory] = useState("");
+  const [countInStock, setCountInStock] = useState(0);
+  const [description, setDescription] = useState("");
 
   useEffect(() => {
     if (product) {
@@ -61,6 +68,7 @@ const ProductEditScreen = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
+
     if (category === "seleccionar" || category === "") {
       toast.error("Por favor selecciona una categoría");
       return;
@@ -73,13 +81,14 @@ const ProductEditScreen = () => {
         brand,
         //on the category include "todos los productos" along with the rest of the categories
         category: category + ", todos los productos",
-        images,
+        images: imageUrls.length > 0 ? imageUrls : images,
         description,
         countInStock,
       }).unwrap(); // NOTE: here we need to unwrap the Promise to catch any rejection in our catch block
       toast.success("Producto actualizado exitosamente");
+      dispatch(clearImages());
       refetch();
-      navigate("/admin/productlist");
+      navigate(`/product/${productID}`);
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
@@ -97,8 +106,8 @@ const ProductEditScreen = () => {
     try {
       // Make a single request to upload all files
       const res = await uploadProductImages(formData).unwrap();
-      setImages(res.images);
-      toast.success("Imagenes subidas exitosamente");
+      // Update the images state with the URLs returned from the server
+      dispatch(setImagesToState(res.imageData));
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
@@ -114,6 +123,23 @@ const ProductEditScreen = () => {
   };
 
   const uploadVideoHandler = async (e) => {};
+
+  const handleDeleteImages = useCallback(async () => {
+    try {
+      await deleteImages({ imagesData: images });
+      dispatch(clearImages());
+    } catch (error) {
+      toast.error(error?.data?.message || error.error);
+    }
+  }, [deleteImages, dispatch, images]);
+
+  useEffect(() => {
+    return () => {
+      if (imageUrls.length > 0) {
+        handleDeleteImages();
+      }
+    };
+  }, [imageUrls, handleDeleteImages, images]);
 
   if (categoriesLoading || isLoading) return <Loader />;
   else if (categoriesError)
@@ -155,17 +181,17 @@ const ProductEditScreen = () => {
                 ></Form.Control>
               </Form.Group>
 
-              {images.length > 0 && (
+              {images.length > 0 && imageUrls?.length === 0 && (
                 // Display the uploaded images
                 <div className="my-2" style={{ overflow: "hidden" }}>
                   {" "}
                   {/* Add overflow: 'hidden' here */}
-                  <Form.Label>Imágenes Subidas</Form.Label>
+                  <Form.Label>Imágenes Actuales</Form.Label>
                   <div className="d-flex flex-wrap justify-content-center gap-1">
                     {images.map((image, index) => (
                       <img
                         key={index}
-                        src={image}
+                        src={image.url}
                         alt={`Imagen-${index}`}
                         className="img-small"
                         style={{ width: "100px" }} // Set the width to 100px
@@ -175,6 +201,25 @@ const ProductEditScreen = () => {
                 </div>
               )}
 
+              {imageUrls.length > 0 && (
+                // Display the uploaded images
+                <div className="my-2" style={{ overflow: "hidden" }}>
+                  {" "}
+                  {/* Add overflow: 'hidden' here */}
+                  <Form.Label>Imágenes por subir</Form.Label>
+                  <div className="d-flex flex-wrap justify-content-center gap-1">
+                    {imageUrls.map((image, index) => (
+                      <img
+                        key={index}
+                        src={image.url}
+                        alt={`Imagen-${index}`}
+                        className="img-small"
+                        style={{ width: "100px" }} // Set the width to 100px
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
               <Form.Group controlId="images" className="my-2">
                 <Form.Label>
                   Imágenes (Máximo 6) Formato: JPG, JPEG o PNG

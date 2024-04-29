@@ -132,6 +132,26 @@ const updateProduct = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Update a product
+// @route   PUT /api/products/:id
+// @access  Private/Admin
+const updateProductImages = asyncHandler(async (req, res) => {
+  const { images } = req.body;
+
+  const product = await Product.findById(req.params.id);
+
+  if (product) {
+    product.images = images;
+
+    const updatedProduct = await product.save();
+
+    res.json(updatedProduct);
+  } else {
+    res.status(404);
+    throw new Error("Producto no encontrado");
+  }
+});
+
 // @desc    Delete a product
 // @route   DELETE /api/products/:id
 // @access  Private/Admin
@@ -284,6 +304,7 @@ export {
   getProductById,
   createProduct,
   updateProduct,
+  updateProductImages,
   deleteProduct,
   createProductReview,
   getTopProducts,
