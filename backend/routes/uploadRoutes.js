@@ -38,6 +38,11 @@ const deleteImage = async (public_id) => {
   }
 };
 
+const uploadVideo = multer({
+  storage: storage,
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit for videos
+}).single("video");
+
 const upload = multer({ storage, fileFilter });
 const uploadSingleImage = upload.single("image");
 const uploadImages = multer({ storage, fileFilter }).array("image", 6); // This handles up to 6 files
@@ -204,6 +209,46 @@ router.post("/uploadzelle", (req, res) => {
       return res.status(400).send({ message: error.message });
     }
   });
+});
+
+router.post("/video", uploadVideo, async (req, res) => {
+  if (!req.file) {
+    return res.status(400).send({ message: "No se ha cargado un video" });
+  }
+
+  try {
+    // Upload to Cloudinary with transformations
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      resource_type: "video",
+      chunk_size: 6e6, // 6MB chunks
+      transformation: [
+        {
+          width: 640,
+          height: 510,
+          crop: "limit",
+          bitrate: "500k",
+          quality: "auto",
+        }, // Example transformations
+      ],
+    });
+
+    // Delete the temporary file
+    await fs.unlink(req.file.path);
+
+    return res.status(200).send({
+      message: "Video subido correctamente",
+      url: result.secure_url,
+    });
+  } catch (error) {
+    // Attempt to delete the temporary file in case of upload failure
+    try {
+      await fs.unlink(req.file.path);
+    } catch (unlinkErr) {
+      console.error("Error deleting temporary file:", unlinkErr);
+    }
+
+    return res.status(400).send({ message: error.message });
+  }
 });
 
 export default router;

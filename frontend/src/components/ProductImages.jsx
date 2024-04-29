@@ -3,16 +3,47 @@ import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 
 const ProductImages = ({ product }) => {
-  const images = product?.images?.map((image) => ({
+  const items = product?.images?.map((image) => ({
     original: image.url,
     thumbnail: image.url,
   }));
+
+  // Check if there is a video and add it to the gallery items
+  if (product?.video) {
+    items.push({
+      renderItem: () => (
+        <div
+          className="image-gallery-image"
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+          }}
+        >
+          <video
+            controls
+            preload="metadata"
+            style={{
+              maxWidth: "100%", // Ensures the video does not exceed the container's width
+              maxHeight: "100%", // Ensures the video does not exceed the container's height
+              objectFit: "contain", // Ensures the video maintains its aspect ratio and fits within its bounds
+            }}
+          >
+            <source src={product.video} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      ),
+      thumbnail: "/images/mpthumb.png", // Optional: path to a thumbnail for the video
+    });
+  }
 
   return (
     <>
       {product?.images && product?.images?.length > 0 && (
         <ImageGallery
-          items={images}
+          items={items}
           showPlayButton={false}
           showFullscreenButton={false}
           showNav={false}

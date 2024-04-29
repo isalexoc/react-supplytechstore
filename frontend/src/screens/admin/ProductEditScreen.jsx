@@ -11,13 +11,14 @@ import {
   useGetProductDetailsQuery,
   useUploadProductImagesMutation,
   useGetCategoriesQuery,
-  useDeleteImagesMutation,
+  // useDeleteImagesMutation,
 } from "../../slices/productsApiSlice";
 import { setImagesToState, clearImages } from "../../slices/authSlice";
 import { capitalizeString } from "../../utils/capitlizeString";
 import Meta from "../../components/Meta";
 import TextEditor from "../../components/TextEditor";
 import ImageDisplay from "../../components/ImageDisplay";
+import VideoUpload from "../../components/VideoUpload";
 
 const ProductEditScreen = () => {
   const { id: productID } = useParams();
@@ -39,7 +40,7 @@ const ProductEditScreen = () => {
   const [uploadProductImages, { isLoading: loadingUpload }] =
     useUploadProductImagesMutation();
 
-  const [deleteImages] = useDeleteImagesMutation();
+  //const [deleteImages] = useDeleteImagesMutation();
 
   const {
     data: categories,
@@ -54,6 +55,8 @@ const ProductEditScreen = () => {
   const [category, setCategory] = useState("");
   const [countInStock, setCountInStock] = useState(0);
   const [description, setDescription] = useState("");
+  const [productVideo, setProductVideo] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
 
   useEffect(() => {
     if (product) {
@@ -64,6 +67,7 @@ const ProductEditScreen = () => {
       setCategory(product.category === " " ? "" : product.category);
       setCountInStock(product.countInStock);
       setDescription(product.description === " " ? "" : product.description);
+      setProductVideo(product.video ? product.video : "");
     }
   }, [product]);
 
@@ -80,6 +84,7 @@ const ProductEditScreen = () => {
         name,
         price,
         brand,
+        video: videoUrl !== "" ? videoUrl : productVideo,
         //on the category include "todos los productos" along with the rest of the categories
         category: category + ", todos los productos",
         images: imageUrls.length > 0 ? imageUrls : images,
@@ -123,16 +128,14 @@ const ProductEditScreen = () => {
     } */
   };
 
-  const uploadVideoHandler = async (e) => {};
-
   const handleDeleteImages = useCallback(async () => {
     try {
-      await deleteImages({ imagesData: images });
+      //await deleteImages({ imagesData: images });
       dispatch(clearImages());
     } catch (error) {
       toast.error(error?.data?.message || error.error);
     }
-  }, [deleteImages, dispatch, images]);
+  }, [dispatch]);
 
   useEffect(() => {
     return () => {
@@ -212,15 +215,10 @@ const ProductEditScreen = () => {
               </Form.Group>
               {loadingUpload && <Loader />}
 
-              <Form.Group controlId="video" className="my-2">
-                <Form.Label>Video</Form.Label>
-                <Form.Control
-                  type="file"
-                  label="Ingresa un video"
-                  name="video"
-                  onChange={uploadVideoHandler}
-                ></Form.Control>
-              </Form.Group>
+              <VideoUpload
+                setVideoUrl={setVideoUrl}
+                productVideo={productVideo}
+              />
 
               <Form.Group controlId="brand" className="my-2">
                 <Form.Label>Marca</Form.Label>
