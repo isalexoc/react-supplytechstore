@@ -1,11 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect /*, useCallback*/ } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { Form, Button } from "react-bootstrap";
 import Message from "../../components/Message";
 import Loader from "../../components/Loader";
 import FormContainer from "../../components/FormContainer";
 import { toast } from "react-toastify";
-import { useDispatch, useSelector } from "react-redux";
 import {
   useUpdateProductMutation,
   useGetProductDetailsQuery,
@@ -13,7 +12,6 @@ import {
   useGetCategoriesQuery,
   // useDeleteImagesMutation,
 } from "../../slices/productsApiSlice";
-import { setImagesToState, clearImages } from "../../slices/authSlice";
 import { capitalizeString } from "../../utils/capitlizeString";
 import Meta from "../../components/Meta";
 import TextEditor from "../../components/TextEditor";
@@ -22,10 +20,7 @@ import VideoUpload from "../../components/VideoUpload";
 
 const ProductEditScreen = () => {
   const { id: productID } = useParams();
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-  // Get the image URLs from the Redux state
-  const imageUrls = useSelector((state) => state.auth.images);
 
   const {
     data: product,
@@ -57,6 +52,7 @@ const ProductEditScreen = () => {
   const [description, setDescription] = useState("");
   const [productVideo, setProductVideo] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
+  const [selectedFiles, setSelectedFiles] = useState(null);
 
   useEffect(() => {
     if (product) {
@@ -71,8 +67,30 @@ const ProductEditScreen = () => {
     }
   }, [product]);
 
+  const handleFileChange = (event) => {
+    const files = event.target.files;
+    if (files.length > 6) {
+      toast.error("Máximo 6 imágenes permitidas");
+      return;
+    }
+    setSelectedFiles(files);
+  };
+
   const submitHandler = async (e) => {
     e.preventDefault();
+    let imageData = null;
+    if (selectedFiles) {
+      if (selectedFiles?.length > 6) {
+        toast.error("Máximo 6 imágenes permitidas");
+        return;
+      }
+
+      imageData = await uploadFileHandler(selectedFiles);
+
+      if (!imageData) {
+        return;
+      }
+    }
 
     if (category === "seleccionar" || category === "") {
       toast.error("Por favor selecciona una categoría");
@@ -87,12 +105,12 @@ const ProductEditScreen = () => {
         video: videoUrl !== "" ? videoUrl : productVideo,
         //on the category include "todos los productos" along with the rest of the categories
         category: category + ", todos los productos",
-        images: imageUrls.length > 0 ? imageUrls : images,
+        images: imageData ? imageData : images,
         description,
         countInStock,
       }).unwrap(); // NOTE: here we need to unwrap the Promise to catch any rejection in our catch block
       toast.success("Producto actualizado exitosamente");
-      dispatch(clearImages());
+      //dispatch(clearImages());
       refetch();
       navigate(`/product/${productID}`);
     } catch (err) {
@@ -100,20 +118,18 @@ const ProductEditScreen = () => {
     }
   };
 
-  const uploadFileHandler = async (e) => {
-    const files = e.target.files;
+  const uploadFileHandler = async (files) => {
     const formData = new FormData();
 
     // Append all files to the same form data object
-    Array.from(files).forEach((file, index) => {
+    Array.from(files).forEach((file) => {
       formData.append("image", file);
     });
 
     try {
       // Make a single request to upload all files
       const res = await uploadProductImages(formData).unwrap();
-      // Update the images state with the URLs returned from the server
-      dispatch(setImagesToState(res.imageData));
+      return res.imageData;
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
@@ -128,7 +144,7 @@ const ProductEditScreen = () => {
     } */
   };
 
-  const handleDeleteImages = useCallback(async () => {
+  /* const handleDeleteImages = useCallback(async () => {
     try {
       //await deleteImages({ imagesData: images });
       dispatch(clearImages());
@@ -144,6 +160,7 @@ const ProductEditScreen = () => {
       }
     };
   }, [imageUrls, handleDeleteImages, images]);
+ */
 
   if (categoriesLoading || isLoading) return <Loader />;
   else if (categoriesError)
@@ -185,18 +202,10 @@ const ProductEditScreen = () => {
                 ></Form.Control>
               </Form.Group>
 
-              {imageUrls.length === 0 && images && (
+              {images.length > 0 && (
                 <ImageDisplay
                   images={images}
                   label="Imágenes Actuales"
-                  setImages={setImages}
-                />
-              )}
-
-              {imageUrls.length > 0 && (
-                <ImageDisplay
-                  images={imageUrls}
-                  label="Imágenes por subir"
                   setImages={setImages}
                 />
               )}
@@ -210,10 +219,9 @@ const ProductEditScreen = () => {
                   label="Selecciona las imágenes"
                   name="images"
                   multiple // Add this line to allow multiple files
-                  onChange={uploadFileHandler}
+                  onChange={handleFileChange}
                 ></Form.Control>
               </Form.Group>
-              {loadingUpload && <Loader />}
 
               <VideoUpload
                 setVideoUrl={setVideoUrl}
@@ -266,6 +274,7 @@ const ProductEditScreen = () => {
               <Button type="submit" variant="primary" className="my-2">
                 Actualizar
               </Button>
+              {loadingUpload && <Loader />}
             </Form>
           )}
         </FormContainer>
