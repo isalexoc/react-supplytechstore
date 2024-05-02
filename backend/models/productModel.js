@@ -46,8 +46,10 @@ const productSchema = mongoose.Schema(
       },
     ],
     video: {
-      type: String, // String to store one video URL
+      url: String,
+      public_id: String,
     },
+
     brand: {
       type: String,
       required: true,

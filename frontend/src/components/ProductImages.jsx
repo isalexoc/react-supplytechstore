@@ -9,7 +9,7 @@ const ProductImages = ({ product }) => {
   }));
 
   // Check if there is a video and add it to the gallery items
-  if (product?.video) {
+  if (product?.video?.url) {
     items.push({
       renderItem: () => (
         <div
@@ -30,8 +30,8 @@ const ProductImages = ({ product }) => {
               objectFit: "contain", // Ensures the video maintains its aspect ratio and fits within its bounds
             }}
           >
-            <source src={product.video} type="video/mp4" />
-            Your browser does not support the video tag.
+            <source src={product.video.url} type="video/mp4" />
+            Tu navegador no soporta video HTML5.
           </video>
         </div>
       ),

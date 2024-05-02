@@ -16,6 +16,8 @@ const storage = multer.diskStorage({
   },
 });
 
+const storageInBuffer = multer.memoryStorage();
+
 function fileFilter(req, file, cb) {
   const filetypes = /jpe?g|png|webp/;
   const mimetypes = /image\/jpe?g|image\/png|image\/webp/;
@@ -39,13 +41,63 @@ const deleteImage = async (public_id) => {
 };
 
 const uploadVideo = multer({
-  storage: storage,
+  storageInBuffer,
   limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit for videos
 }).single("video");
 
 const upload = multer({ storage, fileFilter });
 const uploadSingleImage = upload.single("image");
 const uploadImages = multer({ storage, fileFilter }).array("image", 6); // This handles up to 6 files
+const uploadMultiple = multer({ storageInBuffer, fileFilter }).array(
+  "image",
+  6
+);
+
+router.post("/uploadmultiple", uploadMultiple, async (req, res) => {
+  if (!req.files || req.files.length === 0) {
+    return res.status(400).send({ message: "No se han cargado fotos" });
+  }
+  try {
+    const uploadPromises = req.files.map((file) => {
+      return new Promise((resolve, reject) => {
+        const transformations = {
+          resource_type: "image",
+          transformation: [
+            {
+              width: 640,
+              height: 510,
+              crop: "fill",
+              quality: "auto:good",
+              fetch_format: "auto",
+            },
+          ],
+        };
+
+        cloudinary.uploader
+          .upload_stream(transformations, (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          })
+          .end(file.buffer);
+      });
+    });
+
+    const results = await Promise.all(uploadPromises);
+    res.status(200).send({
+      message: "Imagenes subidas correctamente",
+      images: results.map((result) => result.secure_url),
+      imageData: results.map((result) => ({
+        url: result.secure_url,
+        public_id: result.public_id,
+      })),
+    });
+  } catch (error) {
+    console.error("Upload error:", error);
+    res
+      .status(500)
+      .send({ message: "Failed to upload images", error: error.message });
+  }
+});
 
 router.post("/multiple", uploadImages, async (req, res) => {
   if (!req.files || req.files.length === 0) {
@@ -53,7 +105,7 @@ router.post("/multiple", uploadImages, async (req, res) => {
   }
 
   try {
-    const uploadPromises = req.files.map((file) => {
+    const uploadPromises = await req.files.map((file) => {
       const transformations = {
         width: 640,
         height: 510,
@@ -217,37 +269,38 @@ router.post("/video", uploadVideo, async (req, res) => {
   }
 
   try {
-    // Upload to Cloudinary with transformations
-    const result = await cloudinary.uploader.upload(req.file.path, {
-      resource_type: "video",
-      chunk_size: 6e6, // 6MB chunks
-      transformation: [
+    // Convert buffer to readable stream for Cloudinary
+    const uploadStream = cloudinary.uploader
+      .upload_stream(
         {
-          width: 640,
-          height: 510,
-          crop: "limit",
-          bitrate: "500k",
-          quality: "auto",
-        }, // Example transformations
-      ],
-    });
-
-    // Delete the temporary file
-    await fs.unlink(req.file.path);
-
-    return res.status(200).send({
-      message: "Video subido correctamente",
-      url: result.secure_url,
-    });
+          resource_type: "video",
+          chunk_size: 6000000, // 6MB chunks
+          transformation: [
+            {
+              width: 640,
+              height: 510,
+              crop: "limit",
+              bitrate: "500k",
+              quality: "auto",
+            }, // Adjust transformations as needed
+          ],
+        },
+        (error, result) => {
+          if (error) {
+            return res.status(400).send({ message: error.message });
+          }
+          return res.status(200).send({
+            url: result.secure_url,
+            public_id: result.public_id,
+          });
+        }
+      )
+      .end(req.file.buffer);
   } catch (error) {
-    // Attempt to delete the temporary file in case of upload failure
-    try {
-      await fs.unlink(req.file.path);
-    } catch (unlinkErr) {
-      console.error("Error deleting temporary file:", unlinkErr);
-    }
-
-    return res.status(400).send({ message: error.message });
+    console.error("Upload error:", error);
+    return res
+      .status(500)
+      .send({ message: "Failed to upload video", error: error.message });
   }
 });
 

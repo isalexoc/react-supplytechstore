@@ -17,6 +17,7 @@ import Meta from "../../components/Meta";
 import TextEditor from "../../components/TextEditor";
 import ImageDisplay from "../../components/ImageDisplay";
 import VideoUpload from "../../components/VideoUpload";
+import { UPLOAD_URL } from "../../constants";
 
 const ProductEditScreen = () => {
   const { id: productID } = useParams();
@@ -51,8 +52,9 @@ const ProductEditScreen = () => {
   const [countInStock, setCountInStock] = useState(0);
   const [description, setDescription] = useState("");
   const [productVideo, setProductVideo] = useState("");
-  const [videoUrl, setVideoUrl] = useState("");
   const [selectedFiles, setSelectedFiles] = useState(null);
+  const [videoUploaded, setVideoUploaded] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (product) {
@@ -63,7 +65,7 @@ const ProductEditScreen = () => {
       setCategory(product.category === " " ? "" : product.category);
       setCountInStock(product.countInStock);
       setDescription(product.description === " " ? "" : product.description);
-      setProductVideo(product.video ? product.video : "");
+      setProductVideo(product.video || []);
     }
   }, [product]);
 
@@ -78,16 +80,35 @@ const ProductEditScreen = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
+
     let imageData = null;
+    let videoFile = null;
+
     if (selectedFiles) {
       if (selectedFiles?.length > 6) {
         toast.error("Máximo 6 imágenes permitidas");
         return;
       }
 
-      imageData = await uploadFileHandler(selectedFiles);
+      try {
+        imageData = await uploadFileHandler(selectedFiles);
+      } catch (error) {
+        toast.error(error?.data?.message || error.error);
+      }
 
       if (!imageData) {
+        return;
+      }
+    }
+
+    if (videoUploaded) {
+      try {
+        videoFile = await uploadVideoHandler(videoUploaded);
+      } catch (error) {
+        toast.error(error?.data?.message || error.error);
+      }
+
+      if (!videoFile) {
         return;
       }
     }
@@ -102,7 +123,7 @@ const ProductEditScreen = () => {
         name,
         price,
         brand,
-        video: videoUrl !== "" ? videoUrl : productVideo,
+        video: videoFile ? videoFile : productVideo,
         //on the category include "todos los productos" along with the rest of the categories
         category: category + ", todos los productos",
         images: imageData ? imageData : images,
@@ -142,6 +163,33 @@ const ProductEditScreen = () => {
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     } */
+  };
+
+  const uploadVideoHandler = async (video) => {
+    const file = video;
+
+    const formData = new FormData();
+    formData.append("video", file);
+
+    setUploading(true);
+    try {
+      const response = await fetch(`${UPLOAD_URL}/video`, {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+      if (response.ok) {
+        toast.success("Video uploaded successfully!");
+        return data;
+      } else {
+        throw new Error(data.message || "Failed to upload video");
+      }
+    } catch (error) {
+      toast.error(error.message);
+      console.error("Upload error:", error);
+    } finally {
+      setUploading(false);
+    }
   };
 
   /* const handleDeleteImages = useCallback(async () => {
@@ -224,8 +272,9 @@ const ProductEditScreen = () => {
               </Form.Group>
 
               <VideoUpload
-                setVideoUrl={setVideoUrl}
                 productVideo={productVideo}
+                setVideoUploaded={setVideoUploaded}
+                uploading={uploading}
               />
 
               <Form.Group controlId="brand" className="my-2">
@@ -275,6 +324,7 @@ const ProductEditScreen = () => {
                 Actualizar
               </Button>
               {loadingUpload && <Loader />}
+              {uploading && <Loader />}
             </Form>
           )}
         </FormContainer>
