@@ -148,7 +148,7 @@ const Footer = () => {
 
           <hr />
 
-          <Row className="text-center">
+          <Row className="text-center mb-5">
             <Col md={6}>
               <p>
                 Brindamos a nuestros clientes el mejor{" "}
