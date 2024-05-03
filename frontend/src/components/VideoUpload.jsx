@@ -1,6 +1,11 @@
 import { Form } from "react-bootstrap";
 
-const VideoUpload = ({ productVideo, setVideoUploaded, uploading }) => {
+const VideoUpload = ({
+  productVideo,
+  videoUploaded,
+  setVideoUploaded,
+  uploading,
+}) => {
   const handleUploadChange = (e) => {
     if (!e.target.files.length) return;
     setVideoUploaded(e.target.files[0]);
@@ -16,7 +21,7 @@ const VideoUpload = ({ productVideo, setVideoUploaded, uploading }) => {
         onChange={handleUploadChange}
         disabled={uploading}
       />
-      {productVideo?.url !== "" && (
+      {productVideo?.url !== "" && !videoUploaded && (
         <video
           src={productVideo?.url}
           controls

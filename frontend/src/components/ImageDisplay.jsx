@@ -13,7 +13,7 @@ import {
 } from "@dnd-kit/sortable";
 import SortableItem from "./SortableItem"; // Ensure you have this component set up correctly
 
-const ImageDisplay = ({ images, label, setImages }) => {
+const ImageDisplay = ({ images, label, setImages, selectedFiles }) => {
   const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor));
 
   const handleDragEnd = (event) => {
@@ -29,32 +29,35 @@ const ImageDisplay = ({ images, label, setImages }) => {
     }
   };
 
-  return (
-    <div className="my-2" style={{ overflow: "hidden" }}>
-      <Form.Label>{label}</Form.Label>
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
-        <SortableContext
-          items={images.map((image) => image.url)}
-          strategy={verticalListSortingStrategy}
+  if (selectedFiles) {
+    return;
+  } else
+    return (
+      <div className="my-2" style={{ overflow: "hidden" }}>
+        <Form.Label>{label}</Form.Label>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
         >
-          <div className="d-flex flex-wrap justify-content-center gap-1">
-            {images.map((image, index) => (
-              <SortableItem
-                key={image.url}
-                id={image.url}
-                url={image.url}
-                index={index}
-              />
-            ))}
-          </div>
-        </SortableContext>
-      </DndContext>
-    </div>
-  );
+          <SortableContext
+            items={images.map((image) => image.url)}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="d-flex flex-wrap justify-content-center gap-1">
+              {images.map((image, index) => (
+                <SortableItem
+                  key={image.url}
+                  id={image.url}
+                  url={image.url}
+                  index={index}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
+      </div>
+    );
 };
 
 export default ImageDisplay;

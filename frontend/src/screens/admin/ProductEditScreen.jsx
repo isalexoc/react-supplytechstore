@@ -118,22 +118,27 @@ const ProductEditScreen = () => {
       return;
     }
     try {
-      await updateProduct({
+      const updated = await updateProduct({
         productId: productID,
         name,
         price,
         brand,
         video: videoFile ? videoFile : productVideo,
+        videoChanged: videoFile ? true : false,
         //on the category include "todos los productos" along with the rest of the categories
         category: category + ", todos los productos",
         images: imageData ? imageData : images,
+        imageChanged: imageData ? true : false,
         description,
         countInStock,
       }).unwrap(); // NOTE: here we need to unwrap the Promise to catch any rejection in our catch block
       toast.success("Producto actualizado exitosamente");
       //dispatch(clearImages());
       refetch();
-      navigate(`/product/${productID}`);
+      //if successful, redirect to product list
+      if (updated) {
+        navigate(`/product/${productID}`);
+      }
     } catch (err) {
       toast.error(err?.data?.message || err.error);
     }
@@ -255,6 +260,7 @@ const ProductEditScreen = () => {
                   images={images}
                   label="Imágenes Actuales"
                   setImages={setImages}
+                  selectedFiles={selectedFiles}
                 />
               )}
 
@@ -275,6 +281,7 @@ const ProductEditScreen = () => {
                 productVideo={productVideo}
                 setVideoUploaded={setVideoUploaded}
                 uploading={uploading}
+                videoUploaded={videoUploaded}
               />
 
               <Form.Group controlId="brand" className="my-2">

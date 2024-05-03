@@ -1,6 +1,13 @@
 import asyncHandler from "../middleware/asyncHandler.js";
 import Product from "../models/productModel.js";
 import Category from "../models/categoriesModel.js";
+import { v2 as cloudinary } from "cloudinary";
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 // @desc    Fetch all products
 // @route   GET /api/products
@@ -110,10 +117,12 @@ const updateProduct = asyncHandler(async (req, res) => {
     price,
     description,
     images,
+    imageChanged,
     brand,
     category,
     countInStock,
     video,
+    videoChanged,
   } = req.body;
 
   if (!name || !price || !description || !brand || !category || !countInStock) {
@@ -122,6 +131,11 @@ const updateProduct = asyncHandler(async (req, res) => {
   }
 
   const product = await Product.findById(req.params.id);
+
+  // Clone the original images array before making any updates
+  const oldImages = product.images ? [...product.images] : [];
+  // Clone the original video object before making any updates
+  const oldVideo = product.video ? { ...product.video } : null;
 
   if (product) {
     product.name = name;
@@ -134,6 +148,29 @@ const updateProduct = asyncHandler(async (req, res) => {
     product.video = video;
 
     const updatedProduct = await product.save();
+
+    if (updatedProduct) {
+      if (imageChanged && oldImages?.length > 0) {
+        // delete old images from cloudinary
+        const publicIds = oldImages.map((image) => image.public_id);
+        cloudinary.api
+          .delete_resources(publicIds, {
+            type: "upload",
+            resource_type: "image",
+            invalidate: true,
+          })
+          .then(console.log("Images deleted"));
+      }
+
+      if (videoChanged && oldVideo) {
+        // delete old video from cloudinary
+        cloudinary.api.delete_resources([oldVideo.public_id], {
+          type: "upload",
+          resource_type: "video",
+          invalidate: true,
+        });
+      }
+    }
 
     res.json(updatedProduct);
   } else {
@@ -169,6 +206,26 @@ const deleteProduct = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
 
   if (product) {
+    // delete images from cloudinary
+    const publicIds = product.images.map((image) => image.public_id);
+    if (publicIds?.length > 0) {
+      cloudinary.api
+        .delete_resources(publicIds, {
+          type: "upload",
+          resource_type: "image",
+          invalidate: true,
+        })
+        .then(console.log("Images deleted"));
+    }
+
+    // delete video from cloudinary
+    if (product?.video) {
+      cloudinary.api.delete_resources([product.video.public_id], {
+        type: "upload",
+        resource_type: "video",
+        invalidate: true,
+      });
+    }
     await Product.deleteOne({ _id: product._id });
     res.status(200).json({ message: "Producto borrado" });
   } else {
