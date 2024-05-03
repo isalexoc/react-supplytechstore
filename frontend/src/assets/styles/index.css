@@ -213,7 +213,6 @@ table th {
 /* Whatsapp Button */
 .whatsapp-button {
   position: fixed; /* Fixed positioning relative to the viewport */
-  bottom: 15px; /* 20px from the bottom */
   right: 15px; /* 20px from the right */
   background-color: #25d366; /* WhatsApp brand color */
   color: white; /* Icon color */
@@ -225,6 +224,18 @@ table th {
   align-items: center; /* Center vertically */
   text-decoration: none; /* Removes underline from the icon/link */
   z-index: 1000;
+}
+
+.wb-on-normal {
+  bottom: 15px;
+}
+
+.wb-on-mobile {
+  bottom: 65px;
+}
+
+.mobile-font {
+  font-size: 0.7rem;
 }
 
 .whatsapp-button:hover {
@@ -363,6 +374,19 @@ table th {
 .link-style {
   cursor: pointer;
   text-decoration: underline;
+}
+
+.fixed-mobile-nav {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: 1030;
+}
+
+.nav-link.active-nav-link {
+  font-weight: bold;
+  color: #000;
 }
 
 @keyframes moveToCart {

@@ -1,7 +1,7 @@
 import React from "react";
 import { FaWhatsapp } from "react-icons/fa";
 
-const WhatsAppButton = () => {
+const WhatsAppButton = ({ isMobile }) => {
   // Define your WhatsApp link
   const whatsappLink =
     "https://wa.me/584122763933?text=Hola%20quiero%20mas%20info%20sobre%20los%20productos";
@@ -9,7 +9,9 @@ const WhatsAppButton = () => {
   return (
     <a
       href={whatsappLink}
-      className="whatsapp-button"
+      className={`whatsapp-button ${
+        isMobile ? "wb-on-mobile" : "wb-on-normal"
+      }`}
       target="_blank"
       rel="noopener noreferrer"
     >
