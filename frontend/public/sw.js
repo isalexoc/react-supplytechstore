@@ -1,6 +1,17 @@
 const CACHE_NAME = "sts-cache";
 // The list of static files your app needs to start.
-const PRE_CACHED_RESOURCES = ["/"];
+const PRE_CACHED_RESOURCES = [
+  "/",
+  "/cart",
+  "/login",
+  "/register",
+  "/contact",
+  "/forgotpassword",
+  "/shipping",
+  "/payment",
+  "/placeorder",
+  "/profile",
+];
 
 self.addEventListener("fetch", (event) => {
   console.log(event.request.url);
