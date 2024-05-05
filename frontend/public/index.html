@@ -82,6 +82,11 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
 
+    <script>
+      if (typeof navigator.serviceWorker !== "undefined") {
+        navigator.serviceWorker.register("sw.js");
+      }
+    </script>
     <title>Supply Tech Store</title>
   </head>
   <body>
