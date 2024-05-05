@@ -2,6 +2,18 @@
   "short_name": "SupplyTechStore",
   "name": "SupplyTechStore",
   "description": "Materiales especializados en soldadura, corte, medición, seguridad industrial, y ferreteria",
+  "lang": "es",
+  "orientation": "portrait-primary",
+  "background_color": "#000000",
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "dir": "ltr",
+  "scope": "/",
+  "categories": ["tools", "welding", "cutting", "safety", "hardware"],
+  "launch_handler": {
+    "client_mode": ["navigate-existing", "auto"]
+  },
   "icons": [
     {
       "src": "/images/logo64.png",
@@ -31,7 +43,8 @@
     {
       "src": "/images/logo512.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any"
     },
     {
       "src": "/images/logo192.png",
@@ -54,8 +67,13 @@
       "type": "image/png"
     }
   ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "shortcuts": [
+    {
+      "name": "Mis órdenes",
+      "short_name": "Órdenes",
+      "description": "Abre tu perfil para ver tus órdenes",
+      "url": "/profile",
+      "icons": [{ "src": "icons/ordersicon.png", "sizes": "192x192" }]
+    }
+  ]
 }
