@@ -2,7 +2,8 @@ const CACHE_NAME = "sts-cache";
 // The list of static files your app needs to start.
 const PRE_CACHED_RESOURCES = ["/"];
 
-self.addEventListener("fetch", event => {
+self.addEventListener("fetch", (event) => {
+  console.log(event.request.url);
   async function returnCachedResource() {
     // Open the app's cache.
     const cache = await caches.open(CACHE_NAME);
@@ -18,14 +19,12 @@ self.addEventListener("fetch", event => {
       // Put the response in cache.
       cache.put(event.request.url, fetchResponse.clone());
       // And return the response.
-      return fetchResponse.
+      return fetchResponse;
     }
   }
 
   event.respondWith(returnCachedResource());
 });
-
-
 
 // Listen to the `install` event.
 self.addEventListener("install", (event) => {
