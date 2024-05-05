@@ -74,6 +74,13 @@
       "description": "Abre tu perfil para ver tus órdenes",
       "url": "/profile",
       "icons": [{ "src": "icons/ordersicon.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Catálogo",
+      "short_name": "Catálogode productos",
+      "description": "Abre el catálogo de todos los productos",
+      "url": "/products/todos%20los%20productos/page/1",
+      "icons": [{ "src": "icons/catalogicon.png", "sizes": "192x192" }]
     }
   ]
 }
