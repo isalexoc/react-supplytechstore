@@ -10,6 +10,7 @@ const PRE_CACHED_RESOURCES = [
   "/payment",
   "/placeorder",
   "/profile",
+  "/products",
   "/products/todos%20los%20productos/page/1",
   "/products/todos%20los%20productos/page/2",
   "/products/todos%20los%20productos/page/3",
@@ -65,24 +66,35 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     fetch(event.request)
       .then((fetchResponse) => {
+        if (!fetchResponse.ok) {
+          throw new Error(`Request failed: network response was not ok`);
+        }
         return caches.open(CACHE_NAME).then((cache) => {
           cache.put(event.request, fetchResponse.clone());
           return fetchResponse;
         });
       })
-      .catch(() => {
+      .catch((error) => {
         return caches.match(event.request).then((response) => {
           if (response) {
             return response;
           }
           // Optionally provide a fallback response here if a request fails both in the network and cache
           console.error(
-            `Request failed both in network and cache: ${event.request.url}`
+            `Network request failed: ${error.message}`,
+            event.request.url
           );
-          return new Response("Network error occurred", {
-            status: 404,
-            statusText: "Network error",
-          });
+          return new Response(
+            JSON.stringify({
+              message: "Offline or network error occurred",
+              status: "error",
+            }),
+            {
+              headers: { "Content-Type": "application/json" },
+              status: 404,
+              statusText: "Network error",
+            }
+          );
         });
       })
   );
