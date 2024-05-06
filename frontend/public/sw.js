@@ -10,6 +10,22 @@ const PRE_CACHED_RESOURCES = [
   "/payment",
   "/placeorder",
   "/profile",
+  "/products/todos%20los%20productos/page/1",
+  "/products/todos%20los%20productos/page/2",
+  "/products/todos%20los%20productos/page/3",
+  "/products/todos%20los%20productos/page/4",
+  "/products/todos%20los%20productos/page/5",
+  "/products/todos%20los%20productos/page/6",
+  "/products/todos%20los%20productos/page/7",
+  "/products/todos%20los%20productos/page/8",
+  "/products/todos%20los%20productos/page/9",
+  "/products/todos%20los%20productos/page/10",
+  "/products/todos%20los%20productos/page/11",
+  "/products/todos%20los%20productos/page/12",
+  "/products/todos%20los%20productos/page/13",
+  "/products/todos%20los%20productos/page/14",
+  "/products/todos%20los%20productos/page/15",
+  "/products/todos%20los%20productos/page/16",
 ];
 
 self.addEventListener("install", (event) => {
