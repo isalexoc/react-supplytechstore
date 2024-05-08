@@ -1,18 +1,12 @@
-import PropTypes from "prop-types";
-
-const YoutubeEmbed = ({ embedId }) => (
+const YoutubeEmbed = () => (
   <>
-    <iframe
-      src={`https://www.youtube.com/embed/${embedId}?autoplay=1&mute=1&loop=1&playlist=${embedId}&controls=0&modestbranding=1&rel=0&showinfo=0&iv_load_policy=3`}
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-      allowFullScreen
-      title="Embedded youtube"
-    />
+    <video autoPlay loop muted playsInline title="Embedded cloudinary video">
+      <source
+        src="https://res.cloudinary.com/isaacdev/video/upload/v1715140806/intro_nubfsz.mp4"
+        type="video/mp4"
+      />
+    </video>
   </>
 );
-
-YoutubeEmbed.propTypes = {
-  embedId: PropTypes.string.isRequired,
-};
 
 export default YoutubeEmbed;

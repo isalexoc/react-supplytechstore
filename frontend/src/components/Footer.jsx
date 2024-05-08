@@ -12,40 +12,61 @@ import {
 import Newsletter from "./Newsletter";
 
 const Footer = () => {
-  const [isAppInstalled, setIsAppInstalled] = useState(true);
+  const [isAppInstalled, setIsAppInstalled] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
 
   useEffect(() => {
-    const beforeInstallPromptHandler = (e) => {
-      // Prevent Chrome 67 and earlier from automatically showing the prompt
+    const handleAppInstalled = () => {
+      setIsAppInstalled(true);
+    };
+
+    window.addEventListener("appinstalled", handleAppInstalled);
+
+    window.addEventListener("beforeinstallprompt", (e) => {
+      // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
       // Stash the event so it can be triggered later.
       setDeferredPrompt(e);
-      // Update UI to notify the user they can add to home screen
+      // Update UI to notify the user they can install the PWA
       setIsAppInstalled(false);
-    };
-
-    window.addEventListener("beforeinstallprompt", beforeInstallPromptHandler);
+    });
 
     return () => {
-      window.removeEventListener(
-        "beforeinstallprompt",
-        beforeInstallPromptHandler
-      );
+      window.removeEventListener("appinstalled", handleAppInstalled);
+      window.removeEventListener("beforeinstallprompt", (e) => {
+        setDeferredPrompt(null);
+      });
     };
   }, []);
 
+  const cacheAssets = () => {
+    if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({
+        action: "CACHE_ASSETS",
+      });
+    } else {
+      console.log("Service worker not registered or active.");
+    }
+  };
+
   const installAppHandler = async () => {
-    // Show the prompt
-    if (deferredPrompt !== null) {
-      deferredPrompt.prompt();
-      // Wait for the user to respond to the prompt
-      const { outcome } = await deferredPrompt.userChoice;
-      // Optionally, send analytics event with the response of the user
-      console.log(`User response to the install prompt: ${outcome}`);
-      // We've used the prompt, and can't use it again, discard it
+    if (deferredPrompt) {
+      try {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User response to the install prompt: ${outcome}`);
+
+        if (outcome === "accepted") {
+          console.log("User accepted the A2HS prompt");
+          setIsAppInstalled(true);
+          cacheAssets(); // Trigger asset caching after the app is installed
+        } else {
+          console.log("User dismissed the A2HS prompt");
+        }
+      } catch (error) {
+        console.error("Installation failed: ", error);
+      }
       setDeferredPrompt(null);
-      setIsAppInstalled(true);
     }
   };
 
