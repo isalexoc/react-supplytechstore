@@ -1,4 +1,4 @@
-const CACHE_NAME = "sts-cache-v6";
+const CACHE_NAME = "sts-cache-v7";
 
 const PRE_CACHED_RESOURCES = ["/", "/index.html"];
 
@@ -29,11 +29,11 @@ self.addEventListener("activate", (event) => {
 
 // Listener for fetch events - serves cached assets in case of no network or slow network.
 self.addEventListener("fetch", (event) => {
-  event.respondWith(
+  /* event.respondWith(
     caches.match(event.request).then((response) => {
       return response || fetch(event.request);
     })
-  );
+  ); */
 });
 
 self.addEventListener("message", (event) => {

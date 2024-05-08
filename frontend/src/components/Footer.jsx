@@ -70,6 +70,8 @@ const Footer = () => {
     }
   };
 
+  console.log(isAppInstalled);
+
   const openAppHandler = () => {
     alert(
       "La aplicación ha sido instalada. Por favor, ábrela desde tu pantalla de inicio o el cajón de aplicaciones."
