@@ -9,15 +9,22 @@ import { useSelector } from "react-redux";
 import { MdOutlineAdminPanelSettings } from "react-icons/md";
 import { HiOutlineViewGridAdd } from "react-icons/hi";
 import { RxBorderStyle } from "react-icons/rx";
+import { checkIFstandAlone } from "../utils/checkIfStandAlone";
 
 const MobileMenu = () => {
   const { userInfo } = useSelector((state) => state.auth);
 
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 500);
 
+  const isStandAlone = checkIFstandAlone();
+
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 500);
+      if (isStandAlone) {
+        setIsMobile(true);
+      } else {
+        setIsMobile(window.innerWidth <= 500);
+      }
     };
 
     window.addEventListener("resize", handleResize);
@@ -26,7 +33,7 @@ const MobileMenu = () => {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
+  }, [isStandAlone]);
 
   return (
     <>
@@ -55,7 +62,7 @@ const MobileMenu = () => {
               activeClassName="active-nav-link"
             >
               <Nav.Link className="d-flex flex-column justify-content-center align-items-center">
-                <GrCatalog size={20} />
+                <GrCatalog size={25} />
                 <span className="mobile-font">Catálogo</span>
               </Nav.Link>
             </LinkContainer>
@@ -68,7 +75,7 @@ const MobileMenu = () => {
                   activeClassName="active-nav-link"
                 >
                   <Nav.Link className="d-flex flex-column justify-content-center align-items-center">
-                    <MdOutlineAdminPanelSettings size={20} />
+                    <MdOutlineAdminPanelSettings size={25} />
                     <span className="mobile-font">Perfil</span>
                   </Nav.Link>
                 </LinkContainer>
@@ -79,7 +86,7 @@ const MobileMenu = () => {
                   activeClassName="active-nav-link"
                 >
                   <Nav.Link className="d-flex flex-column justify-content-center align-items-center">
-                    <HiOutlineViewGridAdd size={20} />
+                    <HiOutlineViewGridAdd size={25} />
                     <span className="mobile-font">Productos</span>
                   </Nav.Link>
                 </LinkContainer>
@@ -90,7 +97,7 @@ const MobileMenu = () => {
                   activeClassName="active-nav-link"
                 >
                   <Nav.Link className="d-flex flex-column justify-content-center align-items-center">
-                    <RxBorderStyle size={20} />
+                    <RxBorderStyle size={25} />
                     <span className="mobile-font">Órdenes</span>
                   </Nav.Link>
                 </LinkContainer>
@@ -103,7 +110,7 @@ const MobileMenu = () => {
                   activeClassName="active-nav-link"
                 >
                   <Nav.Link className="d-flex flex-column justify-content-center align-items-center">
-                    <GrContact size={20} />
+                    <GrContact size={25} />
                     <span className="mobile-font">Contacto</span>
                   </Nav.Link>
                 </LinkContainer>
@@ -114,7 +121,7 @@ const MobileMenu = () => {
                   activeClassName="active-nav-link"
                 >
                   <Nav.Link className="d-flex flex-column justify-content-center align-items-center">
-                    <FaRegUser size={20} />
+                    <FaRegUser size={25} />
                     <span className="mobile-font">Mi Cuenta</span>
                   </Nav.Link>
                 </LinkContainer>

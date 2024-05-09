@@ -11,6 +11,7 @@ import { setCredentials } from "../slices/authSlice";
 import { useGetMyOrdersQuery } from "../slices/orderApiSlice";
 import ShowCategories from "../components/ShowCategories";
 import Meta from "../components/Meta";
+import BackTo from "../components/BackTo";
 
 const ProfileScreen = () => {
   const [name, setName] = useState("");
@@ -170,6 +171,8 @@ const ProfileScreen = () => {
           </Col>
         )}
       </Row>
+
+      <BackTo />
     </>
   );
 };

@@ -11,6 +11,7 @@ import Loader from "../components/Loader";
 import Message from "../components/Message";
 import Meta from "../components/Meta";
 import getDollarPrice from "../utils/dollarPrice";
+import BackTo from "../components/BackTo";
 
 const Catalog = () => {
   const { category: currentCategory, pageNumber: currentPageNumber } =
@@ -155,6 +156,7 @@ const Catalog = () => {
           </Row>
         </>
       )}
+      <BackTo />
     </>
   );
 };

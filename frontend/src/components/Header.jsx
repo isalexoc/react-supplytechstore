@@ -15,6 +15,7 @@ import { truncateString } from "../utils/textUtils";
 import BannerVideo from "./BannerVideo";
 import { useLocation } from "react-router-dom";
 import { checkIFstandAlone } from "../utils/checkIfStandAlone";
+import { FaFacebook, FaInstagram } from "react-icons/fa";
 
 const Header = () => {
   const location = useLocation();
@@ -34,6 +35,7 @@ const Header = () => {
   const [expanded, setExpanded] = useState(false);
 
   const isStandAlone = checkIFstandAlone();
+  const isMobile = window.innerWidth <= 989;
 
   useEffect(() => {
     setExpanded(false);
@@ -53,7 +55,10 @@ const Header = () => {
       }
     };
 
-    if (currentPath === "/" || currentPath.startsWith("/page/1")) {
+    if (
+      (currentPath === "/" || currentPath.startsWith("/page/1")) &&
+      !isStandAlone
+    ) {
       setNavbarBg("transparent");
       setIsHome(true);
       // Add scroll event listener
@@ -105,7 +110,7 @@ const Header = () => {
             setExpanded(expanded);
             if (expanded) {
               setNavbarBg("dark");
-            } else if (!isScrolled && isHome) {
+            } else if (!isScrolled && isHome && !isStandAlone) {
               setNavbarBg("transparent");
             }
           }}
@@ -201,6 +206,30 @@ const Header = () => {
                       <NavDropdown.Item>Órdenes</NavDropdown.Item>
                     </LinkContainer>
                   </NavDropdown>
+                )}
+                {isStandAlone && expanded && isMobile && (
+                  <>
+                    <h5 className="text-center text-white mt-4 mb-1">
+                      Nuestras Redes
+                    </h5>
+
+                    <div className="d-flex gap-3 justify-content-center mb-2">
+                      <a
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        href="https://www.facebook.com/profile.php?id=100054573574236"
+                      >
+                        <FaFacebook size={40} className="text-white" />
+                      </a>
+                      <a
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        href="https://www.instagram.com/supply_tech/"
+                      >
+                        <FaInstagram size={40} className="text-white" />
+                      </a>
+                    </div>
+                  </>
                 )}
               </Nav>
             </Navbar.Collapse>
