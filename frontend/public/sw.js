@@ -1,4 +1,4 @@
-const CACHE_NAME = "sts-cache-v7";
+const CACHE_NAME = "sts-cache-v8";
 
 const PRE_CACHED_RESOURCES = ["/", "/index.html"];
 
