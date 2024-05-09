@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Image } from "react-bootstrap";
 import {
   FaHeadset,
   FaLock,
@@ -10,12 +10,21 @@ import {
   FaPhoneAlt,
 } from "react-icons/fa";
 import Newsletter from "./Newsletter";
+import iconInstall from "../assets/logoInstall.png";
 
 const Footer = () => {
   const [isAppInstalled, setIsAppInstalled] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
+    const checkInstallationStatus = () => {
+      const fromApp = window.matchMedia("(display-mode: standalone)").matches;
+      if (fromApp) {
+        setIsStandalone(true);
+      }
+    };
+
     const handleAppInstalled = () => {
       setIsAppInstalled(true);
     };
@@ -30,6 +39,8 @@ const Footer = () => {
       // Update UI to notify the user they can install the PWA
       setIsAppInstalled(false);
     });
+
+    checkInstallationStatus();
 
     return () => {
       window.removeEventListener("appinstalled", handleAppInstalled);
@@ -68,14 +79,6 @@ const Footer = () => {
       }
       setDeferredPrompt(null);
     }
-  };
-
-  console.log(isAppInstalled);
-
-  const openAppHandler = () => {
-    alert(
-      "La aplicación ha sido instalada. Por favor, ábrela desde tu pantalla de inicio o el cajón de aplicaciones."
-    );
   };
 
   return (
@@ -213,7 +216,7 @@ const Footer = () => {
                 id="install-button"
               >
                 {/* Mostrar solo si la app no está instalada */}
-                {!isAppInstalled ? (
+                {!isAppInstalled && !isStandalone && (
                   <div className="d-flex flex-column align-items-center">
                     <p className="text-center">
                       Instala nuestra app para disfrutar de una mejor
@@ -225,18 +228,11 @@ const Footer = () => {
                     >
                       Instalar
                     </button>
-                  </div>
-                ) : (
-                  <div>
-                    <p className="text-center">
-                      ¡Gracias por instalar nuestra app!
+                    <p>
+                      Después de instalar puedes abrir la app desde tu pantalla
+                      de inicio busca el ícono de SupplyTechStore:{" "}
+                      <Image width={60} src={iconInstall} /> y Abre la app
                     </p>
-                    <button
-                      className="btn btn-outline-light btn-lg"
-                      onClick={openAppHandler}
-                    >
-                      Abrir app
-                    </button>
                   </div>
                 )}
               </div>
