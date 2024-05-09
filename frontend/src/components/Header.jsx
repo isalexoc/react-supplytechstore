@@ -14,6 +14,7 @@ import logo from "../assets/logo.png";
 import { truncateString } from "../utils/textUtils";
 import BannerVideo from "./BannerVideo";
 import { useLocation } from "react-router-dom";
+import { checkIFstandAlone } from "../utils/checkIfStandAlone";
 
 const Header = () => {
   const location = useLocation();
@@ -32,6 +33,8 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [expanded, setExpanded] = useState(false);
 
+  const isStandAlone = checkIFstandAlone();
+
   useEffect(() => {
     setExpanded(false);
     window.scrollTo(0, 0);
@@ -39,7 +42,8 @@ const Header = () => {
       // Set navbar background color based on scroll position and current path
       if (
         (currentPath === "/" || currentPath.startsWith("/page/1")) &&
-        window.scrollY > 50
+        window.scrollY > 50 &&
+        !isStandAlone
       ) {
         setNavbarBg("dark");
         setIsScrolled(true);
@@ -53,15 +57,28 @@ const Header = () => {
       setNavbarBg("transparent");
       setIsHome(true);
       // Add scroll event listener
-      window.addEventListener("scroll", handleScroll);
+      if (!isStandAlone) {
+        window.addEventListener("scroll", handleScroll);
+      }
     } else {
       setNavbarBg("dark");
       setIsHome(false);
     }
 
     // Clean up the event listener when the component unmounts or path changes
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [currentPath]);
+    return () => {
+      if (!isStandAlone) {
+        window.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, [currentPath, isStandAlone]);
+
+  useEffect(() => {
+    if (isStandAlone) {
+      // If the app is standalone, always set the navbar background to dark
+      setNavbarBg("dark");
+    }
+  }, [isStandAlone]);
 
   const logoutHandler = async () => {
     try {

@@ -134,6 +134,16 @@ table th {
   margin-top: -80px;
 }
 
+.bannerVideoParent-standalone {
+  position: relative;
+  overflow: hidden;
+  width: 65%;
+  /* Adjust the height as needed or use padding-bottom for aspect ratio */
+  height: 55vh;
+  margin: auto;
+  border-radius: 0.5rem; /* Rounded corners */
+}
+
 .bannerVideoParent video {
   position: absolute;
   top: -10%; /* Adjust as needed to crop the top */
@@ -141,6 +151,12 @@ table th {
   width: 120%; /* Increase width to zoom in */
   height: 120%; /* Increase height to zoom in */
   transform: scale(1.6); /* Scale the video */
+}
+
+.bannerVideoParent-standalone video {
+  position: absolute;
+
+  transform: scale(1.4); /* Scale the video */
 }
 
 .video-overlay {
