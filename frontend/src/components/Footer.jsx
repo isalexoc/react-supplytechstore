@@ -230,26 +230,28 @@ const Footer = () => {
                     className="d-flex justify-content-center align-items-center"
                     id="install-button"
                   >
-                    {/* Mostrar solo si la app no está instalada */}
-                    {!isAppInstalled && (
-                      <div className="d-flex flex-column align-items-center">
-                        <p className="text-center">
-                          Instala nuestra app para disfrutar de una mejor
-                          experiencia de compra
-                        </p>
-                        <button
-                          className="btn btn-outline-light btn-lg"
-                          onClick={installAppHandler}
-                        >
-                          Instalar
-                        </button>
-                        <p>
-                          Después de instalar puedes abrir la app desde tu
-                          pantalla de inicio busca el ícono de SupplyTechStore:{" "}
-                          <Image width={60} src={iconInstall} /> y Abre la app
-                        </p>
-                      </div>
+                    {isAppInstalled && (
+                      <p className="text-center text-primary">
+                        Gracias por instalar nuestra app
+                      </p>
                     )}
+                    <div className="d-flex flex-column align-items-center">
+                      <p className="text-center">
+                        Instala nuestra app para disfrutar de una mejor
+                        experiencia de compra
+                      </p>
+                      <button
+                        className="btn btn-outline-light btn-lg"
+                        onClick={installAppHandler}
+                      >
+                        Instalar
+                      </button>
+                      <p>
+                        Después de instalar puedes abrir la app desde tu
+                        pantalla de inicio busca el ícono de SupplyTechStore:{" "}
+                        <Image width={60} src={iconInstall} /> y Abre la app
+                      </p>
+                    </div>
                   </div>
                 </Col>
               </Row>
