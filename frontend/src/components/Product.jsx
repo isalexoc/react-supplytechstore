@@ -12,6 +12,7 @@ const Product = ({ product, dollar }) => {
             <Card.Img
               src={product?.images[0] ? product?.images[0].url : product.image}
               variant="top"
+              alt={product.name}
             />
           </Link>
         </Col>

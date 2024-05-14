@@ -249,7 +249,12 @@ const Footer = () => {
                       <p>
                         Después de instalar puedes abrir la app desde tu
                         pantalla de inicio busca el ícono de SupplyTechStore:{" "}
-                        <Image width={60} src={iconInstall} /> y Abre la app
+                        <Image
+                          width={60}
+                          src={iconInstall}
+                          alt="Botón para instalar la app"
+                        />{" "}
+                        y Abre la app
                       </p>
                     </div>
                   </div>
