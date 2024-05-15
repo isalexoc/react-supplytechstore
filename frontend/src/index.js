@@ -65,7 +65,6 @@ const router = createBrowserRouter(
       <Route path="/forgotpassword" element={<ForgotPassword />} />
       <Route path="/resetpassword/:id/:token" element={<ResetPassword />} />
       <Route path="/privacypolicy" element={<PrivacyPolicy />} />
-      <Route path="/deleteuser" element={<DeleteUser />} />
 
       <Route path="" element={<PrivateRoute />}>
         <Route path="/shipping" element={<ShippingScreen />} />
@@ -74,6 +73,7 @@ const router = createBrowserRouter(
         <Route path="/order/:id" element={<OrderScreen />} />
         <Route path="/profile" element={<ProfileScreen />} />
         <Route path="/changepay/:id" element={<ChangePaymentMethodScreen />} />
+        <Route path="/deleteuser" element={<DeleteUser />} />
       </Route>
 
       <Route path="" element={<AdminRoute />}>

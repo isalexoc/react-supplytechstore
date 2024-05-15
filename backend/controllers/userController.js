@@ -537,6 +537,47 @@ const resetPassword = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Delete user and all user data and subscriptions
+// @route   POST /api/users/deleteaccount
+// @access  Private
+const removeAccount = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    res.status(400);
+    throw new Error("Por favor, complete todos los campos.");
+  }
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    res.status(404);
+    throw new Error("Usuario no encontrado");
+  }
+
+  if (user._id.toString() !== req.user._id.toString()) {
+    res.status(401);
+    throw new Error("No autorizado para eliminar esta cuenta.");
+  }
+
+  const subscriber = await Subscriber.findOne({ email });
+
+  if (user && (await user.matchPassword(password))) {
+    // Delete user and all user data
+
+    if (subscriber) {
+      await Subscriber.deleteOne({ _id: subscriber._id });
+    }
+
+    await User.deleteOne({ _id: user._id });
+
+    res.status(200).json({ message: "Cuenta eliminada" });
+  } else {
+    res.status(401);
+    throw new Error("Contraseña incorrecta");
+  }
+});
+
 const generateTokenForPassword = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: "10m",
@@ -560,4 +601,5 @@ export {
   googleLogin,
   forgotPassword,
   resetPassword,
+  removeAccount,
 };

@@ -17,6 +17,7 @@ import {
   googleLogin,
   forgotPassword,
   resetPassword,
+  removeAccount,
 } from "../controllers/userController.js";
 import { protect, admin } from "../middleware/authMiddleware.js";
 
@@ -41,5 +42,5 @@ router
   .put(protect, admin, updateUser);
 router.route("/forgotpassword").post(forgotPassword);
 router.route("/resetpassword").post(resetPassword);
-
+router.route("/deleteaccount").post(protect, removeAccount);
 export default router;
