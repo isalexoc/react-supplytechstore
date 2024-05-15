@@ -1,8 +1,13 @@
-[{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "com.supplytechstore.www.twa",
-        "sha256_cert_fingerprints": ["94:30:12:7B:0E:4F:EA:BC:68:A0:E7:90:A3:09:2F:15:9C:D6:BF:1B:95:5A:73:21:EB:16:5E:09:25:1A:16:9C"]
-      }
-    }]
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.supplytechstore.www.twa",
+      "sha256_cert_fingerprints": [
+        "94:30:12:7B:0E:4F:EA:BC:68:A0:E7:90:A3:09:2F:15:9C:D6:BF:1B:95:5A:73:21:EB:16:5E:09:25:1A:16:9C",
+        "65:F9:49:2C:25:47:14:9B:00:60:15:A1:21:EA:33:44:43:28:4D:01"
+      ]
+    }
+  }
+]
