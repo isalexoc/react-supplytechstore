@@ -1,0 +1,13 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.supplytechstore.www.twa",
+      "sha256_cert_fingerprints": [
+        "69:96:39:FD:3E:7D:DB:AC:2C:E4:31:63:9D:20:56:71:5B:B7:FE:40:A7:FF:9C:10:AD:66:67:50:2C:FE:A5:94",
+        "22:01:F0:EF:0A:8D:4D:54:CD:58:6F:64:ED:1F:F7:46:56:BB:69:CE:D0:A0:AA:C2:C5:9D:12:71:9D:A7:B6:D1"
+      ]
+    }
+  }
+]

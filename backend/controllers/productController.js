@@ -366,6 +366,33 @@ const updateCategory = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Get all products images
+// @route   GET /api/products/getproductsimages
+// @access  Public
+const getImages = asyncHandler(async (req, res) => {
+  console.log(`Entered getImages`);
+  try {
+    const products = await Product.find({}); // Fetch all products from the database
+    const allImages = products.flatMap((product) => {
+      // Flatten the array of arrays or single items into one array of image URLs
+      if (product.images && product.images.length > 0) {
+        return product.images.map((image) => image.url); // Return all image URLs from the 'images' array
+      } else if (product.image) {
+        return [product.image]; // Return the single image URL as an array
+      }
+      return []; // Return an empty array if no images found
+    });
+
+    console.log(`Total images found: ${allImages.length}`); // Log the total number of images found
+    res.status(200).json({ allImages }); // Send all image URLs in JSON format
+  } catch (error) {
+    console.error("Error fetching product images:", error); // Log any error that occurred during the fetch
+    res
+      .status(500)
+      .json({ message: "Error fetching product images", error: error.message });
+  }
+});
+
 export {
   getProducts,
   getProductById,
@@ -381,4 +408,5 @@ export {
   createCategory,
   deleteCategory,
   updateCategory,
+  getImages,
 };

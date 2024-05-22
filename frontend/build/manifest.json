@@ -1,0 +1,86 @@
+{
+  "short_name": "SupplyTechStore",
+  "name": "SupplyTechStore",
+  "description": "Materiales especializados en soldadura, corte, medición, seguridad industrial, y ferreteria",
+  "lang": "es",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "dir": "ltr",
+  "scope": "/",
+  "categories": ["tools", "welding", "cutting", "safety", "hardware"],
+  "launch_handler": {
+    "client_mode": ["navigate-existing", "auto"]
+  },
+  "icons": [
+    {
+      "src": "/images/logo64.png",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/images/logo32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/logo24.png",
+      "sizes": "24x24",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/logo16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/images/logo512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/logo192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "background_color": "#ffffff",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/images/screenshot800.png",
+      "sizes": "800x600",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/images/screenshot2.png",
+      "sizes": "800x600",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Mis órdenes",
+      "short_name": "Órdenes",
+      "description": "Abre tu perfil para ver tus órdenes",
+      "url": "/profile",
+      "icons": [{ "src": "icons/ordersicon.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Catálogo",
+      "short_name": "Catálogode productos",
+      "description": "Abre el catálogo de todos los productos",
+      "url": "/products/todos%20los%20productos/page/1",
+      "icons": [{ "src": "icons/catalogicon.png", "sizes": "192x192" }]
+    }
+  ]
+}
