@@ -134,6 +134,12 @@ export const productsApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    getCatalog: builder.mutation({
+      query: () => ({
+        url: `${PRODUCTS_URL}/getcatalog`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -156,4 +162,5 @@ export const {
   useCreateCategoryMutation,
   useDeleteCategoryMutation,
   useUpdateCategoryMutation,
+  useGetCatalogMutation,
 } = productsApiSlice;

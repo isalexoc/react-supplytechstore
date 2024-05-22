@@ -137,7 +137,7 @@ const OrderScreen = () => {
                       onClick={() => {
                         setIsPreparingDownload(true);
                         setTimeout(() => {
-                          setIsPreparingDownload(false); // reset after 10 seconds, adjust as needed
+                          setIsPreparingDownload(false); // reset after 2 seconds, adjust as needed
                         }, 2000);
                       }}
                     >

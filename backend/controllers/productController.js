@@ -2,6 +2,8 @@ import asyncHandler from "../middleware/asyncHandler.js";
 import Product from "../models/productModel.js";
 import Category from "../models/categoriesModel.js";
 import { v2 as cloudinary } from "cloudinary";
+import path from "path";
+import buildPDF from "../libs/pdfKitCatalog.js";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -393,6 +395,40 @@ const getImages = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Get catalog
+// @route   GET /api/products/getcatalog
+// @access  Public
+
+const getCatalog = asyncHandler(async (req, res) => {
+  const products = await Product.find({}).populate("user", "name email");
+  try {
+    const __dirname = path.resolve();
+    const logoPath = path.join(__dirname, "frontend/public/images/logo192.png");
+
+    const stream = res.writeHead(200, {
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename=Productos-supplytechstore.pdf`,
+    });
+
+    buildPDF(
+      (data) => {
+        stream.write(data);
+      },
+      () => {
+        stream.end();
+      },
+      products,
+      user,
+      logoPath
+    );
+  } catch (error) {
+    console.log(error);
+    throw new Error("Error al generar la factura");
+  }
+
+  res.status(200).json({ message: "Catalogo generado" });
+});
+
 export {
   getProducts,
   getProductById,
@@ -409,4 +445,5 @@ export {
   deleteCategory,
   updateCategory,
   getImages,
+  getCatalog,
 };

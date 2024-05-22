@@ -16,6 +16,7 @@ import {
   updateCategory,
   updateProductImages,
   getImages,
+  getCatalog,
 } from "../controllers/productController.js";
 import { protect, admin } from "../middleware/authMiddleware.js";
 import checkObjectId from "../middleware/checkObjectId.js";
@@ -26,6 +27,7 @@ router.route("/:id/reviews").post(protect, checkObjectId, createProductReview);
 router.route("/top").get(getTopProducts);
 router.route("/allproducts").get(getAllProducts);
 router.route("/category").get(getProductByCategory);
+router.route("/getcatalog").get(getCatalog);
 router.route("/getImages").get(getImages);
 
 router

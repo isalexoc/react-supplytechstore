@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { LinkContainer } from "react-router-bootstrap";
 import { Table, Button, Row, Col, Image } from "react-bootstrap";
 import { FaEdit, FaTrash } from "react-icons/fa";
@@ -12,6 +13,7 @@ import {
   useDeleteProductMutation,
 } from "../../slices/productsApiSlice";
 import Meta from "../../components/Meta";
+import { PRODUCTS_URL } from "../../constants";
 
 const ProductListScreen = () => {
   const { pageNumber } = useParams();
@@ -25,6 +27,8 @@ const ProductListScreen = () => {
 
   const [deleteProduct, { isLoading: loadingDelete }] =
     useDeleteProductMutation();
+
+  const [isPreparingDownload, setIsPreparingDownload] = useState(false);
 
   const deleteHandler = async (id) => {
     if (window.confirm("¿Deseas borrar el producto?")) {
@@ -55,6 +59,23 @@ const ProductListScreen = () => {
       <Row className="align-items-center">
         <Col>
           <h1>Productos</h1>
+          {isPreparingDownload ? (
+            <Loader />
+          ) : (
+            <a
+              href={`${PRODUCTS_URL}/getcatalog`}
+              download
+              className="btn btn-primary btn-sm mb-3"
+              onClick={() => {
+                setIsPreparingDownload(true);
+                setTimeout(() => {
+                  setIsPreparingDownload(false); // reset after 2 seconds, adjust as needed
+                }, 2000);
+              }}
+            >
+              Descargar Catálogo
+            </a>
+          )}
         </Col>
         <Col className="text-end">
           <Button onClick={createProductHandler} className="m-3 btn-sm">
