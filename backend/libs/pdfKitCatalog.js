@@ -55,9 +55,48 @@ async function buildPDF(dataCallback, endCallback, products, logoPath) {
 
   doc.moveDown(2);
 
-  doc.text(`Cantidad de productos ${productsToPrint.length}`, {
-    align: "center",
-  });
+  // Customer Service Information
+  doc.moveDown(1);
+  doc
+    .font("Helvetica-Bold")
+    .text("Servicio al cliente:", { continued: true })
+    .font("Helvetica")
+    .text(
+      " Lunes a Viernes de 7:30 am a 6:30 pm, Sábados de 8:00 am a 4:00 pm"
+    );
+  doc.text("+58 412-2763933, +58 424-3189004, supplytech.soldaduras@gmail.com");
+  doc.text("R.I.F: J405080078, SUPPLY TECH C.A");
+
+  // Address
+  doc.moveDown(1);
+  doc
+    .font("Helvetica-Bold")
+    .text("Dirección:", { continued: true })
+    .font("Helvetica")
+    .text(
+      " Av. Bolivar Oeste #150 C/C Av. Ayacucho, Edificio Don Antonio, Piso B, Local 2, Sector casco central de Maracay, Edo. Aragua, Zona postal 2101"
+    );
+
+  // Contact Phones
+  doc.moveDown(1);
+  doc
+    .font("Helvetica-Bold")
+    .text("Teléfonos:", { continued: true })
+    .font("Helvetica")
+    .text(" +58 412-2763933 | +58 424-3189004");
+
+  // Bank Accounts
+  doc.moveDown(1);
+  doc.font("Helvetica-Bold").text("Cuentas Bancarias para transferencias:");
+  doc
+    .font("Helvetica")
+    .text(
+      "Cta corriente Banco mercantil Supply tech C.A 01050100891100178104, supplytech.soldaduras@gmail.com, J-405080078"
+    );
+  doc.moveDown(1);
+  doc.text(
+    "Cta corriente banco de Venezuela SUPPLY TECH 0102-0358-91-0000749264, supplytech.soldaduras@gmail.com, J-405080078"
+  );
 
   doc.moveDown(2);
 

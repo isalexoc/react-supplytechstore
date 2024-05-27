@@ -2,6 +2,8 @@ import { useState } from "react";
 import { LinkContainer } from "react-router-bootstrap";
 import { Table, Button, Row, Col, Image } from "react-bootstrap";
 import { FaEdit, FaTrash } from "react-icons/fa";
+import { GrCatalog } from "react-icons/gr";
+import { IoMdDownload } from "react-icons/io";
 import { useParams } from "react-router-dom";
 import Message from "../../components/Message";
 import Loader from "../../components/Loader";
@@ -73,7 +75,7 @@ const ProductListScreen = () => {
                 }, 2000);
               }}
             >
-              Descargar Catálogo
+              <IoMdDownload /> Descargar Catálogo <GrCatalog />
             </a>
           )}
         </Col>

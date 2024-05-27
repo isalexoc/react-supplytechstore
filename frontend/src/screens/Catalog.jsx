@@ -12,6 +12,9 @@ import Message from "../components/Message";
 import Meta from "../components/Meta";
 import getDollarPrice from "../utils/dollarPrice";
 import BackTo from "../components/BackTo";
+import { PRODUCTS_URL } from "../constants";
+import { GrCatalog } from "react-icons/gr";
+import { IoMdDownload } from "react-icons/io";
 
 const Catalog = () => {
   const { category: currentCategory, pageNumber: currentPageNumber } =
@@ -22,6 +25,8 @@ const Catalog = () => {
   const [selectedCategory, setSelectedCategory] = useState(
     currentCategory || ""
   );
+  const [isPreparingDownload, setIsPreparingDownload] = useState(false);
+
   const pageNumber = parseInt(currentPageNumber) || 1;
 
   const {
@@ -105,7 +110,26 @@ const Catalog = () => {
         <>
           <Row>
             <Col md={3}>
-              <h3>Categorías</h3>
+              <div className="z-index-3 d-flex justify-content-center align-items-center">
+                {isPreparingDownload ? (
+                  <Loader />
+                ) : (
+                  <a
+                    href={`${PRODUCTS_URL}/getcatalog`}
+                    download
+                    className="btn btn-primary btn-sm mb-3"
+                    onClick={() => {
+                      setIsPreparingDownload(true);
+                      setTimeout(() => {
+                        setIsPreparingDownload(false); // reset after 2 seconds, adjust as needed
+                      }, 2000);
+                    }}
+                  >
+                    <IoMdDownload /> Descargar Catálogo <GrCatalog />
+                  </a>
+                )}
+              </div>
+
               <Form.Group
                 as="select"
                 className="d-md-none form-select"

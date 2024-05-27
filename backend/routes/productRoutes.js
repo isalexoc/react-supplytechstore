@@ -27,7 +27,7 @@ router.route("/:id/reviews").post(protect, checkObjectId, createProductReview);
 router.route("/top").get(getTopProducts);
 router.route("/allproducts").get(getAllProducts);
 router.route("/category").get(getProductByCategory);
-router.route("/getcatalog").get(getCatalog);
+router.route("/getcatalog").get(protect, getCatalog);
 router.route("/getImages").get(getImages);
 
 router
