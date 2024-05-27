@@ -400,7 +400,7 @@ const getImages = asyncHandler(async (req, res) => {
 // @access  Public
 
 const getCatalog = asyncHandler(async (req, res) => {
-  const products = await Product.find({}).populate("user", "name email");
+  const products = await Product.find({}).sort({ name: 1 });
   try {
     const __dirname = path.resolve();
     const logoPath = path.join(__dirname, "frontend/public/images/logo192.png");
@@ -410,7 +410,7 @@ const getCatalog = asyncHandler(async (req, res) => {
       "Content-Disposition": `attachment; filename=Productos-supplytechstore.pdf`,
     });
 
-    buildPDF(
+    await buildPDF(
       (data) => {
         stream.write(data);
       },
@@ -418,7 +418,6 @@ const getCatalog = asyncHandler(async (req, res) => {
         stream.end();
       },
       products,
-      user,
       logoPath
     );
   } catch (error) {
