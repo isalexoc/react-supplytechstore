@@ -98,10 +98,10 @@ async function buildPDF(dataCallback, endCallback, products, logoPath) {
     "Cta corriente banco de Venezuela SUPPLY TECH 0102-0358-91-0000749264, supplytech.soldaduras@gmail.com, J-405080078"
   );
 
-  doc.moveDown(2);
+  doc.moveDown(3);
 
   let productCount = 0;
-  let productsPerPage = 6; // First page has 6 products
+  let productsPerPage = 3; // First page has 3 products
 
   for (let product of productsToPrint) {
     if (product) {
