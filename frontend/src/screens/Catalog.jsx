@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Row, Col, ListGroup, Form } from "react-bootstrap";
 import { useParams, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import Product from "../components/Product";
 import {
   useGetAllProductsQuery,
@@ -15,13 +16,17 @@ import BackTo from "../components/BackTo";
 import { PRODUCTS_URL } from "../constants";
 import { GrCatalog } from "react-icons/gr";
 import { IoMdDownload } from "react-icons/io";
+import axios from "axios"; // Assuming axios is installed for making HTTP requests
+import { toast } from "react-toastify";
 
 const Catalog = () => {
   const { category: currentCategory, pageNumber: currentPageNumber } =
     useParams();
+
+  const { userInfo } = useSelector((state) => state.auth);
+
   const navigate = useNavigate();
 
-  // Initialize state for all products and selected category
   const [selectedCategory, setSelectedCategory] = useState(
     currentCategory || ""
   );
@@ -40,7 +45,6 @@ const Catalog = () => {
     pageNumber,
   });
 
-  // To store and display categories
   const [categoriesMapping, setCategoriesMapping] = useState({});
   const [dollar, setDollar] = useState(0);
 
@@ -74,24 +78,40 @@ const Catalog = () => {
   }, [allProducts]);
 
   const categories = Object.keys(categoriesMapping).sort((a, b) => {
-    // Use the mapping to get the original category names for comparison
-    const categoryA = categoriesMapping[a].toUpperCase(); // Ignore upper and lowercase
-    const categoryB = categoriesMapping[b].toUpperCase(); // Ignore upper and lowercase
-    if (categoryA < categoryB) {
-      return -1;
-    }
-    if (categoryA > categoryB) {
-      return 1;
-    }
-
-    // Names must be equal
-    return 0;
+    const categoryA = categoriesMapping[a].toUpperCase();
+    const categoryB = categoriesMapping[b].toUpperCase();
+    return categoryA.localeCompare(categoryB);
   });
 
-  // Handle category selection
   const handleCategoryChange = (normalizedCategory) => {
     setSelectedCategory(normalizedCategory);
     navigate(`/products/${normalizedCategory}/page/1`);
+  };
+
+  const handleDownload = async () => {
+    setIsPreparingDownload(true);
+    if (userInfo) {
+      try {
+        const response = await axios.get(`${PRODUCTS_URL}/getcatalog`, {
+          responseType: "blob", // Important for files like PDF
+        });
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", "catalog.pdf");
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error("Error downloading the catalog:", error);
+        alert("Failed to download the catalog");
+      }
+    } else {
+      toast.error("Debes iniciar sesión para descargar el catálogo");
+    }
+
+    setIsPreparingDownload(false);
   };
 
   return (
@@ -114,26 +134,18 @@ const Catalog = () => {
                 {isPreparingDownload ? (
                   <Loader />
                 ) : (
-                  <a
-                    href={`${PRODUCTS_URL}/getcatalog`}
-                    download
+                  <button
                     className="btn btn-primary btn-sm mb-3"
-                    onClick={() => {
-                      setIsPreparingDownload(true);
-                      setTimeout(() => {
-                        setIsPreparingDownload(false); // reset after 2 seconds, adjust as needed
-                      }, 2000);
-                    }}
+                    onClick={handleDownload}
                   >
                     <IoMdDownload /> Descargar Catálogo <GrCatalog />
-                  </a>
+                  </button>
                 )}
               </div>
-
               <Form.Group
                 as="select"
                 className="d-md-none form-select"
-                value={selectedCategory} // Set the value to selectedCategory
+                value={selectedCategory}
                 onChange={(e) => handleCategoryChange(e.target.value)}
               >
                 {categories.map((normalizedCategory, index) => (
