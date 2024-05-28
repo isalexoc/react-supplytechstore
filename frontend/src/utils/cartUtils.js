@@ -8,6 +8,13 @@ export const updateCart = (state) => {
     state.cartItems.reduce((acc, item) => acc + item.price * item.qty, 0)
   );
 
+  // save image for each item in cart if images array exists use images[0].url else use image
+  state.cartItems = state.cartItems.map((item) => {
+    item.image =
+      item.images && item.images.length > 0 ? item.images[0].url : item.image;
+    return item;
+  });
+
   //Calculate the shipping price (free shipping if items price > 100)
   if (state.shippingMethod === "pickup") {
     state.shippingPrice = 0;

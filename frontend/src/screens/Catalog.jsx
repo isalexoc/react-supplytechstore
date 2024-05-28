@@ -95,10 +95,22 @@ const Catalog = () => {
         const response = await axios.get(`${PRODUCTS_URL}/getcatalog`, {
           responseType: "blob", // Important for files like PDF
         });
+        const date = new Date();
+        const timestamp = `${date.getFullYear()}${(date.getMonth() + 1)
+          .toString()
+          .padStart(2, "0")}${date.getDate().toString().padStart(2, "0")}_${date
+          .getHours()
+          .toString()
+          .padStart(2, "0")}${date
+          .getMinutes()
+          .toString()
+          .padStart(2, "0")}${date.getSeconds().toString().padStart(2, "0")}`;
+        const filename = `productos-supplytechstore_${timestamp}.pdf`;
+
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement("a");
         link.href = url;
-        link.setAttribute("download", "productos-supplytechstore.pdf");
+        link.setAttribute("download", filename); // Set the filename with timestamp
         document.body.appendChild(link);
         link.click();
         link.parentNode.removeChild(link);
