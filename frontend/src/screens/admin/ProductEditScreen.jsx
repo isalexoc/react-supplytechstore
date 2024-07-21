@@ -133,7 +133,6 @@ const ProductEditScreen = () => {
         countInStock,
       }).unwrap(); // NOTE: here we need to unwrap the Promise to catch any rejection in our catch block
       toast.success("Producto actualizado exitosamente");
-      //dispatch(clearImages());
       refetch();
       //if successful, redirect to product list
       if (updated) {
