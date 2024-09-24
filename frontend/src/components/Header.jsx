@@ -129,7 +129,7 @@ const Header = () => {
               <Nav.Link className="">
                 <div>
                   <FaShoppingCart size={20} color="white" />
-                  {cartItems.length > 0 && (
+                  {cartItems?.length > 0 && (
                     <Badge pill bg="success" style={{ marginLeft: "5px" }}>
                       {cartItems.reduce((acc, item) => acc + item.qty, 0)}
                     </Badge>
@@ -145,7 +145,7 @@ const Header = () => {
                   <Nav.Link className="d-flex flex-lg-column justify-content-center align-items-start align-items-lg-center mt-3 mb-2 my-lg-0">
                     <div>
                       <FaShoppingCart size={25} />
-                      {cartItems.length > 0 && (
+                      {cartItems?.length > 0 && (
                         <Badge pill bg="success" style={{ marginLeft: "5px" }}>
                           {cartItems.reduce((acc, item) => acc + item.qty, 0)}
                         </Badge>

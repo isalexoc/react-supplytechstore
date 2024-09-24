@@ -1,6 +1,6 @@
 const getDollarPrice = async () => {
   const response = await fetch(
-    "https://pydolarvenezuela-api.vercel.app/api/v1/dollar"
+    "https://pydolarve.org/api/v1/dollar?page=dolartoday"
   );
   const data = await response.json();
   const dollar = data?.monitors?.dolar_today?.price;
