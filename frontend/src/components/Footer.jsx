@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Container, Row, Col, Image } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import {
   FaHeadset,
   FaLock,
@@ -10,7 +10,8 @@ import {
   FaPhoneAlt,
 } from "react-icons/fa";
 import Newsletter from "./Newsletter";
-import iconInstall from "../assets/logoInstall.png";
+import appleStore from "../assets/applestore.png";
+import googlePlay from "../assets/googleplay.png";
 
 const Footer = () => {
   const [isAppInstalled, setIsAppInstalled] = useState(false);
@@ -201,7 +202,7 @@ const Footer = () => {
                   </p>
                 </Col>
 
-                <Col md={6}>
+                <Col md={6} className="mb-4">
                   <h5 className="text-primary">
                     <strong className="text-primary">
                       Conéctate con nosotros
@@ -224,38 +225,41 @@ const Footer = () => {
                     </a>
                   </div>
                 </Col>
-                <Col md={12} className="mt-4">
-                  {/* Bonton para instalar la app */}
-                  <div
-                    className="d-flex justify-content-center align-items-center"
-                    id="install-button"
-                  >
-                    {isAppInstalled && (
-                      <p className="text-center text-primary">
-                        Gracias por instalar nuestra app
-                      </p>
-                    )}
-                    <div className="d-flex flex-column align-items-center">
-                      <p className="text-center">
-                        Instala nuestra app para disfrutar de una mejor
-                        experiencia de compra
-                      </p>
-                      <button
-                        className="btn btn-outline-light btn-lg"
-                        onClick={installAppHandler}
-                      >
-                        Instalar
-                      </button>
-                      <p>
-                        Después de instalar puedes abrir la app desde tu
-                        pantalla de inicio busca el ícono de SupplyTechStore:{" "}
-                        <Image
-                          width={60}
-                          src={iconInstall}
-                          alt="Botón para instalar la app"
-                        />{" "}
-                        y Abre la app
-                      </p>
+                <hr />
+                <Col md={6} className="mt-4">
+                  {/* Google Play Install Button */}
+                  <div className="d-flex flex-column align-items-center">
+                    <p className="text-center mb-3 h4">
+                      Encuentranos en <strong>Google Play</strong>{" "}
+                    </p>
+                    <a
+                      href="https://play.google.com/store/apps/details?id=com.supplytechstore.www.twa"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <img
+                        src={googlePlay}
+                        alt="Install App"
+                        className="img-fluid"
+                        style={{ width: "50%" }}
+                      />
+                    </a>
+                  </div>
+                </Col>
+
+                <Col md={6} className="mt-4">
+                  {/* Apple App Store Install Button */}
+                  <div className="d-flex flex-column align-items-center">
+                    <p className="text-center mb-3 h4">
+                      Muy pronto en <strong>Apple App Store</strong>{" "}
+                    </p>
+                    <div>
+                      <img
+                        src={appleStore}
+                        alt="Install App"
+                        className="img-fluid"
+                        style={{ width: "50%" }}
+                      />
                     </div>
                   </div>
                 </Col>
