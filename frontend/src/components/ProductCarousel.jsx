@@ -39,11 +39,16 @@ const ProductCarousel = ({ dollar }) => {
                       ? `${product.name.substring(0, 82)}...`
                       : product.name}
                   </h5>
-                  <p className="d-none d-lg-block">
-                    {product.description.length > 150
-                      ? `${product.description.substring(0, 147)}...`
-                      : product.description}
-                  </p>
+                  {/* Render product description using dangerouslySetInnerHTML */}
+                  <div
+                    className="d-none d-lg-block"
+                    dangerouslySetInnerHTML={{
+                      __html:
+                        product.description.length > 150
+                          ? `${product.description.substring(0, 147)}...`
+                          : product.description,
+                    }}
+                  />
                   <div>
                     <h5 className="mb-0">${product.price}</h5>
                     {dollar > 0 && (

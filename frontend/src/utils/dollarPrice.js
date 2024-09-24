@@ -3,7 +3,7 @@ const getDollarPrice = async () => {
     "https://pydolarve.org/api/v1/dollar?page=dolartoday"
   );
   const data = await response.json();
-  const dollar = data?.monitors?.dolar_today?.price;
+  const dollar = data?.monitors?.dolartoday?.price;
   return dollar;
 };
 
