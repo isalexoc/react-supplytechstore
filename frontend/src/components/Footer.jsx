@@ -14,8 +14,8 @@ import appleStore from "../assets/applestore.png";
 import googlePlay from "../assets/googleplay.png";
 
 const Footer = () => {
-  const [isAppInstalled, setIsAppInstalled] = useState(false);
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [, setIsAppInstalled] = useState(false);
+  const [, setDeferredPrompt] = useState(null);
   const [isStandalone, setIsStandalone] = useState(false);
 
   useEffect(() => {
@@ -50,37 +50,6 @@ const Footer = () => {
       });
     };
   }, []);
-
-  const cacheAssets = () => {
-    if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
-      navigator.serviceWorker.controller.postMessage({
-        action: "CACHE_ASSETS",
-      });
-    } else {
-      console.log("Service worker not registered or active.");
-    }
-  };
-
-  const installAppHandler = async () => {
-    if (deferredPrompt) {
-      try {
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        console.log(`User response to the install prompt: ${outcome}`);
-
-        if (outcome === "accepted") {
-          console.log("User accepted the A2HS prompt");
-          setIsAppInstalled(true);
-          cacheAssets(); // Trigger asset caching after the app is installed
-        } else {
-          console.log("User dismissed the A2HS prompt");
-        }
-      } catch (error) {
-        console.error("Installation failed: ", error);
-      }
-      setDeferredPrompt(null);
-    }
-  };
 
   return (
     <>
