@@ -29,10 +29,16 @@ const Product = ({ product, dollar }) => {
                 text={`${product.numReviews} comentarios`}
               />
             </Card.Text>
-            <Card.Text as="h3" className="mb-0">
+
+            {/* Benjamin request to show only bs price */}
+            {/*  <Card.Text as="h3" className="mb-0">
               ${product.price}
             </Card.Text>
             <Card.Text as="p">
+              {dollar > 0 ? `Bs. ${(product.price * dollar).toFixed(2)}` : ""}
+            </Card.Text> */}
+
+            <Card.Text as="h5" className="mb-0">
               {dollar > 0 ? `Bs. ${(product.price * dollar).toFixed(2)}` : ""}
             </Card.Text>
           </Card.Body>
