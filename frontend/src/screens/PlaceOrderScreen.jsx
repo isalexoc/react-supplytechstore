@@ -116,8 +116,8 @@ const PlaceOrderScreen = () => {
                           <Link to={`/product/${item._id}`}>{item.name}</Link>
                         </Col>
                         <Col md={4} sm={4} className="text-center">
-                          {item.qty} x ${item.price} = $
-                          {(item.qty * item.price).toFixed(2)}
+                          {item.qty} x {(item.price * dollar).toFixed(2)} ={" "}
+                          {(item.qty * (item.price * dollar)).toFixed(2)}
                         </Col>
                       </Row>
                     </ListGroup.Item>
@@ -136,18 +136,23 @@ const PlaceOrderScreen = () => {
               <ListGroup.Item>
                 <Row>
                   <Col>Productos</Col>
-                  <Col>${cart.itemsPrice}</Col>
+                  <Col>
+                    {" "}
+                    {dollar > 0
+                      ? `Bs. ${(cart.totalPrice * dollar).toFixed(2)}`
+                      : ""}
+                  </Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>
                 <Row>
                   <Col>Envío</Col>
-                  <Col>${cart.shippingPrice}</Col>
+                  <Col>Bs. {(cart.shippingPrice * dollar).toFixed(2)}</Col>
                   {cart.shippingMethod === "address" &&
                     cart.shippingAddress?.city?.toLowerCase() === "maracay" && (
                       <p>
-                        $2 de costo de envío para Maracay Edo. Aragua (solo
-                        casco central de Maracay
+                        (item.price * dollar * 2).toFixed(2) de costo de envío
+                        para Maracay Edo. Aragua (solo casco central de Maracay
                       </p>
                     )}
                 </Row>
@@ -163,7 +168,7 @@ const PlaceOrderScreen = () => {
                 <Row>
                   <Col>Total</Col>
                   <Col>
-                    <div>${cart.totalPrice}</div>
+                    {/*  <div>${cart.totalPrice}</div> */}
                     <div>
                       {dollar > 0
                         ? `Bs. ${(cart.totalPrice * dollar).toFixed(2)}`

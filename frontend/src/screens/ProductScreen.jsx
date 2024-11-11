@@ -128,7 +128,12 @@ const ProductScreen = () => {
                     text={`${product.numReviews} reviews`}
                   />
                 </ListGroup.Item>
-                <ListGroup.Item>Precio ${product.price}</ListGroup.Item>
+                <ListGroup.Item>
+                  Precio:{" "}
+                  {dollar > 0
+                    ? `Bs. ${(product.price * dollar).toFixed(2)}`
+                    : ""}
+                </ListGroup.Item>
               </ListGroup>
             </Col>
             <Col className="d-none d-lg-block mb-5">
@@ -139,13 +144,17 @@ const ProductScreen = () => {
                       <Col>Precio:</Col>
                       <Col>
                         <div>
-                          <strong>${product.price}</strong>
+                          <strong>
+                            {dollar > 0
+                              ? `Bs. ${(product.price * dollar).toFixed(2)}`
+                              : ""}
+                          </strong>
                         </div>
-                        <div>
+                        {/*  <div>
                           {dollar > 0
                             ? `Bs. ${(product.price * dollar).toFixed(2)}`
                             : ""}
-                        </div>
+                        </div> */}
                       </Col>
                     </Row>
                   </ListGroup.Item>

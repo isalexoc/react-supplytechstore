@@ -89,7 +89,8 @@ const CartScreen = () => {
                       md={2}
                       className="d-flex justify-content-center align-items-center mt-2 mt-sm-0"
                     >
-                      ${item.price}
+                      {/* ${item.price} */}
+                      Bs. {(item.price * dollar).toFixed(2)}
                     </Col>
                     <Col
                       xs={4}
@@ -140,10 +141,10 @@ const CartScreen = () => {
                   Subtotal ({cartItems.reduce((acc, item) => acc + item.qty, 0)}
                   ) Artículos
                 </h2>
-                $
+                {/*     $
                 {cartItems
                   .reduce((acc, item) => acc + item.qty * item.price, 0)
-                  .toFixed(2)}
+                  .toFixed(2)} */}
                 {dollar > 0 && (
                   <h6 className="mb-0">
                     Bs.{" "}
