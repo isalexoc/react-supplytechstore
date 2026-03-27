@@ -48,7 +48,12 @@ const contentSecurityPolicy = {
       "https://www.paypal.com",
       "https://www.sandbox.paypal.com",
     ],
-    styleSrc: ["'self'", "'unsafe-inline'"],
+    styleSrc: [
+      "'self'",
+      "'unsafe-inline'",
+      "https://accounts.google.com",
+      "https://fonts.googleapis.com",
+    ],
     imgSrc: [
       "'self'",
       "data:",

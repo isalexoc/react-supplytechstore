@@ -11,13 +11,11 @@ import {
 import { setCredentials } from "../slices/authSlice";
 import { toast } from "react-toastify";
 import { GoogleLogin } from "@react-oauth/google";
-import GoogleOneTabUtil from "../components/GoogleOneTabUtil";
 import Meta from "../components/Meta";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [googleTU, setGoogleTU] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -34,8 +32,6 @@ const LoginScreen = () => {
   useEffect(() => {
     if (userInfo) {
       navigate(redirect);
-    } else {
-      setGoogleTU(true);
     }
   }, [navigate, userInfo, redirect]);
 
@@ -63,7 +59,6 @@ const LoginScreen = () => {
   return (
     <>
       <Meta title="Iniciar Sesión" />
-      {googleTU && <GoogleOneTabUtil />}
       <FormContainer>
         <h1>Iniciar Sesión</h1>
 

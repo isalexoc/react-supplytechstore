@@ -11,7 +11,6 @@ import {
 import { setCredentials } from "../slices/authSlice";
 import { toast } from "react-toastify";
 import { GoogleLogin } from "@react-oauth/google";
-import { useGoogleOneTapLogin } from "@react-oauth/google";
 import Meta from "../components/Meta";
 
 const RegisterScreen = () => {
@@ -64,15 +63,6 @@ const RegisterScreen = () => {
       toast.error(err?.data?.message || err.error);
     }
   };
-
-  useGoogleOneTapLogin({
-    onSuccess: (credentialResponse) => {
-      handleGoogleSubmit(credentialResponse);
-    },
-    onError: () => {
-      console.log("Login Failed");
-    },
-  });
 
   return (
     <>
