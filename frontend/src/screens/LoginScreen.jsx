@@ -109,6 +109,7 @@ const LoginScreen = () => {
             text="signin_with"
             shape="rectangular"
             logo_alignment="left"
+            width={400}
             locale="es"
             onSuccess={(credentialResponse) => {
               handleGoogleSubmit(credentialResponse);

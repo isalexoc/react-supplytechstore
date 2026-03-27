@@ -132,6 +132,7 @@ const RegisterScreen = () => {
             text="signup_with"
             shape="rectangular"
             logo_alignment="left"
+            width={400}
             locale="es"
             onSuccess={(credentialResponse) => {
               handleGoogleSubmit(credentialResponse);
