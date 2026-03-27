@@ -68,7 +68,7 @@ const ShowCategories = () => {
   const deleteHandler = async (id) => {
     if (window.confirm("¿Deseas borrar la categoría?")) {
       try {
-        await deleteCategory(id);
+        await deleteCategory(id).unwrap();
         toast.success("categoria borrada");
         setSelectedCategory(null);
         refetchCategories();

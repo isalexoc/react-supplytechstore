@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Carousel, Image, Row, Col } from "react-bootstrap";
+import DOMPurify from "dompurify";
 import Loader from "./Loader";
 import Message from "./Message";
 import { useGetTopProductsQuery } from "../slices/productsApiSlice";
@@ -9,7 +10,9 @@ const ProductCarousel = ({ dollar }) => {
   return isLoading ? (
     <Loader />
   ) : error ? (
-    <Message variant="danger">{error}</Message>
+    <Message variant="danger">
+      {error?.data?.message || error?.error || "Error"}
+    </Message>
   ) : (
     <Carousel pause="hover" className="bg-primary mb-4">
       {products.map((product) => (
@@ -39,16 +42,17 @@ const ProductCarousel = ({ dollar }) => {
                       ? `${product.name.substring(0, 82)}...`
                       : product.name}
                   </h5>
-                  {/* Render product description using dangerouslySetInnerHTML */}
-                  <div
-                    className="d-none d-lg-block"
-                    dangerouslySetInnerHTML={{
-                      __html:
-                        product.description.length > 150
-                          ? `${product.description.substring(0, 147)}...`
-                          : product.description,
-                    }}
-                  />
+                  <div className="d-none d-lg-block">
+                    {(() => {
+                      const plain = DOMPurify.sanitize(
+                        String(product.description || ""),
+                        { ALLOWED_TAGS: [] }
+                      );
+                      return plain.length > 150
+                        ? `${plain.substring(0, 147)}...`
+                        : plain;
+                    })()}
+                  </div>
                   <div>
                     <h5 className="mb-0">${product.price}</h5>
                     {dollar > 0 && (

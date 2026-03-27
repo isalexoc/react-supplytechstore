@@ -20,17 +20,18 @@ import {
   removeAccount,
 } from "../controllers/userController.js";
 import { protect, admin } from "../middleware/authMiddleware.js";
+import { authRouteLimiter } from "../middleware/rateLimiter.js";
 
-router.route("/").post(registerUser).get(protect, admin, getUsers);
+router.route("/").post(authRouteLimiter, registerUser).get(protect, admin, getUsers);
 router.post("/logout", logoutUser);
-router.post("/auth", authUser);
-router.post("/google", googleLogin);
+router.post("/auth", authRouteLimiter, authUser);
+router.post("/google", authRouteLimiter, googleLogin);
 router
   .route("/subscribe")
-  .post(saveSubscriber)
+  .post(authRouteLimiter, saveSubscriber)
   .get(checkSubscriber)
   .delete(unsubscribeNewsletter);
-router.route("/contact").post(contactForm);
+router.route("/contact").post(authRouteLimiter, contactForm);
 router
   .route("/profile")
   .get(protect, getUserProfile)
@@ -40,7 +41,7 @@ router
   .get(protect, admin, getUserById)
   .delete(protect, admin, deleteUser)
   .put(protect, admin, updateUser);
-router.route("/forgotpassword").post(forgotPassword);
-router.route("/resetpassword").post(resetPassword);
+router.route("/forgotpassword").post(authRouteLimiter, forgotPassword);
+router.route("/resetpassword").post(authRouteLimiter, resetPassword);
 router.route("/deleteaccount").post(protect, removeAccount);
 export default router;

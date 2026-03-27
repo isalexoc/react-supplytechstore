@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Container } from "react-bootstrap";
 import WhatsAppButton from "./WhatsAppButton";
 import { GrCatalog, GrContact } from "react-icons/gr";
-import { FaRegUser } from "react-icons/fa";
+import { FaRegUser, FaDollarSign } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { MdOutlineAdminPanelSettings } from "react-icons/md";
 import { HiOutlineViewGridAdd } from "react-icons/hi";
@@ -99,6 +99,17 @@ const MobileMenu = () => {
                   <Nav.Link className="d-flex flex-column justify-content-center align-items-center">
                     <RxBorderStyle size={25} />
                     <span className="mobile-font">Órdenes</span>
+                  </Nav.Link>
+                </LinkContainer>
+
+                <LinkContainer
+                  to="/admin/exchange-rate"
+                  className="me-0"
+                  activeClassName="active-nav-link"
+                >
+                  <Nav.Link className="d-flex flex-column justify-content-center align-items-center">
+                    <FaDollarSign size={25} />
+                    <span className="mobile-font">Tasa</span>
                   </Nav.Link>
                 </LinkContainer>
               </>

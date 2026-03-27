@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { FaUser } from "react-icons/fa";
-import { useSelector, useDispatch } from "react-redux";
 import { useForgotPasswordMutation } from "../slices/usersApiSlice";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -15,27 +14,10 @@ function ForgotPassword() {
 
   const { email } = formData;
 
-  const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  const { user, isLoading, isSuccess, message, isError } = useSelector(
-    (state) => state.auth
-  );
 
   const [forgotPassword, { isLoading: passwordLoading }] =
     useForgotPasswordMutation();
-
-  useEffect(() => {
-    if (isError) {
-      toast.error(message);
-    }
-
-    //redeirect if logged in
-    if (isSuccess && user) {
-      //redirect
-      navigate("/");
-    }
-  }, [isError, message, isSuccess, user, navigate, dispatch]);
 
   const onChange = (e) => {
     setFormData((prevState) => ({
@@ -47,11 +29,10 @@ function ForgotPassword() {
   const onSubmit = async (e) => {
     e.preventDefault();
 
-    //validate email
     if (!email) {
       toast.error("Por favor ingresa tu email");
       return;
-    } //regex for email validation
+    }
 
     const re = /\S+@\S+\.\S+/;
     if (!re.test(email)) {
@@ -60,7 +41,6 @@ function ForgotPassword() {
     }
 
     try {
-      //dispatch login
       await forgotPassword({ email }).unwrap();
       toast.success(
         "Email enviado con instrucciones para recuperar tu contraseña"
@@ -68,13 +48,11 @@ function ForgotPassword() {
       setFormData({ email: "" });
       navigate("/");
     } catch (error) {
-      toast.error(error.data.message);
+      toast.error(
+        error?.data?.message || error?.error || "Error al enviar el email"
+      );
     }
   };
-
-  if (isLoading) {
-    return <Loader />;
-  }
 
   return (
     <>
@@ -103,7 +81,11 @@ function ForgotPassword() {
               />
             </FormContainer>
             <div className="text-center my-5">
-              <button type="submit" className="btn btn-primary">
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={passwordLoading}
+              >
                 Recuperar contraseña
               </button>
               {passwordLoading && <Loader />}

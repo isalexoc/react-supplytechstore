@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { addToCart, removeFromCart } from "../slices/cartSlice";
@@ -15,13 +14,13 @@ import { FaTrash } from "react-icons/fa";
 import Message from "../components/Message";
 import BackTo from "../components/BackTo";
 import Meta from "../components/Meta";
-import getDollarPrice from "../utils/dollarPrice";
 
 const CartScreen = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const cart = useSelector((state) => state.cart);
+  const dollar = useSelector((s) => s.exchangeRate.rate) ?? 0;
   const { cartItems } = cart;
 
   const addToCartHnadler = async (product, qty) => {
@@ -35,17 +34,6 @@ const CartScreen = () => {
   const checkoutHandler = () => {
     navigate("/login?redirect=/shipping");
   };
-
-  const [dollar, setDollar] = useState(0);
-
-  useEffect(() => {
-    const fetchDollarPrice = async () => {
-      const currentDollarPrice = await getDollarPrice();
-      setDollar(currentDollarPrice);
-    };
-
-    fetchDollarPrice();
-  }, []);
 
   return (
     <>

@@ -90,5 +90,4 @@ export const {
   useUploadPaymentCaptureMutation,
   useUpdateOrderZelleMutation,
   useMarkAsPaidMutation,
-  useGeneratePdfMutation,
 } = orderApiSlice;

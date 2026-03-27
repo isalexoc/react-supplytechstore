@@ -3,13 +3,31 @@ import User from "../models/userModel.js";
 import Subscriber from "../models/subscriberModel.js";
 import generateToken from "../utils/generateToken.js";
 import nodemailer from "nodemailer";
-import { jwtDecode } from "jwt-decode";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 import sendEmailHandler from "../utils/sendEmailHandler.js";
+import { verifyGoogleIdToken } from "../utils/verifyGoogleIdToken.js";
 
-const emailAdminUser = "supplytech.soldaduras@gmail.com";
-const passCodeGoogle = "urir iifu hanl uqmc";
+function getMailTransporter() {
+  const user = process.env.ADMIN_EMAIL;
+  const pass = process.env.PASS_CODE_GOOGLE;
+  if (!user || !pass) {
+    throw new Error("Correo de la aplicación no configurado (ADMIN_EMAIL / PASS_CODE_GOOGLE)");
+  }
+  return nodemailer.createTransport({
+    service: "gmail",
+    auth: { user, pass },
+  });
+}
+
+function mailFromAddress() {
+  const from = process.env.ADMIN_EMAIL;
+  if (!from) {
+    throw new Error("ADMIN_EMAIL no está configurado");
+  }
+  return from;
+}
 
 // @desc    Auth user & get token
 // @route   POST /api/users/login
@@ -71,12 +89,15 @@ const registerUser = asyncHandler(async (req, res) => {
 // @route   POST /api/users/googlelogin
 // @access  Public
 const googleLogin = asyncHandler(async (req, res) => {
-  const credentials = req.body;
-  const credentialResponseDecoded = jwtDecode(credentials.credential);
+  const { credential } = req.body;
+  if (!credential) {
+    res.status(400);
+    throw new Error("Credencial de Google faltante");
+  }
 
-  const userExists = await User.findOne({
-    email: credentialResponseDecoded.email,
-  });
+  const { email, name } = await verifyGoogleIdToken(credential);
+
+  const userExists = await User.findOne({ email });
 
   if (userExists) {
     generateToken(res, userExists._id);
@@ -89,11 +110,14 @@ const googleLogin = asyncHandler(async (req, res) => {
   }
 
   const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(credentials.credential, salt);
+  const hashedPassword = await bcrypt.hash(
+    crypto.randomBytes(32).toString("hex"),
+    salt
+  );
 
   const user = await User.create({
-    name: credentialResponseDecoded.name,
-    email: credentialResponseDecoded.email,
+    name,
+    email,
     password: hashedPassword,
   });
 
@@ -265,16 +289,10 @@ const saveSubscriber = asyncHandler(async (req, res) => {
 
   // send email
 
-  var transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: emailAdminUser,
-      pass: passCodeGoogle,
-    },
-  });
+  var transporter = getMailTransporter();
 
   var mailOptions = {
-    from: emailAdminUser,
+    from: mailFromAddress(),
     to: email,
     subject: "Subscripción a nuestro boletín informativo",
     text: "Gracias por suscribirse a nuestro boletín informativo. Le mantendremos informado de todas las novedades de supplytechstore.com.",
@@ -290,8 +308,8 @@ const saveSubscriber = asyncHandler(async (req, res) => {
 
   var mailOptionsAdmin = {
     typeEmail: "newSubscriber",
-    from: emailAdminUser,
-    to: emailAdminUser,
+    from: mailFromAddress(),
+    to: mailFromAddress(),
     subject: "Tienes un nuevo suscriptor al boletín informativo",
     userInfo: userExists ? userExists.name : null,
     email,
@@ -387,17 +405,14 @@ const contactForm = asyncHandler(async (req, res) => {
     throw new Error("Por favor, complete todos los campos.");
   }
 
-  var transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: emailAdminUser, // Your Gmail
-      pass: passCodeGoogle, // Your Gmail App Password
-    },
-  });
+  var transporter = getMailTransporter();
+
+  const notifyEmail =
+    process.env.CONTACT_NOTIFY_EMAIL || process.env.ADMIN_EMAIL;
 
   // Email to the customer
   var customerMailOptions = {
-    from: "supplytech.soldaduras@gmail.com",
+    from: mailFromAddress(),
     to: email, // Customer's email
     subject: "Mensaje de contacto recibido",
     text: `Hola ${name},\n\nGracias por contactarnos. Hemos recibido tu mensaje: "${message}"\n\nNos pondremos en contacto contigo a la brevedad.\n\nSaludos,\nEquipo de SupplyTech`,
@@ -405,8 +420,8 @@ const contactForm = asyncHandler(async (req, res) => {
 
   // Email to the company
   var companyMailOptions = {
-    from: "supplytech.soldaduras@gmail.com",
-    to: "isaac87usa@gmail.com", // Company's email
+    from: mailFromAddress(),
+    to: notifyEmail,
     subject: "Nuevo mensaje de contacto",
     text: `Has recibido un nuevo mensaje de contacto de ${name} (${email}).\n\nMensaje:\n${message}`,
   };
@@ -458,16 +473,10 @@ const forgotPassword = asyncHandler(async (req, res) => {
 
   const link = `https://www.supplytechstore.com/resetpassword/${user._id}/${token}`;
 
-  var transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: emailAdminUser,
-      pass: passCodeGoogle,
-    },
-  });
+  var transporter = getMailTransporter();
 
   var mailOptions = {
-    from: "supplytech.soldaduras@gmail.com",
+    from: mailFromAddress(),
     to: user.email,
     subject: "Recuperar contraseña para SupplyTech Store",
     text:

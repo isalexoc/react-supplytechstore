@@ -5,10 +5,12 @@ import "react-toastify/dist/ReactToastify.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import MobileMenu from "./components/MobileMenu";
+import ExchangeRateSocketListener from "./components/ExchangeRateSocketListener";
 
 const App = () => {
   return (
     <>
+      <ExchangeRateSocketListener />
       <Header />
       <main className="py-3">
         <Container>

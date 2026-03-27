@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -14,8 +14,8 @@ import Loader from "../components/Loader";
 import Message from "../components/Message";
 import { addToCart } from "../slices/cartSlice";
 import BackTo from "../components/BackTo";
-import getDollarPrice from "../utils/dollarPrice";
 import ProductImages from "../components/ProductImages";
+import DOMPurify from "dompurify";
 
 const ProductScreen = () => {
   const { id: productId } = useParams();
@@ -39,21 +39,11 @@ const ProductScreen = () => {
     useCreateReviewMutation();
 
   const { userInfo } = useSelector((state) => state.auth);
-
-  const [dollar, setDollar] = useState(0);
+  const dollar = useSelector((s) => s.exchangeRate.rate) ?? 0;
   const [isAnimating, setIsAnimating] = useState(false);
   const [animationStyle, setAnimationStyle] = useState({});
   const buttonRef = useRef(null);
   const mobileButtonRef = useRef(null);
-
-  useEffect(() => {
-    const fetchDollarPrice = async () => {
-      const currentDollarPrice = await getDollarPrice();
-      setDollar(currentDollarPrice);
-    };
-
-    fetchDollarPrice();
-  }, []);
 
   const addToCartHandler = () => {
     dispatch(addToCart({ ...product, qty }));
@@ -110,7 +100,7 @@ const ProductScreen = () => {
             contentImage={product.image}
             contentDescription={product.description}
             contentTitle={product.name}
-            serviceUrl={`	https://www.supplytechstore.com/product/${product._id}`}
+            serviceUrl={`${window.location.origin}/product/${product._id}`}
             serviceType="product"
           />
           <Row>
@@ -318,8 +308,11 @@ const ProductScreen = () => {
           <Row className="mt-5">
             <Col md={12}>
               <h3>Descripción</h3>
-              {/* Use dangerouslySetInnerHTML to render HTML */}
-              <div dangerouslySetInnerHTML={{ __html: product.description }} />
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(String(product.description || "")),
+                }}
+              />
             </Col>
           </Row>
           <Row className="review">

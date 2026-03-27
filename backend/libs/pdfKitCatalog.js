@@ -3,7 +3,7 @@ import fetch from "node-fetch";
 import getDollarPrice from "../utils/getDollarPrice.js";
 
 // Assuming getDollarPrice is async and needs to be awaited when used
-const dollarPrice = await getDollarPrice();
+const dollarPrice = (await getDollarPrice()) ?? 0;
 
 function fetchWithTimeout(url, timeout) {
   return Promise.race([

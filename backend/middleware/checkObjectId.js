@@ -2,8 +2,9 @@ import { isValidObjectId } from "mongoose";
 
 function checkObjectId(req, res, next) {
   if (!isValidObjectId(req.params.id)) {
-    return res.status(400);
-    throw new Error("Invalid Object Id of: ${req.params.id}");
+    return res.status(400).json({
+      message: `Invalid Object Id: ${req.params.id}`,
+    });
   }
   next();
 }

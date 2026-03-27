@@ -205,6 +205,9 @@ const Header = () => {
                     <LinkContainer to="/admin/orderlist">
                       <NavDropdown.Item>Órdenes</NavDropdown.Item>
                     </LinkContainer>
+                    <LinkContainer to="/admin/exchange-rate">
+                      <NavDropdown.Item>Tasa del día</NavDropdown.Item>
+                    </LinkContainer>
                   </NavDropdown>
                 )}
                 {isStandAlone && expanded && isMobile && (

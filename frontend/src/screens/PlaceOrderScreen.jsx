@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { Button, Row, Col, ListGroup, Image, Card } from "react-bootstrap";
@@ -9,26 +9,14 @@ import Message from "../components/Message";
 import { useCreateOrderMutation } from "../slices/orderApiSlice";
 import { clearCartItems } from "../slices/cartSlice";
 import Meta from "../components/Meta";
-import getDollarPrice from "../utils/dollarPrice";
-
 const PlaceOrderScreen = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const cart = useSelector((state) => state.cart);
+  const dollar = useSelector((s) => s.exchangeRate.rate) ?? 0;
 
   const [createOrder, { isLoading, error }] = useCreateOrderMutation();
-
-  const [dollar, setDollar] = useState(0);
-
-  useEffect(() => {
-    const fetchDollarPrice = async () => {
-      const currentDollarPrice = await getDollarPrice();
-      setDollar(currentDollarPrice);
-    };
-
-    fetchDollarPrice();
-  }, []);
 
   useEffect(() => {
     if (cart.shippingMethod === "address" && !cart.shippingAddress.address) {
@@ -53,7 +41,9 @@ const PlaceOrderScreen = () => {
       dispatch(clearCartItems());
       navigate(`/order/${res._id}`);
     } catch (error) {
-      toast.error("Error al realizar el pedido");
+      toast.error(
+        error?.data?.message || error?.error || "Error al realizar el pedido"
+      );
     }
   };
 

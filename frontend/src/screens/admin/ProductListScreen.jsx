@@ -29,7 +29,7 @@ const ProductListScreen = () => {
   const deleteHandler = async (id) => {
     if (window.confirm("¿Deseas borrar el producto?")) {
       try {
-        await deleteProduct(id);
+        await deleteProduct(id).unwrap();
         toast.success("Producto borrado");
         refetch();
       } catch (err) {
@@ -41,7 +41,7 @@ const ProductListScreen = () => {
   const createProductHandler = async () => {
     if (window.confirm("¿Deseas crear un nuevo producto?")) {
       try {
-        await createProduct();
+        await createProduct().unwrap();
         refetch();
       } catch (err) {
         toast.error(err?.data?.message || err.error);

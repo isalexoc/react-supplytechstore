@@ -77,9 +77,9 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       }),
     }),
     checkSubscriber: builder.query({
-      query: (data) => ({
+      query: ({ email }) => ({
         url: `${USERS_URL}/subscribe`,
-        body: data,
+        params: { email },
       }),
     }),
     unsubscribeNewsletter: builder.mutation({

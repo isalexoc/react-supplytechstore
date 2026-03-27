@@ -11,6 +11,10 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+function escapeRegex(str) {
+  return String(str).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 // @desc    Fetch all products
 // @route   GET /api/products
 // @access  Public
@@ -21,7 +25,7 @@ const getProducts = asyncHandler(async (req, res) => {
   const keyword = req.query.keyword
     ? {
         name: {
-          $regex: req.query.keyword,
+          $regex: escapeRegex(req.query.keyword),
           $options: "i",
         },
       }
@@ -50,7 +54,7 @@ const getProductByCategory = asyncHandler(async (req, res) => {
   const category = req.query.category
     ? {
         category: {
-          $regex: req.query.category,
+          $regex: escapeRegex(req.query.category),
           $options: "i",
         },
       }
@@ -422,10 +426,8 @@ const getCatalog = asyncHandler(async (req, res) => {
     );
   } catch (error) {
     console.log(error);
-    throw new Error("Error al generar la factura");
+    throw new Error("Error al generar el catálogo");
   }
-
-  res.status(200).json({ message: "Catalogo generado" });
 });
 
 export {

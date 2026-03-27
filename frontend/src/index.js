@@ -35,6 +35,7 @@ import ProductListScreen from "./screens/admin/ProductListScreen";
 import ProductEditScreen from "./screens/admin/ProductEditScreen";
 import UserListScreen from "./screens/admin/UserListScreen";
 import UserEditScreen from "./screens/admin/UserEditScreen";
+import ExchangeRateScreen from "./screens/admin/ExchangeRateScreen";
 import ForgotPassword from "./screens/ForgotPassword";
 import ResetPassword from "./screens/ResetPassword";
 import PrivacyPolicy from "./screens/PrivacyPolicy";
@@ -96,6 +97,7 @@ const router = createBrowserRouter(
           element={<UserListScreen />}
         />
         <Route path="/admin/user/:id/edit" element={<UserEditScreen />} />
+        <Route path="/admin/exchange-rate" element={<ExchangeRateScreen />} />
       </Route>
     </Route>
   )

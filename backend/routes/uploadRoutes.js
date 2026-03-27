@@ -3,8 +3,12 @@ import express from "express";
 import multer from "multer";
 import cloudinary from "../config/cloudinary.js";
 import fs from "fs/promises"; // Import fs promises for async operations
+import { protect, admin } from "../middleware/authMiddleware.js";
+import { uploadRouteLimiter } from "../middleware/rateLimiter.js";
 
 const router = express.Router();
+
+router.use(uploadRouteLimiter);
 
 const storage = multer.diskStorage({
   destination: "uploads/",
@@ -41,19 +45,19 @@ const deleteImage = async (public_id) => {
 };
 
 const uploadVideo = multer({
-  storageInBuffer,
+  storage: storageInBuffer,
   limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit for videos
 }).single("video");
 
 const upload = multer({ storage, fileFilter });
 const uploadSingleImage = upload.single("image");
 const uploadImages = multer({ storage, fileFilter }).array("image", 6); // This handles up to 6 files
-const uploadMultiple = multer({ storageInBuffer, fileFilter }).array(
+const uploadMultiple = multer({ storage: storageInBuffer, fileFilter }).array(
   "image",
   6
 );
 
-router.post("/uploadmultiple", uploadMultiple, async (req, res) => {
+router.post("/uploadmultiple", protect, admin, uploadMultiple, async (req, res) => {
   if (!req.files || req.files.length === 0) {
     return res.status(400).send({ message: "No se han cargado fotos" });
   }
@@ -99,7 +103,7 @@ router.post("/uploadmultiple", uploadMultiple, async (req, res) => {
   }
 });
 
-router.post("/multiple", uploadImages, async (req, res) => {
+router.post("/multiple", protect, admin, uploadImages, async (req, res) => {
   if (!req.files || req.files.length === 0) {
     return res.status(400).send({ message: "No se han cargado fotos" });
   }
@@ -141,7 +145,7 @@ router.post("/multiple", uploadImages, async (req, res) => {
 });
 
 // remove images from cloudinary using the public ids
-router.post("/removeImages", async (req, res) => {
+router.post("/removeImages", protect, admin, async (req, res) => {
   const { imagesData } = req.body;
   if (!imagesData || imagesData.length === 0) {
     return res.status(400).send({ message: "No se han seleccionado imágenes" });
@@ -163,7 +167,7 @@ router.post("/removeImages", async (req, res) => {
 });
 
 // remove single image from cloudinary using the public id
-router.post("/removeSingleImage", async (req, res) => {
+router.post("/removeSingleImage", protect, admin, async (req, res) => {
   const { imageData } = req.body;
   if (!imageData) {
     return res
@@ -181,7 +185,7 @@ router.post("/removeSingleImage", async (req, res) => {
   }
 });
 
-router.post("/", (req, res) => {
+router.post("/", protect, admin, (req, res) => {
   uploadSingleImage(req, res, async (err) => {
     if (err) {
       return res.status(400).send({ message: err.message });
@@ -263,7 +267,7 @@ router.post("/uploadzelle", (req, res) => {
   });
 });
 
-router.post("/video", uploadVideo, async (req, res) => {
+router.post("/video", protect, admin, uploadVideo, async (req, res) => {
   if (!req.file) {
     return res.status(400).send({ message: "No se ha cargado un video" });
   }

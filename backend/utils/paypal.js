@@ -61,6 +61,7 @@ export async function checkIfNewTransaction(orderModel, paypalTransactionId) {
     return orders.length === 0;
   } catch (err) {
     console.error(err);
+    throw new Error("No se pudo verificar la transacción en la base de datos");
   }
 }
 

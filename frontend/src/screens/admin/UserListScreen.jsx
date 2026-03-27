@@ -21,7 +21,7 @@ const UserListScreen = () => {
   const deleteHandler = async (id) => {
     if (window.confirm("¿Deseas borrar el usuario?")) {
       try {
-        await deleteUser(id);
+        await deleteUser(id).unwrap();
         toast.success("Usuario borrado");
         refetch();
       } catch (err) {

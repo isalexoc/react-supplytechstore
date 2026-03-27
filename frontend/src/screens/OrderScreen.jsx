@@ -16,7 +16,6 @@ import {
   useMarkAsPaidMutation,
 } from "../slices/orderApiSlice";
 import Meta from "../components/Meta";
-import getDollarPrice from "../utils/dollarPrice";
 import { ORDERS_URL } from "../constants";
 import formatDate from "../utils/formatDate";
 
@@ -39,28 +38,18 @@ const OrderScreen = () => {
   //const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
 
   const { userInfo } = useSelector((state) => state.auth);
+  const dollar = useSelector((s) => s.exchangeRate.rate) ?? 0;
 
-  const [dollar, setDollar] = useState(0);
   const [isPreparingDownload, setIsPreparingDownload] = useState(false);
 
   useEffect(() => {
-    const fetchDollarPrice = async () => {
-      const currentDollarPrice = await getDollarPrice();
-      setDollar(currentDollarPrice);
-    };
-
-    fetchDollarPrice();
-  }, []);
-
-  useEffect(() => {
     refetch();
-    // eslint-disable-next-line
-  }, []);
+  }, [orderId, refetch]);
 
   const deliverOrderHandler = async () => {
     if (window.confirm("¿Estás seguro de marcar la orden como ENTREGADA?")) {
       try {
-        await deliverOrder(orderId);
+        await deliverOrder(orderId).unwrap();
         refetch();
         toast.success("Orden entregada");
       } catch (err) {
@@ -72,7 +61,7 @@ const OrderScreen = () => {
   const markAsPaidHandler = async () => {
     if (window.confirm("¿Estás seguro de marcar la orden como PAGADA?")) {
       try {
-        await markAsPaid(orderId);
+        await markAsPaid(orderId).unwrap();
         refetch();
         toast.success("Orden marcada como pagada");
       } catch (err) {

@@ -1,46 +1,21 @@
-const DOLARAPI_URL = "https://ve.dolarapi.com/v1/dolares";
-
-/** Prefer parallel rate (DolarToday–style); else first valid promedio. */
-function extractParaleloPromedio(data) {
-  const list = Array.isArray(data) ? data : [];
-  const paralelo = list.find(
-    (r) =>
-      r?.fuente === "paralelo" &&
-      typeof r?.promedio === "number" &&
-      Number.isFinite(r.promedio)
-  );
-  if (paralelo) return paralelo.promedio;
-  const byName = list.find(
-    (r) =>
-      /paralelo|dolartoday/i.test(String(r?.nombre ?? "")) &&
-      typeof r?.promedio === "number" &&
-      Number.isFinite(r.promedio)
-  );
-  if (byName) return byName.promedio;
-  const first = list.find(
-    (r) =>
-      typeof r?.promedio === "number" && Number.isFinite(r.promedio)
-  );
-  return first?.promedio ?? null;
-}
+import { BASE_URL } from "../constants";
 
 /**
- * @returns {Promise<number>} Bs/USD rate, or 0 if unavailable (UI hides Bs. when 0)
+ * Bs per USD: locked daily rate from API if set for today (Caracas), else live formula on server.
+ * @returns {Promise<number>}
  */
 const getDollarPrice = async () => {
   try {
-    const response = await fetch(DOLARAPI_URL);
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-    const data = await response.json();
-    const dollar = extractParaleloPromedio(data);
-    if (dollar == null) {
-      throw new Error("No parallel dollar rate in API response");
-    }
-    return dollar;
-  } catch (error) {
-    console.warn("DolarApi:", error.message);
+    const res = await fetch(`${BASE_URL}/api/settings/exchange-rate`, {
+      credentials: "include",
+      cache: "no-store",
+    });
+    if (!res.ok) return 0;
+    const data = await res.json();
+    const rate = data.rate;
+    if (typeof rate !== "number" || !Number.isFinite(rate) || rate <= 0) return 0;
+    return rate;
+  } catch {
     return 0;
   }
 };

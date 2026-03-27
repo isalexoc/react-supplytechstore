@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
 import { Row, Col } from "react-bootstrap";
 import { Link, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 import Product from "../components/Product";
 import { useGetProductsQuery } from "../slices/productsApiSlice";
 import Paginate from "../components/Paginate";
@@ -11,8 +11,6 @@ import ProductCarousel from "../components/ProductCarousel";
 import Brands from "../components/Brands";
 import ShowMap from "../components/ShowMap";
 import CategoriesSlider from "../components/CategoriesSlider";
-import getDollarPrice from "../utils/dollarPrice";
-
 const HomeScreen = () => {
   const { pageNumber, keyword } = useParams();
 
@@ -21,16 +19,7 @@ const HomeScreen = () => {
     pageNumber,
   });
 
-  const [dollar, setDollar] = useState(0);
-
-  useEffect(() => {
-    const fetchDollarPrice = async () => {
-      const currentDollarPrice = await getDollarPrice();
-      setDollar(currentDollarPrice);
-    };
-
-    fetchDollarPrice();
-  }, []);
+  const dollar = useSelector((s) => s.exchangeRate.rate) ?? 0;
 
   return (
     <>

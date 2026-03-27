@@ -1,12 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+function safeParseJson(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch {
+    localStorage.removeItem(key);
+    return fallback;
+  }
+}
+
 const initialState = {
-  userInfo: localStorage.getItem("userInfo")
-    ? JSON.parse(localStorage.getItem("userInfo"))
-    : null,
-  images: localStorage.getItem("images")
-    ? JSON.parse(localStorage.getItem("images"))
-    : [],
+  userInfo: safeParseJson("userInfo", null),
+  images: safeParseJson("images", []),
 };
 
 const authSlice = createSlice({

@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Row, Col, ListGroup, Form } from "react-bootstrap";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import axios from "axios";
 import Product from "../components/Product";
 import {
   useGetAllProductsQuery,
@@ -11,26 +12,35 @@ import Paginate from "../components/Paginate";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import Meta from "../components/Meta";
-import getDollarPrice from "../utils/dollarPrice";
 import BackTo from "../components/BackTo";
 import { PRODUCTS_URL } from "../constants";
 import { GrCatalog } from "react-icons/gr";
 import { IoMdDownload } from "react-icons/io";
-import axios from "axios"; // Assuming axios is installed for making HTTP requests
 import { toast } from "react-toastify";
+import CatalogDownloadModal, {
+  formatBytes,
+} from "../components/CatalogDownloadModal";
 
 const Catalog = () => {
   const { category: currentCategory, pageNumber: currentPageNumber } =
     useParams();
 
   const { userInfo } = useSelector((state) => state.auth);
+  const dollar = useSelector((s) => s.exchangeRate.rate) ?? 0;
 
   const navigate = useNavigate();
+  const abortRef = useRef(null);
 
   const [selectedCategory, setSelectedCategory] = useState(
     currentCategory || ""
   );
-  const [isPreparingDownload, setIsPreparingDownload] = useState(false);
+
+  const [downloadModalOpen, setDownloadModalOpen] = useState(false);
+  const [downloadIndeterminate, setDownloadIndeterminate] = useState(true);
+  const [downloadProgress, setDownloadProgress] = useState(null);
+  const [downloadStatus, setDownloadStatus] = useState("");
+  const [downloadBytes, setDownloadBytes] = useState(0);
+  const [downloadCanCancel, setDownloadCanCancel] = useState(false);
 
   const pageNumber = parseInt(currentPageNumber) || 1;
 
@@ -46,16 +56,6 @@ const Catalog = () => {
   });
 
   const [categoriesMapping, setCategoriesMapping] = useState({});
-  const [dollar, setDollar] = useState(0);
-
-  useEffect(() => {
-    const fetchDollarPrice = async () => {
-      const currentDollarPrice = await getDollarPrice();
-      setDollar(currentDollarPrice);
-    };
-
-    fetchDollarPrice();
-  }, []);
 
   useEffect(() => {
     if (allProducts) {
@@ -88,47 +88,107 @@ const Catalog = () => {
     navigate(`/products/${normalizedCategory}/page/1`);
   };
 
-  const handleDownload = async () => {
-    setIsPreparingDownload(true);
-    if (userInfo) {
-      try {
-        const response = await axios.get(`${PRODUCTS_URL}/getcatalog`, {
-          responseType: "blob", // Important for files like PDF
-        });
-        const date = new Date();
-        const timestamp = `${date.getFullYear()}${(date.getMonth() + 1)
-          .toString()
-          .padStart(2, "0")}${date.getDate().toString().padStart(2, "0")}_${date
-          .getHours()
-          .toString()
-          .padStart(2, "0")}${date
-          .getMinutes()
-          .toString()
-          .padStart(2, "0")}${date.getSeconds().toString().padStart(2, "0")}`;
-        const filename = `productos-supplytechstore_${timestamp}.pdf`;
+  const handleCancelDownload = () => {
+    abortRef.current?.abort();
+  };
 
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", filename); // Set the filename with timestamp
-        document.body.appendChild(link);
-        link.click();
-        link.parentNode.removeChild(link);
-        window.URL.revokeObjectURL(url);
-      } catch (error) {
-        console.error("Error downloading the catalog:", error);
-        alert("Failed to download the catalog");
-      }
-    } else {
+  const handleDownload = async () => {
+    if (!userInfo) {
       toast.error("Debes iniciar sesión para descargar el catálogo");
+      return;
     }
 
-    setIsPreparingDownload(false);
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    setDownloadModalOpen(true);
+    setDownloadIndeterminate(true);
+    setDownloadProgress(null);
+    setDownloadBytes(0);
+    setDownloadCanCancel(true);
+    setDownloadStatus(
+      "Generando el PDF en el servidor. Puede tardar un minuto según la cantidad de productos…"
+    );
+
+    try {
+      const response = await axios.get(`${PRODUCTS_URL}/getcatalog`, {
+        responseType: "blob",
+        withCredentials: true,
+        signal: controller.signal,
+        timeout: 300000,
+        onDownloadProgress: (e) => {
+          const loaded = e.loaded;
+          const total = e.total;
+          setDownloadBytes(loaded);
+
+          if (total && total > 0) {
+            setDownloadIndeterminate(false);
+            setDownloadProgress(Math.min(100, Math.round((loaded * 100) / total)));
+            setDownloadStatus("Descargando archivo…");
+          } else if (loaded > 0) {
+            setDownloadStatus(
+              `Recibiendo datos… (${formatBytes(loaded)} descargados)`
+            );
+          }
+        },
+      });
+
+      const blob = new Blob([response.data], { type: "application/pdf" });
+      const date = new Date();
+      const timestamp = `${date.getFullYear()}${(date.getMonth() + 1)
+        .toString()
+        .padStart(2, "0")}${date.getDate().toString().padStart(2, "0")}_${date
+        .getHours()
+        .toString()
+        .padStart(2, "0")}${date
+        .getMinutes()
+        .toString()
+        .padStart(2, "0")}${date.getSeconds().toString().padStart(2, "0")}`;
+      const filename = `productos-supplytechstore_${timestamp}.pdf`;
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      setDownloadIndeterminate(false);
+      setDownloadProgress(100);
+      setDownloadStatus("Descarga completada.");
+      toast.success("Catálogo descargado correctamente");
+    } catch (error) {
+      if (axios.isCancel(error) || error.code === "ERR_CANCELED") {
+        toast.info("Descarga cancelada");
+      } else {
+        console.error("Error downloading the catalog:", error);
+        const msg =
+          error?.response?.data?.message ||
+          error?.message ||
+          "No se pudo descargar el catálogo";
+        toast.error(typeof msg === "string" ? msg : "Error al descargar");
+      }
+    } finally {
+      setDownloadCanCancel(false);
+      abortRef.current = null;
+      setDownloadModalOpen(false);
+    }
   };
 
   return (
     <>
       <Meta title="Catálogo" />
+      <CatalogDownloadModal
+        show={downloadModalOpen}
+        progress={downloadProgress}
+        indeterminate={downloadIndeterminate}
+        statusLabel={downloadStatus}
+        bytesLoaded={downloadBytes}
+        onCancel={handleCancelDownload}
+        canCancel={downloadCanCancel}
+      />
       {isLoading || loadingAllProducts ? (
         <Loader />
       ) : error || allProductsError ? (
@@ -143,16 +203,16 @@ const Catalog = () => {
           <Row>
             <Col md={3}>
               <div className="z-index-3 d-flex justify-content-center align-items-center">
-                {isPreparingDownload ? (
-                  <Loader />
-                ) : (
-                  <button
-                    className="btn btn-primary btn-sm mb-3"
-                    onClick={handleDownload}
-                  >
-                    <IoMdDownload /> Descargar Catálogo <GrCatalog />
-                  </button>
-                )}
+                <button
+                  type="button"
+                  className="btn btn-primary btn-sm mb-3 d-inline-flex align-items-center gap-2"
+                  onClick={handleDownload}
+                  disabled={downloadModalOpen}
+                >
+                  <IoMdDownload />
+                  Descargar catálogo
+                  <GrCatalog />
+                </button>
               </div>
               <Form.Group
                 as="select"

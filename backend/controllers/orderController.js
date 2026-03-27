@@ -10,10 +10,23 @@ import {
   defaultEmail,
 } from "../utils/sendEmailHandler.js";
 import buildPDF from "../libs/pdfKit.js";
-import { uploadFile } from "../utils/uploadToGoogle.js";
 import path from "path";
 
 const adminEmail = process.env.ADMIN_EMAIL;
+
+/** Owner id whether `user` is populated or an ObjectId */
+function orderOwnerId(order) {
+  const u = order.user;
+  if (u == null) return null;
+  if (typeof u === "object" && u._id) return u._id.toString();
+  return u.toString();
+}
+
+function canAccessOrder(order, reqUser) {
+  if (!order || !reqUser) return false;
+  if (reqUser.isAdmin) return true;
+  return orderOwnerId(order) === reqUser._id.toString();
+}
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -31,22 +44,32 @@ const addOrderItems = asyncHandler(async (req, res) => {
       _id: { $in: orderItems.map((x) => x._id) },
     });
 
-    // map over the order items and use the price from our items from database
-    const dbOrderItems = orderItems.map((itemFromClient) => {
+    const dbOrderItems = [];
+    for (const itemFromClient of orderItems) {
       const matchingItemFromDB = itemsFromDB.find(
         (itemFromDB) => itemFromDB._id.toString() === itemFromClient._id
       );
+      if (!matchingItemFromDB) {
+        res.status(400);
+        throw new Error(
+          `Producto no encontrado o inválido: ${itemFromClient._id}`
+        );
+      }
+      if (typeof matchingItemFromDB.price !== "number") {
+        res.status(400);
+        throw new Error(`Precio inválido para el producto: ${itemFromClient._id}`);
+      }
 
-      return {
+      dbOrderItems.push({
         ...itemFromClient,
-        image: matchingItemFromDB?.images[0]
-          ? matchingItemFromDB?.images[0].url
+        image: matchingItemFromDB?.images?.[0]
+          ? matchingItemFromDB.images[0].url
           : matchingItemFromDB.image,
         product: itemFromClient._id,
         price: matchingItemFromDB.price,
         _id: undefined,
-      };
-    });
+      });
+    }
 
     if (shippingMethod === "pickup") {
       shippingAddress.address =
@@ -123,49 +146,53 @@ const getOrderById = asyncHandler(async (req, res) => {
     "name email"
   );
 
-  if (order) {
-    res.status(200).json(order);
-  } else {
+  if (!order) {
     res.status(404);
     throw new Error("Orden no encontrada.");
   }
+  if (!canAccessOrder(order, req.user)) {
+    res.status(401);
+    throw new Error("No autorizado para ver esta orden.");
+  }
+  res.status(200).json(order);
 });
 
 // @des   Update order to paid
 // @route PUT /api/orders/:id/pay
 // @access Private
 const updateOrderToPaid = asyncHandler(async (req, res) => {
-  const { verified, value } = await verifyPayPalPayment(req.body.id);
-  if (!verified) throw new Error("Payment not verified");
-
-  // check if this transaction has been used before
-  const isNewTransaction = await checkIfNewTransaction(Order, req.body.id);
-  if (!isNewTransaction) throw new Error("Transaction has been used before");
-
   const order = await Order.findById(req.params.id);
 
-  if (order) {
-    // check the correct amount was paid
-    //console.log order.totalPrice.toString() but use always 2 decimals
-    const paidCorrectAmount = order.totalPrice.toFixed(2) === value;
-    if (!paidCorrectAmount) throw new Error("Incorrect amount paid");
-
-    order.isPaid = true;
-    order.paidAt = Date.now();
-    order.paymentResult = {
-      id: req.body.id,
-      status: req.body.status,
-      update_time: req.body.update_time,
-      email_address: req.body.payer.email_address,
-    };
-
-    const updatedOrder = await order.save();
-
-    res.json(updatedOrder);
-  } else {
+  if (!order) {
     res.status(404);
     throw new Error("Order not found");
   }
+  if (!canAccessOrder(order, req.user)) {
+    res.status(401);
+    throw new Error("No autorizado para actualizar esta orden.");
+  }
+
+  const { verified, value } = await verifyPayPalPayment(req.body.id);
+  if (!verified) throw new Error("Payment not verified");
+
+  const isNewTransaction = await checkIfNewTransaction(Order, req.body.id);
+  if (!isNewTransaction) throw new Error("Transaction has been used before");
+
+  const paidCorrectAmount = order.totalPrice.toFixed(2) === value;
+  if (!paidCorrectAmount) throw new Error("Incorrect amount paid");
+
+  order.isPaid = true;
+  order.paidAt = Date.now();
+  order.paymentResult = {
+    id: req.body.id,
+    status: req.body.status,
+    update_time: req.body.update_time,
+    email_address: req.body.payer.email_address,
+  };
+
+  const updatedOrder = await order.save();
+
+  res.json(updatedOrder);
 });
 
 // @des   Update order to delivered
@@ -210,16 +237,20 @@ const updatePaymentMethod = asyncHandler(async (req, res) => {
 
   const order = await Order.findById(orderId);
 
-  if (order) {
-    order.paymentMethod = paymentMethod;
-
-    const updatedOrder = await order.save();
-
-    res.json(updatedOrder);
-  } else {
+  if (!order) {
     res.status(404);
     throw new Error("Order not found");
   }
+  if (!canAccessOrder(order, req.user)) {
+    res.status(401);
+    throw new Error("No autorizado para modificar esta orden.");
+  }
+
+  order.paymentMethod = paymentMethod;
+
+  const updatedOrder = await order.save();
+
+  res.json(updatedOrder);
 });
 
 // @des   Update order zelle
@@ -229,66 +260,74 @@ const updateOrderZelle = asyncHandler(async (req, res) => {
   const { orderId, referenceType, code, image } = req.body;
 
   const order = await Order.findById(orderId);
-  const user = await User.findById(order.user);
 
-  if (order) {
-    if (referenceType === "delete") {
-      order.paymentConfirmation = {
-        referenceType: "",
-        code: "",
-        image: "",
-      };
-    }
-    if (referenceType === "ReferenceNumber") {
-      order.paymentConfirmation = {
-        referenceType,
-        code,
-      };
-    }
-
-    if (referenceType === "ReferenceImage") {
-      order.paymentConfirmation = {
-        referenceType,
-        image,
-      };
-    }
-
-    if (referenceType === "both") {
-      order.paymentConfirmation = {
-        referenceType,
-        code,
-        image,
-      };
-    }
-
-    try {
-      const updatedOrder = await order.save();
-      res.json(updatedOrder);
-
-      //send email to user and admin
-      if (referenceType !== "delete") {
-        const emailDataUser = {
-          to: user.email,
-          userEmail: user.email,
-          name: user.name,
-          admin: false,
-          type: "ZELLE",
-          code,
-          image,
-          orderId: updatedOrder._id,
-          subject: "Confirmación de pago",
-        };
-        await paymentConfirmationEmail(emailDataUser);
-        emailDataUser.admin = true;
-        emailDataUser.to = adminEmail;
-        await paymentConfirmationEmail(emailDataUser);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  } else {
+  if (!order) {
     res.status(404);
     throw new Error("Order not found");
+  }
+  if (!canAccessOrder(order, req.user)) {
+    res.status(401);
+    throw new Error("No autorizado para modificar esta orden.");
+  }
+
+  const user = await User.findById(order.user);
+  if (!user) {
+    res.status(404);
+    throw new Error("Usuario de la orden no encontrado.");
+  }
+
+  if (referenceType === "delete") {
+    order.paymentConfirmation = {
+      referenceType: "",
+      code: "",
+      image: "",
+    };
+  }
+  if (referenceType === "ReferenceNumber") {
+    order.paymentConfirmation = {
+      referenceType,
+      code,
+    };
+  }
+
+  if (referenceType === "ReferenceImage") {
+    order.paymentConfirmation = {
+      referenceType,
+      image,
+    };
+  }
+
+  if (referenceType === "both") {
+    order.paymentConfirmation = {
+      referenceType,
+      code,
+      image,
+    };
+  }
+
+  try {
+    const updatedOrder = await order.save();
+    res.json(updatedOrder);
+
+    if (referenceType !== "delete") {
+      const emailDataUser = {
+        to: user.email,
+        userEmail: user.email,
+        name: user.name,
+        admin: false,
+        type: "ZELLE",
+        code,
+        image,
+        orderId: updatedOrder._id,
+        subject: "Confirmación de pago",
+      };
+      await paymentConfirmationEmail(emailDataUser);
+      emailDataUser.admin = true;
+      emailDataUser.to = adminEmail;
+      await paymentConfirmationEmail(emailDataUser);
+    }
+  } catch (error) {
+    console.log(error);
   }
 });
 
@@ -297,57 +336,46 @@ const updateOrderZelle = asyncHandler(async (req, res) => {
 // @access Private/Admin
 const markAsPaid = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id);
+
+  if (!order) {
+    res.status(404);
+    throw new Error("Order not found");
+  }
+
   const user = await User.findById(order.user);
+  if (!user) {
+    res.status(404);
+    throw new Error("Usuario no encontrado");
+  }
 
-  if (order) {
-    order.isPaid = true;
-    order.paidAt = Date.now();
-    order.paymentResult = {
-      id: order._id,
-      status: "COMPLETED BY ADMIN - MARKED AS PAID",
-      update_time: Date.now().toString(),
-      email_address: user.email,
-    };
+  order.isPaid = true;
+  order.paidAt = Date.now();
+  order.paymentResult = {
+    id: order._id,
+    status: "COMPLETED BY ADMIN - MARKED AS PAID",
+    update_time: Date.now().toString(),
+    email_address: user.email,
+  };
 
-    const updatedOrder = await order.save();
+  const updatedOrder = await order.save();
 
-    //upload file to google cloud
-    /*  
-    const filePath = "./backend/data/pueba.pdf";
-
-    async function main() {
-      try {
-        const publicUrl = await uploadFile(filePath);
-        console.log(`Successfully uploaded file to: ${publicUrl}`);
-      } catch (error) {
-        console.error("Error uploading file:", error);
-      }
-    }
-
-    main(); */
-
-    //send email to user and admin
-    const emailDataUser = {
-      to: user.email,
-      name: user.name,
-      type: "Pago",
-      orderId: updatedOrder._id,
-      subject: `Pago confirmado de la orden ${updatedOrder._id}`,
-      message: `Tu orden ha sido marcada como pagada por el administrador. Gracias por tu compra. Puedes ver el estado de tu orden en tu perfil: https://www.supplytechstore.com/profile
+  const emailDataUser = {
+    to: user.email,
+    name: user.name,
+    type: "Pago",
+    orderId: updatedOrder._id,
+    subject: `Pago confirmado de la orden ${updatedOrder._id}`,
+    message: `Tu orden ha sido marcada como pagada por el administrador. Gracias por tu compra. Puedes ver el estado de tu orden en tu perfil: https://www.supplytechstore.com/profile
       si tienes alguna pregunta, no dudes en contactarnos.
       
       Datos de la orden:
       Orden: ${updatedOrder._id}
       Total: ${updatedOrder.totalPrice}
       Método de pago: Marcado como pagado por el administrador`,
-    };
-    await defaultEmail(emailDataUser);
+  };
+  await defaultEmail(emailDataUser);
 
-    res.json(updatedOrder);
-  } else {
-    res.status(404);
-    throw new Error("Order not found");
-  }
+  res.json(updatedOrder);
 });
 
 // @des   Get invoice
@@ -355,39 +383,48 @@ const markAsPaid = asyncHandler(async (req, res) => {
 // @access Private
 const getInvoice = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id);
-  const user = await User.findById(order.user);
 
-  if (order) {
-    try {
-      const __dirname = path.resolve();
-      const logoPath = path.join(
-        __dirname,
-        "frontend/public/images/logo192.png"
-      );
-
-      const stream = res.writeHead(200, {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename=invoice-${req.params.id}.pdf`,
-      });
-
-      buildPDF(
-        (data) => {
-          stream.write(data);
-        },
-        () => {
-          stream.end();
-        },
-        order,
-        user,
-        logoPath
-      );
-    } catch (error) {
-      console.log(error);
-      throw new Error("Error al generar la factura");
-    }
-  } else {
+  if (!order) {
     res.status(404);
     throw new Error("Order not found");
+  }
+  if (!canAccessOrder(order, req.user)) {
+    res.status(401);
+    throw new Error("No autorizado para descargar esta factura.");
+  }
+
+  const user = await User.findById(order.user);
+  if (!user) {
+    res.status(404);
+    throw new Error("Usuario no encontrado");
+  }
+
+  try {
+    const __dirname = path.resolve();
+    const logoPath = path.join(
+      __dirname,
+      "frontend/public/images/logo192.png"
+    );
+
+    const stream = res.writeHead(200, {
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename=invoice-${req.params.id}.pdf`,
+    });
+
+    buildPDF(
+      (data) => {
+        stream.write(data);
+      },
+      () => {
+        stream.end();
+      },
+      order,
+      user,
+      logoPath
+    );
+  } catch (error) {
+    console.log(error);
+    throw new Error("Error al generar la factura");
   }
 });
 
