@@ -37,7 +37,60 @@ if (process.env.NODE_ENV === "production") {
   app.set("trust proxy", 1);
 }
 
-app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
+/** Allow third-party scripts, media, and frames used by the SPA (Google OAuth, Cloudinary, Maps, PayPal). */
+const contentSecurityPolicy = {
+  directives: {
+    defaultSrc: ["'self'"],
+    scriptSrc: [
+      "'self'",
+      "https://accounts.google.com",
+      "https://apis.google.com",
+      "https://www.paypal.com",
+      "https://www.sandbox.paypal.com",
+    ],
+    styleSrc: ["'self'", "'unsafe-inline'"],
+    imgSrc: [
+      "'self'",
+      "data:",
+      "blob:",
+      "https://res.cloudinary.com",
+      "https://storage.googleapis.com",
+      "https://via.placeholder.com",
+    ],
+    mediaSrc: ["'self'", "https://res.cloudinary.com"],
+    connectSrc: [
+      "'self'",
+      "https://accounts.google.com",
+      "https://oauth2.googleapis.com",
+      "https://www.googleapis.com",
+      "https://apis.google.com",
+      "https://www.paypal.com",
+      "https://www.sandbox.paypal.com",
+      "https://api.paypal.com",
+      "https://api-m.paypal.com",
+      "https://api-m.sandbox.paypal.com",
+    ],
+    frameSrc: [
+      "'self'",
+      "https://accounts.google.com",
+      "https://www.google.com",
+      "https://www.paypal.com",
+      "https://www.sandbox.paypal.com",
+    ],
+    fontSrc: ["'self'", "data:", "https://fonts.gstatic.com"],
+    objectSrc: ["'none'"],
+    baseUri: ["'self'"],
+    formAction: ["'self'"],
+    frameAncestors: ["'self'"],
+  },
+};
+
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    contentSecurityPolicy,
+  })
+);
 
 // Middleware to parse JSON data in the body of the request
 app.use(express.json());
