@@ -43,6 +43,11 @@ import DeleteUser from "./screens/DeleteUser";
 import ChangePaymentMethodScreen from "./screens/ChangePaymentMethodScreen";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
+/** Must match server `GOOGLE_CLIENT_ID` and Google Cloud OAuth Web client. */
+const GOOGLE_CLIENT_ID =
+  process.env.REACT_APP_GOOGLE_CLIENT_ID ||
+  "679298053905-gpeof9cold4qv77d6ikgqasn4sqcp1c2.apps.googleusercontent.com";
+
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
@@ -106,7 +111,7 @@ const router = createBrowserRouter(
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <GoogleOAuthProvider clientId="679298053905-gpeof9cold4qv77d6ikgqasn4sqcp1c2.apps.googleusercontent.com">
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <HelmetProvider>
         <Provider store={store}>
           <PayPalScriptProvider deferLoading={true}>
