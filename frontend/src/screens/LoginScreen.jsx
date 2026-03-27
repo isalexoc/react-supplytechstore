@@ -102,7 +102,14 @@ const LoginScreen = () => {
         </p>
         <div className="mt-3">
           <GoogleLogin
-            language="es"
+            use_fedcm_for_prompt={false}
+            type="standard"
+            theme="outline"
+            size="large"
+            text="signin_with"
+            shape="rectangular"
+            logo_alignment="left"
+            locale="es"
             onSuccess={(credentialResponse) => {
               handleGoogleSubmit(credentialResponse);
             }}
